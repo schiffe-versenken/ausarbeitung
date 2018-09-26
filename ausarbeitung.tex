@@ -1,0 +1,262 @@
+% This is LLNCS.DEM the demonstration file of
+% the LaTeX macro package from Springer-Verlag
+\documentclass[a4paper,12pt]{llncs}
+%
+\usepackage{makeidx}  % allows for indexgeneration
+\makeindex
+
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}      % Code-Page latin 1
+\usepackage[T1]{fontenc}
+% Nur eine der beiden folgenden Zeilen einbinden!
+% siehe Abschnitt Bilder
+%\usepackage{graphicx}       % Bilder einbinden, Version fuer normales latex
+\usepackage[pdftex]{graphicx}       % Bilder einbinden, Version fuer pdflatex
+
+% mit Hyperrefs
+\usepackage[pdftex, plainpages=false,hypertexnames=true,pdfnewwindow=true,backref=true,colorlinks=true,citecolor=blue,linkcolor=black,urlcolor=blue,filecolor=blue]{hyperref}% 
+% weitere Packages
+\usepackage{ifthen}                 % Zum Auskommentieren von Textteilen
+\usepackage{amssymb}                % Mathematische Buchstaben
+\usepackage{amsmath}                % Verbesserter Formelsatz
+\usepackage[vlined,boxed]{algorithm2e}
+\usepackage{booktabs}               % schönere Tabellen
+\usepackage{color}
+\usepackage{hyperref}
+ \hypersetup{urlcolor=black,citecolor=black}
+%\setalcapskip{1.5ex} % fuer package algorithm
+\usepackage{dsfont}  
+%\newtheorem{definition}{Definition}
+\usepackage{doc}
+
+% Seitenformat ===============================================================
+\hoffset=-1.25truecm
+\setlength{\topmargin}{0.0cm}
+\setlength{\textheight}{23.0cm}
+\setlength{\footskip}{1.5cm}
+\setlength{\textwidth}{15.4cm}
+\setlength{\evensidemargin}{1.5cm}
+\setlength{\oddsidemargin}{1.5cm}
+\setlength{\parskip}{1ex}
+\setlength{\parindent}{0pt}
+\setlength{\marginparwidth}{1.4cm}
+\setlength{\marginparsep}{1mm}
+
+\pagestyle{plain}
+
+% Makro-Definitionen ==========================================================
+% Zahlenbereiche -------------------------------------------------------------
+\newcommand{\N}{{\mathbb{N}}}
+\newcommand{\R}{{\mathbb{R}}}
+\newcommand{\C}{{\mathbb{C}}}
+\newcommand{\Z}{{\mathbb{Z}}}
+\newcommand{\Q}{{\mathbb{Q}}}
+
+% 
+\def\myverzeichnis{.}
+
+\numberwithin{equation}{section} 
+% Bild -----------------------------------------------------------------------
+% #1 Filename;  #2 Label;  #3 Bildunterschrift;  #4 Kurzform
+\newcommand{\bild}[4]{
+  \begin{figure}[htbp]
+    \begin{center}
+      \includegraphics{#1}
+      \caption[#4]{#3}
+      \label{#2}
+    \end{center}
+  \end{figure}
+}
+
+% Bildbreite -----------------------------------------------------------------
+% #1 Filename;  #2 Breite;  #3 Label;  #4 Bildunterschrift;  #5 Kurzform
+\newcommand{\bildbreite}[5]{
+  \begin{figure}[htbp]
+    \begin{center}
+      \includegraphics[width=#2]{#1}
+      \caption[#5]{#4}
+      \label{#3}
+    \end{center}
+  \end{figure}
+}
+
+
+% ============================================================================
+\begin{document}
+
+% =========== Das war der Vorspann, jetzt geht's los! ========================
+
+% ============================================================================
+% =============  AB HIER DARF UND SOLL GETIPPT WERDEN ========================
+% ============================================================================
+
+\author{Viel Schreiber}
+\index{Viel Schreiber}
+
+% Das Institut wird fuer den Betreuer missbraucht ...
+\institute{{\bf Betreuer:} Dipl.-Inf. Carl Coder}
+\authorrunning{Viel Schreiber}
+\title{Meine Seminarausarbeitung}
+
+\maketitle
+
+\thispagestyle{empty}
+
+\begin{abstract}
+Ein schöner Abstract. Das ist einfach die Kurzzusammenfassung.
+\end{abstract}
+
+% Einleitung -----------------------------------------------------------------
+\section{Spielbeschreibung}
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+\subsection{Definitionen}
+Sei $C=\{1, \dots, N\}^d$ die Menge aller Zellen (cells) des Spielfeldes mit jeweils $N$ Zellen in $d$ Dimensionen.
+
+Sei $l$ eine mögliche Schiffsposition (location), welche mithilfe einer minimalen Ecke $c_{min}(l)$ und einer maximalen Ecke $c_{max}(l)$ bestimmt wird. Dann ist
+\[
+c(l)=
+\{
+c
+\in
+C
+\mid
+c_{min}(l) \leq c \leq c_{max}(l)
+\}
+\]
+die Menge aller Zellen, welche sich innerhalb der möglichen Schiffsposition $l$ befinden.
+
+Sei 
+\[
+L=
+\{
+\{
+k
+\in
+C
+\mid
+i \leq k \leq j
+\}
+\mid
+i,j \in C
+\wedge
+i \leq j
+\}
+\] die Menge aller möglichen Schiffspositionen.
+
+Sei $S \subseteq L$ die Gesamtmenge der Positionen von allen platzierten Schiffe (ships) auf dem Spielfeld.
+
+Sei
+\[   
+f = (c,h,d), c \in C, h \in \N_0, d \subseteq S
+\]
+ein abgefeuerter Schuss (fired shot), wobei $c$ die beschossene Zelle ist, $h$ angibt wie viele Schiffe bei einem Schuss auf die Zelle $c$ getroffen wurden und $d$ angibt, welche Schiffe zusätzlich versenkt wurden. Daher gilt $h \geq |d|$.
+
+
+\section{Zufällige Schiffsverteilung}
+
+Bei einer zufälligen Verteilung werden $m$ verschiedene Schiffspositionen $s_1, \dots, s_m$ aus $L_P$ ausgewählt, sodass $S=\{s_1, \dots, s_m\}$.
+
+Sei $g_t=(L_t, F_t, K_t, P_t)$ das Spielzustandsobjekt (game state) zum Zeitpunkt $t$, also nach $t$ Schüssen, bestehend aus den restlichen Schiffspositionen (locations), den abgefeuerten Schüssen (fired shots) $F_t=(f_1, \dots, f_t)$, den bekannten, also versenkten Schiffen (known ships) und der Wahrscheinlichkeitsfunktion $P_t(l)$ welche für jede Position $l \in L_t$ die Wahrscheinlichkeit angibt, dass $l \in S$ ist.
+
+Zu Beginn ist $g_0=(L, \emptyset, \emptyset, P_0(l)=\frac{|S|}{|L|})$.
+
+Sei
+\[
+l_t(c)=
+\{
+i
+\in
+L_t
+\mid
+c
+\in
+i
+\}
+\]
+die Menge aller locations, in denen die Zelle $c$ enthalten ist.
+
+
+Sei
+\[
+i(c)=
+\{
+s
+\in
+S
+\mid
+c
+\in
+c(s)
+\}
+\]
+die Intersect-Funktion, welche angibt, welche Schiffe aus $S$ die Zelle $c$ belegen.
+
+Dann ist
+\[
+P_t(|i(c)|=k)=
+\frac{\binom{|l_t(c)|}{k} \binom{|L_t| - |l_t(c)|}{m-k}}{\binom{|L_t|}{m}}
+\]
+die Wahrscheinlichkeit, dass die Zelle $c$ von $k$ Schiffen belegt wird.
+
+\subsection{Transferfunktion bei einem Schuss}
+Sei $g_t=(L_t, F_t, K_t, P_t)$ der Zustand nach $t$ Schüssen.
+Wird ein weiterer Schuss $f_{t+1}=(c, h, d)$ abgegeben, verändert sich der Zustand wie folgt: \\
+\[
+L_{t+1}=
+\begin{cases} 
+      L_t \setminus l_t(c) &, h=0 \\
+      L_t \setminus d &, |d|>0 \\
+      L_t &, sonst \\
+\end{cases}
+\]
+$F_{t+1}=F_t \cup f_{t+1}$ \\
+$K_{t+1}=K_t \cup d$ \\
+
+Außerdem muss für alle Positionen $l$ die Wahrscheinlichkeit für $l \in S$ folgendermaßen verändert werden:
+\\
+TODO: Anders formulieren und versenkte Schiffe beachten!
+Sei
+\begin{align}
+&P(F_{t+1}=\{f_1, \dots, f_{t+1}\}) \\
+= &P(f_1=(c_1, h_1, d_1), \dots, f_{t+1}=(c_{t+1}, h_{t+1}, d_{t+1})) \\
+= &P_0(|i(c_1)|=h_1) * P_1(|i(c_2)|=h_2) * \dots * P_t(|i(c_{t+1})|=h_{t+1}) \\
+= &P(F_{t}=\{f_1, \dots, f_{t}\}) * P_t(|i(c_{t+1})|=h_{t+1})
+\end{align}
+die Wahrscheinlichkeit, dass bei der Schussfolge $\{f_1, \dots, f_{t+1}\}$ für jeden Schuss $f_i$ auf Zelle $c_i$ genau $h_i$ Schiffe getroffen und $d_i$ Schiffe versenkt werden.
+
+Für jede Position $l \in L_{t+1}$ sei
+\[
+P_t(\{l \in S\} \cap \{f_{t+1}=(c_{t+1}, h_{t+1}, d_{t+1})\})=
+\begin{cases} 
+      \frac{h}{|l_t(c)|} &, c \in c(l) \\
+      \frac{m-h}{|L_t|-|l_t(c)|} &, c \notin c(l)
+\end{cases}
+\]
+die Wahrscheinlichkeit, dass nach dem Schuss $f_{t+1}$ auf Position $l$ ein Schiff liegt.
+
+Außerdem gilt:
+\begin{align}
+&P(\{l \in S\} \cap \{F_{t+1}=\{f_1, \dots, f_{t+1}\}\}) \\
+=&P_t(\{l \in S\}) \\
+&* P_t(\{l \in S \} \cap \{f_{t+1}=(c_{t+1}, h_{t+1}, d_{t+1})\}) \\
+&* P(\{F_{t+1}=\{f_1, \dots, f_{t+1}\})
+\end{align}
+
+Damit sind alle Bestandteile bekannt um die neue Wahrscheinlichkeitsfunktion $P_{t+1}$ zu definieren:
+\begin{align}
+&P_{t+1}(l \in S) \\
+=&P(\{l \in S\} \mid \{F_{t+1}=\{f_1, \dots, f_{t+1}\}) \\
+=&\frac{P(\{l \in S\} \cap \{F_{t+1}=\{f_1, \dots, f_{t+1}\})}{P(F_{t+1}=\{f_1, \dots, f_{t+1}\})}
+\end{align}
+
+Somit kann die Transferfunktion $t(g_t, f_{t+1})=g_{t+1}$ definiert werden mit $t((L_t, F_t, K_t), f_{t+1})=(L_{t+1}, F_{t+1}, K_{t+1},P_{t+1})$.
+
+% Literaturverzeichnis ------------------------------------------------
+\newpage
+\bibliographystyle{alphadinLinkLocal}
+\bibliography{literatur} 
+
+%\iffalse
+\end{document}
+%\fi

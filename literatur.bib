@@ -1,0 +1,148 @@
+%% Dies ist ein Beispiel fuer BibTex-Dateien
+%%
+%% Im folgenden sind einige Beispiele und Templates gegeben.
+%%
+%% 
+%% Der generelle Aufbau eines Bibtex-Eintrags ist folgender:
+%%
+%% <AT>Eintragstyp{label,
+%%     erstesFeld = {Inhalt},
+%%     zweitesFeld = "Inhalt",
+%%     ...
+%%     n-tesFeld = {Inhalt},
+%% }
+%%
+%%
+%% WARNUNG: Es werden nur diejenigen Eintraege in die Literaturliste aufgenommen,
+%% die im Text mit \cite{label} referenziert wurden!
+%%
+%%
+%% Die Namen der Felder eines Eintrags sollten selbsterklaerend sein.
+%% Bei den Inhalten geht sowohl die Schreibweise mit {} als auch mit ""
+%% Alle Zeilen der Felder muessen mit Komma abgeschlossen werden.
+%%
+%% Generell sollten mindestens alle Felder, die nicht mit OPT
+%% als optional gekennzeichnet sind, ausgefuellt werden.
+%% Bei optionalen Feldern muessen die 3 Buchstaben "OPT" geloescht werden, 
+%% sonst wird das Feld nicht genommen!
+%%
+%%
+%% Die wichtigsten Eintragstypen sind:
+%%
+%% Article: Aufsatz in einer Fachzeitschrift
+%% InProceedings: Konferenzbeitrag in einem Sammelband
+%% Techreport : Technischer Bericht
+%% Book: klassische Monographie
+%% PhDThesis: Doktorarbeit
+%% MastersThesis: sonstige Abschlussarbeit
+%% Misc: Fuer alles, was sonstwie veroeffentlicht wurde
+
+
+
+
+@Article{thisdocument,
+  author = 	 {Ich},
+  title = 	 {Vorlage für das Hauptseminar},
+  journal = 	 {Diese Zeitschrift},
+  year = 	 {2008},
+  OPTkey = 	 {},
+  OPTvolume = 	 {},
+  OPTnumber = 	 {},
+  OPTpages = 	 {},
+  OPTmonth = 	 {},
+  note = 	 {Dieses Dokument solle sich selbst verlinken (Hilfe, Endlosrekursion!)},
+  OPTannote = 	 {},
+  url42 = {./Ausarbeitung\_Vorlage.pdf}
+}
+
+@InProceedings{ams05,
+  author = 	 {M.~Schanz and 
+  J.~Starke and
+  R.~Lafrenz and 
+  O.~Zweigle and 
+  M.~Oubbati and 
+  H.~Rajaie and 
+  F.~Schreiber and 
+  T.~Buchheim and 
+  U.-P.~K{\"a}ppeler and 
+  P.~Levi},
+  title = 	 {{Dynamic Task Assignment in a Team of Agents}},
+  booktitle = {Autonome Mobile Systeme },
+  pages = 	 {11--18},
+  year = 	 {2005},
+  editor = 	 {P.~Levi},
+  publisher = {Springer},
+}
+
+
+@Techreport{WB95,
+  author =	 "G. Welch and G. Bishop",
+  title =	 "An Introduction to the Kalman Filter",
+  institution =	 "UNC-CH Computer Science",
+  type =	 "Technical Report",
+  number =	 "95-041",
+  year =	 "1995",
+  url =          {http://www.cs.unc.edu/~welch/media/pdf/kalman_intro.pdf},
+  keywords =     {kalman}
+}
+
+
+%% Hier ist noch eine Besonderheit:
+%% Ein Buch kann entweder einen Autor (oder natuerlich mehrere) haben,
+%% aber auch als Sammelband einen Editor (oder mehrere)
+%%
+@Book{,
+  ALTauthor = 	 {},
+  ALTeditor = 	 {},
+  title = 	 {},
+  publisher = 	 {},
+  year = 	 {},
+  OPTkey = 	 {},
+  OPTvolume = 	 {},
+  OPTnumber = 	 {},
+  OPTseries = 	 {},
+  OPTaddress = 	 {},
+  OPTedition = 	 {},
+  OPTmonth = 	 {},
+  OPTnote = 	 {},
+  OPTannote = 	 {}
+}
+
+
+@PhdThesis{,
+  author = 	 {},
+  title = 	 {},
+  school = 	 {},
+  year = 	 {},
+  OPTkey = 	 {},
+  OPTtype = 	 {},
+  OPTaddress = 	 {},
+  OPTmonth = 	 {},
+  OPTnote = 	 {},
+  OPTannote = 	 {}
+}
+
+@MastersThesis{,
+  author = 	 {},
+  title = 	 {},
+  school = 	 {},
+  year = 	 {},
+  OPTkey = 	 {},
+  OPTtype = 	 {},
+  OPTaddress = 	 {},
+  OPTmonth = 	 {},
+  OPTnote = 	 {},
+  OPTannote = 	 {}
+}
+
+
+@Misc{,
+  OPTkey = 	 {},
+  OPTauthor = 	 {},
+  OPTtitle = 	 {},
+  OPThowpublished = {},
+  OPTmonth = 	 {},
+  OPTyear = 	 {},
+  OPTnote = 	 {},
+  OPTannote = 	 {}
+}
