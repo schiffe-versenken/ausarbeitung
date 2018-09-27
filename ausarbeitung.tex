@@ -80,6 +80,8 @@
   \end{figure}
 }
 
+\newtheorem{satz}{Satz}
+
 
 % ============================================================================
 \begin{document}
@@ -157,9 +159,11 @@ ein abgefeuerter Schuss (fired shot), wobei $c$ die beschossene Zelle ist, $h$ a
 
 Bei einer zufälligen Verteilung werden $m$ verschiedene Schiffspositionen $s_1, \dots, s_m$ aus $L_P$ ausgewählt, sodass $S=\{s_1, \dots, s_m\}$.
 
-Sei $g_t=(L_t, F_t, K_t, P_t)$ das Spielzustandsobjekt (game state) zum Zeitpunkt $t$, also nach $t$ Schüssen, bestehend aus den restlichen Schiffspositionen (locations), den abgefeuerten Schüssen (fired shots) $F_t=(f_1, \dots, f_t)$, den bekannten, also versenkten Schiffen (known ships) und der Wahrscheinlichkeitsfunktion $P_t(l)$ welche für jede Position $l \in L_t$ die Wahrscheinlichkeit angibt, dass $l \in S$ ist.
+Sei $g_t=(L_t, F_t, K_t, P_t)$ das Spielzustandsobjekt (game state) zum Zeitpunkt $t$, also nach $t$ Schüssen, bestehend aus den restlichen Schiffspositionen $L_t$(locations), den abgefeuerten Schüssen (fired shots) $F_t=(f_1, \dots, f_t)$, den bekannten, also versenkten Schiffen $K_t$ (known ships) und der Wahrscheinlichkeitsfunktion $P_t(l)$ welche für jede Position $l \in L_t$ die Wahrscheinlichkeit angibt, dass $l \in S$ ist.
 
 Zu Beginn ist $g_0=(L, \emptyset, \emptyset, P_0(l)=\frac{|S|}{|L|})$.
+
+Sei $U_t=S \setminus K_t$ die noch unbekannten und damit unversenkten Schiffe (unknown ships) zum Zeitpunkt $t$.
 
 Sei
 \[
@@ -174,34 +178,29 @@ c
 i
 \}
 \]
-die Menge aller locations, in denen die Zelle $c$ enthalten ist.
+die Menge aller Positionen zum Zeitpunkt $t$, in denen die Zelle $c$ enthalten ist.
 
 
 Sei
 \[
-i(c)=
+h_t(c)=
 \{
 s
 \in
-S
+U_t
 \mid
 c
 \in
 c(s)
 \}
 \]
-die Intersect-Funktion, welche angibt, welche Schiffe aus $S$ die Zelle $c$ belegen.
-
-Dann ist
-\[
-P_t(|i(c)|=k)=
-\frac{\binom{|l_t(c)|}{k} \binom{|L_t| - |l_t(c)|}{m-k}}{\binom{|L_t|}{m}}
-\]
-die Wahrscheinlichkeit, dass die Zelle $c$ von $k$ Schiffen belegt wird.
+die Treffer-Funktion (hit function), welche angibt, welche noch zum Zeitpunkt $t$ unbekannten Schiffe die Zelle $c$ belegen.
 
 \subsection{Transferfunktion bei einem Schuss}
-Sei $g_t=(L_t, F_t, K_t, P_t)$ der Zustand nach $t$ Schüssen.
-Wird ein weiterer Schuss $f_{t+1}=(c, h, d)$ abgegeben, verändert sich der Zustand wie folgt: \\
+Sei $g_t=(L_t, F_t, K_t, H_t, P_t)$ der Zustand nach $t$ Schüssen.
+Sei außerdem $c_{t+1}$ die Zelle, auf die bei dem $t+1$-ten Schuss geschossen wird und $f_t(c_{t+1})=(h_{t+1}, d_{t+1})$ das Ergebnis dieses Schusses, wobei $h_{t+1}$ die Anzahl an getroffenen Schiffen und $d_{t+1} \subseteq d_p$ die Menge der versenkten Schiffe ist.
+
+Der Zustand verändert sich wie folgt: \\
 \[
 L_{t+1}=
 \begin{cases} 
@@ -212,45 +211,88 @@ L_{t+1}=
 \]
 $F_{t+1}=F_t \cup f_{t+1}$ \\
 $K_{t+1}=K_t \cup d$ \\
+$H_t?$
 
-Außerdem muss für alle Positionen $l$ die Wahrscheinlichkeit für $l \in S$ folgendermaßen verändert werden:
-\\
-TODO: Anders formulieren und versenkte Schiffe beachten!
-Sei
-\begin{align}
-&P(F_{t+1}=\{f_1, \dots, f_{t+1}\}) \\
-= &P(f_1=(c_1, h_1, d_1), \dots, f_{t+1}=(c_{t+1}, h_{t+1}, d_{t+1})) \\
-= &P_0(|i(c_1)|=h_1) * P_1(|i(c_2)|=h_2) * \dots * P_t(|i(c_{t+1})|=h_{t+1}) \\
-= &P(F_{t}=\{f_1, \dots, f_{t}\}) * P_t(|i(c_{t+1})|=h_{t+1})
-\end{align}
-die Wahrscheinlichkeit, dass bei der Schussfolge $\{f_1, \dots, f_{t+1}\}$ für jeden Schuss $f_i$ auf Zelle $c_i$ genau $h_i$ Schiffe getroffen und $d_i$ Schiffe versenkt werden.
 
-Für jede Position $l \in L_{t+1}$ sei
+\begin{lemma}
+Sei $d_p=l_t(c_{t+1}) \cap \{l \mid (l, 1) \in H_t\}$ die Menge aller Schiffe, die bei diesem Schuss versenkt werden können und sei $h \geq |d_{t+1}|$.
+
+Dann ist
 \[
-P_t(\{l \in S\} \cap \{f_{t+1}=(c_{t+1}, h_{t+1}, d_{t+1})\})=
+P(f_t(c_{t+1})=(h, d_{t+1}))=\prod_{l \in d_{t+1}}P_t(l \in S) * \prod_{l \in d_p \setminus d_{t+1}}P_t(l \notin S)
+\]
+die Wahrscheinlichkeit, dass genau die Schiffe in der Menge $d$ versenkt werden.
+\end{lemma}
+
+\begin{proof}
+TODO
+\end{proof}
+
+
+\begin{lemma}
+Sei $k >0$.
+Dann ist
+\[
+P(|h_{t+1}(c)|=k)=\frac{\binom{|l_{t+1}(c)|}{k} \binom{|L_{t+1}| - |l_{t+1}(c)|}{|U_{t+1}|-k}}{\binom{|L_{t+1}|}{|U_{t+1}|}}
+\]
+die Wahrscheinlichkeit, zusätzlich $k$ Schiffe bei diesem Schuss zu treffen, nachdem bereits die Schiffe $d_{t+1}$ versenkt wurden.
+\end{lemma}
+
+\begin{proof}
+TODO
+\end{proof}
+
+
+\begin{lemma}
+Dann gilt:
+\[
+P(f_t(c_{t+1})=(h_{t+1}, d_{t+1}))=P(f_t(c_{t+1})=(h, d_{t+1})) * P(|h_{t+1}(c)|=h_{t+1}-|d_{t+1}|)
+\]
+\end{lemma}
+
+\begin{proof}
+TODO
+\end{proof}
+
+
+\begin{lemma}
+Sei $l \in L_{t+1}$.
+Dann ist
+\[
+P_t(\{l \in S\} \cap \{f_{t+1}(c_{t+1})=(h_{t+1}, d_{t+1})\})=
 \begin{cases} 
-      \frac{h}{|l_t(c)|} &, c \in c(l) \\
-      \frac{m-h}{|L_t|-|l_t(c)|} &, c \notin c(l)
+      \frac{h_{t+1}}{|l_t(c)|} &, c_{t+1} \in c(l) \\
+      \frac{u_t-h_{t+1}}{|L_t|-|l_t(c)|} &, c_{t+1} \notin c(l)
 \end{cases}
 \]
 die Wahrscheinlichkeit, dass nach dem Schuss $f_{t+1}$ auf Position $l$ ein Schiff liegt.
+\end{lemma}
 
-Außerdem gilt:
-\begin{align}
-&P(\{l \in S\} \cap \{F_{t+1}=\{f_1, \dots, f_{t+1}\}\}) \\
-=&P_t(\{l \in S\}) \\
-&* P_t(\{l \in S \} \cap \{f_{t+1}=(c_{t+1}, h_{t+1}, d_{t+1})\}) \\
-&* P(\{F_{t+1}=\{f_1, \dots, f_{t+1}\})
-\end{align}
+\begin{proof}
+TODO
+\end{proof}
 
-Damit sind alle Bestandteile bekannt um die neue Wahrscheinlichkeitsfunktion $P_{t+1}$ zu definieren:
+
+\begin{satz}
+Sei $l \in L_{t+1}$.
+Dann ist
+\[
+P_{t+1}(l \in S) = \frac{P_t(\{l \in S\} \cap \{f_t(c_{t+1})=(h_{t+1}, d_{t+1})\})}{P_t(\{f_t(c_{t+1})=(h_{t+1}, d_{t+1})\})}
+\]
+\end{satz}
+
+\begin{proof}
 \begin{align}
 &P_{t+1}(l \in S) \\
-=&P(\{l \in S\} \mid \{F_{t+1}=\{f_1, \dots, f_{t+1}\}) \\
-=&\frac{P(\{l \in S\} \cap \{F_{t+1}=\{f_1, \dots, f_{t+1}\})}{P(F_{t+1}=\{f_1, \dots, f_{t+1}\})}
+=&P_t(\{l \in S\} \mid \{f_t(c_{t+1})=(h_{t+1}, d_{t+1})\}) \\
+=&\frac{P_t(\{l \in S\} \cap \{f_t(c_{t+1})=(h_{t+1}, d_{t+1})\})}{P_t(\{f_t(c_{t+1})=(h_{t+1}, d_{t+1})\})}
 \end{align}
+\end{proof}
 
-Somit kann die Transferfunktion $t(g_t, f_{t+1})=g_{t+1}$ definiert werden mit $t((L_t, F_t, K_t), f_{t+1})=(L_{t+1}, F_{t+1}, K_{t+1},P_{t+1})$.
+
+\begin{theorem}
+Die Zustandsveränderung kann somit mithilfe der Transferfunktion $t(g_t, c_{t+1})=g_{t+1}$ definiert werden mit $t((L_t, F_t, K_t, H_t, P_t), c_{t+1})=(L_{t+1}, F_{t+1}, K_{t+1}, H_{t+1}, P_{t+1})$.
+\end{theorem}
 
 % Literaturverzeichnis ------------------------------------------------
 \newpage
