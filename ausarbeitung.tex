@@ -163,7 +163,7 @@ $all\_distributions=\{L \subseteq L_{all} \mid |L|=m\}$ ist die Menge von allen 
 \end{definition}
 
 \begin{definition}
-Sei $L_a$ mit $L_a \in all\_distributions$ die eigentliche und geheime Schiffsverteilung.
+Sei $L_a \in all\_distributions$ die eigentliche und geheime Schiffsverteilung.
 \end{definition}
 
 \begin{definition}
@@ -183,7 +183,7 @@ Sei
 \[
 D_F=\{l \in L_a \mid c(l) \subseteq C_{shot,F}\}
 \]
-die Menge an Schiffen, welche durch die Schüsse auf die Zellen $C_{shot}$ bereits versenkt wurden.
+die Menge an Schiffen, welche durch die Schüsse auf die Zellen $C_{shot,F}$ bereits versenkt wurden.
 \end{definition}
 
 \begin{definition}
@@ -198,7 +198,6 @@ Sei $H_F(c)$ die Anzahl an Treffern von einem bereits abgefeuerten Schuss auf Ze
 
 \begin{satz}
 Seien $C_{pos}$ die Zellen, die belegt werden sollen. Seien $C_{neg}$ die Zellen, die nicht belegt werden sollen.
-Sei $D$ die Menge der bereits zerstörten Schiffe.
 
 Dann ist
 %Sei positive\_min(d)=min(\{c_d \mid c \in C_{pos}\})
@@ -206,24 +205,24 @@ Dann ist
 %Sei b_{min}(d)=negative\_min\_border(d)=max(\{c_d \mid c \in C_{neg} \wedge c_d < positive\_min(d)\}, 1)
 %Sei b_{max}(d)=negative\_max\_border(d)=min(\{c_d \mid c \in C_{neg} \wedge c_d > positive\_max(d)\}, D)\\
 \[
-location\_count(C_{pos}, C_{neg}, D)=TODO (Dennis?)
+location\_count_F(C_{pos}, C_{neg})=TODO (Dennis?)
 \]
 \end{satz}
 
 \begin{definition}
-Sei
+Sei $cell\_combinations_F=\mathcal{P}(C_{shot,F})$.
+\end{definition}
+
+\begin{definition}
+Sei $comb \in cell\_combinations_F$. Dann ist
 \[
-location\_count_F(comb)=location\_count(C_{pos}, C_{neg}, D)
+location\_count_F(comb)=location\_count_F(comb, C_{shot,F} \setminus comb)
 \]
 eine Kurzform.
 \end{definition}
 
 \begin{definition}
-Sei $cell\_combinations_F=\mathcal{P}(C_{shot,F}) \setminus \{\emptyset\}$.
-\end{definition}
-
-\begin{definition}
-Sei
+Sei $comb \in cell\_combinations_F$. Dann ist
 \[
 max\_shared\_ship\_count_F(comb)=min(location\_count_F(comb), \{H_F(c) \mid c \in comb\})
 \]
@@ -233,8 +232,8 @@ max\_shared\_ship\_count_F(comb)=min(location\_count_F(comb), \{H_F(c) \mid c \i
 Sei
 \[
 s_F \colon \begin{array}{l} 
-          cell\_combinations(F) \rightarrow \N_0 \\ 
-          comb\mapsto s(comb)=k, \, 0 \leq k \leq max\_shared\_ship\_count_F(comb)
+          cell\_combinations_F \rightarrow \N_0 \\ 
+          comb\mapsto s_F(comb)=k, \, 0 \leq k \leq max\_shared\_ship\_count_F(comb)
          \end{array}
 \]
 eine Share-Funktion.
@@ -257,17 +256,17 @@ hit\_count(c, s_F)=\sum_{comb \in \{x \in cell\_combinations_F \mid c \in x\}}{s
 \begin{definition}
 Sei
 \[
-valid\_share\_functions_F=\{s_F \mid \forall{c \in C_F}\colon hit\_count(c, s_F)=h(c) \wedge ship\_count(s_F) \leq ships\_left\_count_F\}
+valid\_share\_functions_F=\{s_F \mid \forall{c \in C_{shot,F}}\colon hit\_count(c, s_F)=H_F(c) \wedge ship\_count(s_F) =ships\_left\_count_F\}
 \]
 die Menge an Share-Funktionen, die das LGS (...) lösen.
 \end{definition}
 
 \begin{definition}
 Sei
-\begin{align}
-distribution\_count(s_F)=\\
-\left( \prod_{comb \in cell\_combinations_F}{{location\_count_F(comb)\choose s_F(comb)}} \right) * {ships\_left\_count - ship\_count(s)\choose locations\_left\_count}
-\end{align}
+\[
+distribution\_count(s_F)=
+\left( \prod_{comb \in cell\_combinations_F}{{location\_count_F(comb)\choose s_F(comb)}} \right)
+\]
 \end{definition}
 
 \begin{definition}
@@ -279,12 +278,14 @@ distribution\_count(F)=\sum_{s_F \in valid\_share\_functions_F}{distribution\_co
 
 \subsection{Teilungsfunktionen anwenden}
 
+Sei jetzt der momentane Zustand $F_t$.
+
 \begin{satz}
 Sei $L \subseteq ship\_distributions$ eine mögliche Schiffsverteilung.
 
 Dann ist
 \[
-P(L = L_a)=\frac{1}{distribution\_count(F)}
+P(L = L_a)=\frac{1}{distribution\_count(F_t)}
 \]
 die Wahrscheinlichkeit, dass $L$ die richtige Schiffsverteilung ist.
 \end{satz}
@@ -310,10 +311,10 @@ TODO
 \end{proof}
 
 \begin{theorem}
-Sei $c \in C_{left,F}$ die beschossene Zelle.
+Sei $c \in C_{left,{F_t}}$ die beschossene Zelle.
 Dann gilt:
 \[
-\mathds{E}(H_{F_t}(c))=\sum_{h=1}^{|U|} P(H_F(c)=h) * h
+\mathds{E}(H_{F_t}(c))=\sum_{h=1}^{ships\_left\_count_{F_t}} P(H_F(c)=h) * h
 \]
 \end{theorem}
 
