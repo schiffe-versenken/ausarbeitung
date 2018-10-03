@@ -112,9 +112,14 @@ Ein schöner Abstract. Das ist einfach die Kurzzusammenfassung.
 \section{Spielbeschreibung}
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
-\subsection{Definitionen}
-Sei $C=\{1, \dots, N\}^d$ die Menge aller Zellen (cells) des Spielfeldes mit jeweils $N$ Zellen in $d$ Dimensionen.
+\section{Optimale Schüsse berechnen}
 
+\subsection{Definitionen}
+\begin{definition}
+Sei $C_{all}=\{1, \dots, N\}^d$ die Menge aller Zellen (cells) des Spielfeldes mit jeweils $N$ Zellen in $d$ Dimensionen.
+\end{definition}
+
+\begin{definition}
 Sei $l$ eine mögliche Schiffsposition (location), welche mithilfe einer minimalen Ecke $c_{min}(l)$ und einer maximalen Ecke $c_{max}(l)$ bestimmt wird. Dann ist
 \[
 c(l)=
@@ -127,172 +132,196 @@ c_{min}(l) \leq c \leq c_{max}(l)
 \}
 \]
 die Menge aller Zellen, welche sich innerhalb der möglichen Schiffsposition $l$ befinden.
+\end{definition}
 
+\begin{definition}
 Sei 
 \[
-L=
+L_{all}=
 \{
 \{
 k
 \in
-C
+C_{all}
 \mid
 i \leq k \leq j
 \}
 \mid
-i,j \in C
+i,j \in C_{all}
 \wedge
 i \leq j
 \}
 \] die Menge aller möglichen Schiffspositionen.
+\end{definition}
 
-Sei $S \subseteq L$ die Gesamtmenge der Positionen von allen platzierten Schiffe (ships) auf dem Spielfeld.
+\begin{definition}
+Sei $m$ die Anzahl der platzierten Schiffe.
+\end{definition}
 
-Sei
-\[   
-f = (c,h,d), c \in C, h \in \N_0, d \subseteq S
-\]
-ein abgefeuerter Schuss (fired shot), wobei $c$ die beschossene Zelle ist, $h$ angibt wie viele Schiffe bei einem Schuss auf die Zelle $c$ getroffen wurden und $d$ angibt, welche Schiffe zusätzlich versenkt wurden. Daher gilt $h \geq |d|$.
+\begin{definition}
+$all\_distributions=\{L \subseteq L_{all} \mid |L|=m\}$ ist die Menge von allen möglichen Schiffsverteilungen.
+\end{definition}
 
+\begin{definition}
+Sei $L_a$ mit $L_a \in all\_distributions$ die eigentliche und geheime Schiffsverteilung.
+\end{definition}
 
-\section{Zufällige Schiffsverteilung}
+\begin{definition}
+Sei $F_t=\{(c_1, h_1), \dots , (c_t, h_t)\}$ der Zustand nach $t$ Schüssen.
+\end{definition}
 
-Bei einer zufälligen Verteilung werden $m$ verschiedene Schiffspositionen $s_1, \dots, s_m$ aus $L_P$ ausgewählt, sodass $S=\{s_1, \dots, s_m\}$.
+\begin{definition}
+Sei $C_{shot,F}$ die Menge an Zellen, auf die bereits geschossen wurde.
+\end{definition}
 
-Sei $g_t=(L_t, F_t, K_t, P_t)$ das Spielzustandsobjekt (game state) zum Zeitpunkt $t$, also nach $t$ Schüssen, bestehend aus den restlichen Schiffspositionen $L_t$(locations), den abgefeuerten Schüssen (fired shots) $F_t=(f_1, \dots, f_t)$, den bekannten, also versenkten Schiffen $K_t$ (known ships) und der Wahrscheinlichkeitsfunktion $P_t(l)$ welche für jede Position $l \in L_t$ die Wahrscheinlichkeit angibt, dass $l \in S$ ist.
+\begin{definition}
+Sei $C_{left,F}=C_{all} \setminus C_{shot,F}$ die Menge an Zellen, auf die noch nicht geschossen wurde.
+\end{definition}
 
-Zu Beginn ist $g_0=(L, \emptyset, \emptyset, P_0(l)=\frac{|S|}{|L|})$.
-
-Sei $U_t=S \setminus K_t$ die noch unbekannten und damit unversenkten Schiffe (unknown ships) zum Zeitpunkt $t$.
-
-Sei
-\[
-l_t(c)=
-\{
-i
-\in
-L_t
-\mid
-c
-\in
-i
-\}
-\]
-die Menge aller Positionen zum Zeitpunkt $t$, in denen die Zelle $c$ enthalten ist.
-
-
+\begin{definition}
 Sei
 \[
-h_t(c)=
-\{
-s
-\in
-U_t
-\mid
-c
-\in
-c(s)
-\}
+D_F=\{l \in L_a \mid c(l) \subseteq C_{shot,F}\}
 \]
-die Treffer-Funktion (hit function), welche angibt, welche noch zum Zeitpunkt $t$ unbekannten Schiffe die Zelle $c$ belegen.
+die Menge an Schiffen, welche durch die Schüsse auf die Zellen $C_{shot}$ bereits versenkt wurden.
+\end{definition}
 
-\subsection{Transferfunktion bei einem Schuss}
-Sei $g_t=(L_t, F_t, K_t, H_t, P_t)$ der Zustand nach $t$ Schüssen.
-Sei außerdem $c_{t+1}$ die Zelle, auf die bei dem $t+1$-ten Schuss geschossen wird und $f_t(c_{t+1})=(h_{t+1}, d_{t+1})$ das Ergebnis dieses Schusses, wobei $h_{t+1}$ die Anzahl an getroffenen Schiffen und $d_{t+1} \subseteq d_p$ die Menge der versenkten Schiffe ist.
+\begin{definition}
+Sei $ships\_left\_count_F=m - |D_F|$.
+\end{definition}
 
-Der Zustand verändert sich wie folgt: \\
-\[
-L_{t+1}=
-\begin{cases} 
-      L_t \setminus l_t(c) &, h=0 \\
-      L_t \setminus d &, |d|>0 \\
-      L_t &, sonst \\
-\end{cases}
-\]
-$F_{t+1}=F_t \cup f_{t+1}$ \\
-$K_{t+1}=K_t \cup d$ \\
-$H_t?$
+\begin{definition}
+Sei $H_F(c)$ die Anzahl an Treffern von einem bereits abgefeuerten Schuss auf Zelle $c$, wobei die bereits versenkten Schiffe aus $D_F$ abgezogen wurden.
+\end{definition}
 
-
-\begin{lemma}
-Sei $d_p=l_t(c_{t+1}) \cap \{l \mid (l, 1) \in H_t\}$ die Menge aller Schiffe, die bei diesem Schuss versenkt werden können und sei $h \geq |d_{t+1}|$.
-
-Dann ist
-\[
-P(f_t(c_{t+1})=(h, d_{t+1}))=\prod_{l \in d_{t+1}}P_t(l \in S) * \prod_{l \in d_p \setminus d_{t+1}}P_t(l \notin S)
-\]
-die Wahrscheinlichkeit, dass genau die Schiffe in der Menge $d$ versenkt werden.
-\end{lemma}
-
-\begin{proof}
-TODO
-\end{proof}
-
-
-\begin{lemma}
-Sei $k >0$.
-Dann ist
-\[
-P(|h_{t+1}(c)|=k)=\frac{\binom{|l_{t+1}(c)|}{k} \binom{|L_{t+1}| - |l_{t+1}(c)|}{|U_{t+1}|-k}}{\binom{|L_{t+1}|}{|U_{t+1}|}}
-\]
-die Wahrscheinlichkeit, zusätzlich $k$ Schiffe bei diesem Schuss zu treffen, nachdem bereits die Schiffe $d_{t+1}$ versenkt wurden.
-\end{lemma}
-
-\begin{proof}
-TODO
-\end{proof}
-
-
-\begin{lemma}
-Dann gilt:
-\[
-P(f_t(c_{t+1})=(h_{t+1}, d_{t+1}))=P(f_t(c_{t+1})=(h, d_{t+1})) * P(|h_{t+1}(c)|=h_{t+1}-|d_{t+1}|)
-\]
-\end{lemma}
-
-\begin{proof}
-TODO
-\end{proof}
-
-
-\begin{lemma}
-Sei $l \in L_{t+1}$.
-Dann ist
-\[
-P_t(\{l \in S\} \cap \{f_{t+1}(c_{t+1})=(h_{t+1}, d_{t+1})\})=
-\begin{cases} 
-      \frac{h_{t+1}}{|l_t(c)|} &, c_{t+1} \in c(l) \\
-      \frac{u_t-h_{t+1}}{|L_t|-|l_t(c)|} &, c_{t+1} \notin c(l)
-\end{cases}
-\]
-die Wahrscheinlichkeit, dass nach dem Schuss $f_{t+1}$ auf Position $l$ ein Schiff liegt.
-\end{lemma}
-
-\begin{proof}
-TODO
-\end{proof}
-
+\subsection{Teilungsfunktionen}
 
 \begin{satz}
-Sei $l \in L_{t+1}$.
+Seien $C_{pos}$ die Zellen, die belegt werden sollen. Seien $C_{neg}$ die Zellen, die nicht belegt werden sollen.
+Sei $D$ die Menge der bereits zerstörten Schiffe.
+
+Dann ist
+%Sei positive\_min(d)=min(\{c_d \mid c \in C_{pos}\})
+%Sei positive\_max(d)=max(\{c_d \mid c \in C_{pos}\})
+%Sei b_{min}(d)=negative\_min\_border(d)=max(\{c_d \mid c \in C_{neg} \wedge c_d < positive\_min(d)\}, 1)
+%Sei b_{max}(d)=negative\_max\_border(d)=min(\{c_d \mid c \in C_{neg} \wedge c_d > positive\_max(d)\}, D)\\
+\[
+location\_count(C_{pos}, C_{neg}, D)=TODO (Dennis?)
+\]
+\end{satz}
+
+\begin{definition}
+Sei
+\[
+location\_count_F(comb)=location\_count(C_{pos}, C_{neg}, D)
+\]
+eine Kurzform.
+\end{definition}
+
+\begin{definition}
+Sei $cell\_combinations_F=\mathcal{P}(C_{shot,F}) \setminus \{\emptyset\}$.
+\end{definition}
+
+\begin{definition}
+Sei
+\[
+max\_shared\_ship\_count_F(comb)=min(location\_count_F(comb), \{H_F(c) \mid c \in comb\})
+\]
+\end{definition}
+
+\begin{definition}
+Sei
+\[
+s_F \colon \begin{array}{l} 
+          cell\_combinations(F) \rightarrow \N_0 \\ 
+          comb\mapsto s(comb)=k, \, 0 \leq k \leq max\_shared\_ship\_count_F(comb)
+         \end{array}
+\]
+eine Share-Funktion.
+\end{definition}
+
+\begin{definition}
+Sei
+\[
+ship\_count(s_F)=\sum_{comb \in cell\_combinations_F}{s_F(comb)}
+\]
+\end{definition}
+
+\begin{definition}
+Sei
+\[
+hit\_count(c, s_F)=\sum_{comb \in \{x \in cell\_combinations_F \mid c \in x\}}{s_F(comb)}
+\]
+\end{definition}
+
+\begin{definition}
+Sei
+\[
+valid\_share\_functions_F=\{s_F \mid \forall{c \in C_F}\colon hit\_count(c, s_F)=h(c) \wedge ship\_count(s_F) \leq ships\_left\_count_F\}
+\]
+die Menge an Share-Funktionen, die das LGS (...) lösen.
+\end{definition}
+
+\begin{definition}
+Sei
+\begin{align}
+distribution\_count(s_F)=\\
+\left( \prod_{comb \in cell\_combinations_F}{{location\_count_F(comb)\choose s_F(comb)}} \right) * {ships\_left\_count - ship\_count(s)\choose locations\_left\_count}
+\end{align}
+\end{definition}
+
+\begin{definition}
+Sei
+\[
+distribution\_count(F)=\sum_{s_F \in valid\_share\_functions_F}{distribution\_count(s_F)}
+\]
+\end{definition}
+
+\subsection{Teilungsfunktionen anwenden}
+
+\begin{satz}
+Sei $L \subseteq ship\_distributions$ eine mögliche Schiffsverteilung.
+
 Dann ist
 \[
-P_{t+1}(l \in S) = \frac{P_t(\{l \in S\} \cap \{f_t(c_{t+1})=(h_{t+1}, d_{t+1})\})}{P_t(\{f_t(c_{t+1})=(h_{t+1}, d_{t+1})\})}
+P(L = L_a)=\frac{1}{distribution\_count(F)}
+\]
+die Wahrscheinlichkeit, dass $L$ die richtige Schiffsverteilung ist.
+\end{satz}
+
+\begin{proof}
+\[
+TODO
+\]
+\end{proof}
+
+\begin{satz}
+Sei $c \in C_{left,F}$ die beschossene Zelle und $h \in \N_0$.
+Dann gilt:
+\[
+P(H_F(c)=h)=\frac{distribution\_count(F_t \cup \{(c, h)\})}{distribution\_count(F_t)}
 \]
 \end{satz}
 
 \begin{proof}
-\begin{align}
-&P_{t+1}(l \in S) \\
-=&P_t(\{l \in S\} \mid \{f_t(c_{t+1})=(h_{t+1}, d_{t+1})\}) \\
-=&\frac{P_t(\{l \in S\} \cap \{f_t(c_{t+1})=(h_{t+1}, d_{t+1})\})}{P_t(\{f_t(c_{t+1})=(h_{t+1}, d_{t+1})\})}
-\end{align}
+\[
+TODO
+\]
 \end{proof}
 
-
 \begin{theorem}
-Die Zustandsveränderung kann somit mithilfe der Transferfunktion $t(g_t, c_{t+1})=g_{t+1}$ definiert werden mit $t((L_t, F_t, K_t, H_t, P_t), c_{t+1})=(L_{t+1}, F_{t+1}, K_{t+1}, H_{t+1}, P_{t+1})$.
+Sei $c \in C_{left,F}$ die beschossene Zelle.
+Dann gilt:
+\[
+\mathds{E}(H_{F_t}(c))=\sum_{h=1}^{|U|} P(H_F(c)=h) * h
+\]
 \end{theorem}
+
+\begin{proof}
+\[
+TODO
+\]
+\end{proof}
 
 % Literaturverzeichnis ------------------------------------------------
 \newpage
