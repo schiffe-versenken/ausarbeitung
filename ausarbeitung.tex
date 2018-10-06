@@ -109,12 +109,13 @@ Ein schöner Abstract. Das ist einfach die Kurzzusammenfassung.
 \end{abstract}
 
 % Einleitung -----------------------------------------------------------------
-\section{Spielbeschreibung}
+\section{Einleitung}
+\subsection{Spielbeschreibung}
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
-\section{Optimale Schüsse berechnen}
+\subsection{Formalisierung}
+Um nun die optimalen Spielzüge zu bestimmen, wird das Spiel mithilfe der folgenden Definitionen formalisiert.
 
-\subsection{Definitionen}
 \begin{definition}
 Sei $C_{all}=\{1, \dots, N\}^d$ die Menge aller Zellen (cells) des Spielfeldes mit jeweils $N$ Zellen in $d$ Dimensionen.
 \end{definition}
@@ -122,7 +123,7 @@ Sei $C_{all}=\{1, \dots, N\}^d$ die Menge aller Zellen (cells) des Spielfeldes m
 \begin{definition}
 Sei $l$ eine mögliche Schiffsposition (location), welche mithilfe einer minimalen Ecke $c_{min}(l)$ und einer maximalen Ecke $c_{max}(l)$ bestimmt wird. Dann ist
 \[
-c(l)=
+cells(l)=
 \{
 c
 \in
@@ -155,11 +156,11 @@ i \leq j
 \end{definition}
 
 \begin{definition}
-Sei $m$ die Anzahl der platzierten Schiffe.
+Sei $ship\_count$ die Anzahl der platzierten Schiffe.
 \end{definition}
 
 \begin{definition}
-$all\_distributions=\{L \subseteq L_{all} \mid |L|=m\}$ ist die Menge von allen möglichen Schiffsverteilungen.
+Sei $all\_distributions=\{L \subseteq L_{all} \mid |L|=m\}$ die Menge von allen möglichen Schiffsverteilungen.
 \end{definition}
 
 \begin{definition}
@@ -167,30 +168,69 @@ Sei $L_a \in all\_distributions$ die eigentliche und geheime Schiffsverteilung.
 \end{definition}
 
 \begin{definition}
-Sei $F_t=\{(c_1, h_1), \dots , (c_t, h_t)\}$ der Zustand nach $t$ Schüssen.
-\end{definition}
-
-\begin{definition}
-Sei $C_{shot,F}$ die Menge an Zellen, auf die bereits geschossen wurde.
-\end{definition}
-
-\begin{definition}
-Sei $C_{left,F}=C_{all} \setminus C_{shot,F}$ die Menge an Zellen, auf die noch nicht geschossen wurde.
-\end{definition}
-
-\begin{definition}
-Sei
+Sei $cell \in C_{all}$.
+Dann ist 
 \[
-D_F=\{l \in L_a \mid c(l) \subseteq C_{shot,F}\}
+hit(cell)=|\{l \in L_{all} \mid cell \in cells(l)\} \cap L_a|
 \]
-die Menge an Schiffen, welche durch die Schüsse auf die Zellen $C_{shot,F}$ bereits versenkt wurden.
+die Treffer-Funktion, welche angibt, wie viele Schiffe $h$ bei einem Schuss auf Zelle $c$ getroffen wurden.
 \end{definition}
 
 \begin{definition}
-Sei $H_F(c)$ die Anzahl an Treffern von einem bereits abgefeuerten Schuss auf Zelle $c$, wobei die bereits versenkten Schiffe aus $D_F$ abgezogen wurden.
+Sei $cells=\{c_1, \dots, c_k\} \subseteq C_{all}$ eine Menge an Zellen.
+Dann ist
+\[
+destroyed(cells)=\{l \in L_a \mid cells(l) \subseteq cells\}
+\]
+die Menge an Schiffen, welche durch die Schüsse auf die Zellen $cells$ bereits versenkt wurden.
 \end{definition}
 
-\subsection{Teilungsfunktionen}
+\section{Optimale Schüsse berechnen}
+
+\subsection{Zustände}
+
+\begin{definition}
+Sei $F=\{(c_1, h_1), \dots , (c_t, h_t)\}$ der Zustand nach $t$ Schüssen.
+\end{definition}
+
+\begin{definition}
+Sei $F$ der momentane Zustand.
+Dann ist $C_{shot}(F)=\{c \in C_{all} \mid (c,h) \in F, \; h \in N_0\}$ die Menge an Zellen, auf die bereits geschossen wurde.
+\end{definition}
+
+\begin{definition}
+Sei $F$ der momentane Zustand.
+Dann ist $C_{left}(F)=C_{all} \setminus C_{shot}(F)$ die Menge an Zellen, auf die noch nicht geschossen wurde.
+\end{definition}
+
+\begin{definition}
+Sei $F$ der momentane Zustand und $cell \in C_{left}(F)$ die beschossene Zelle.
+Dann ist
+\[
+fire(F, cell)=F \cup \{(cell,hit(cell))\}
+\]
+die Schuss-Funktion, welche die Zelle dem Zustand $F$ hinzufügt.
+\end{definition}
+
+\begin{definition}
+Sei $F$ der momentane Zustand und $cell \in C_{left}(F)$ die beschossene Zelle und $h \in \N_0$.
+Dann ist
+\[
+hypothetically\_fire(F, cell, hits)=F \cup \{(cell,hits)\}
+\]
+die Schuss-Funktion, welche die Zelle dem Zustand $F$ hinzufügt.
+\end{definition}
+
+\begin{definition}
+Sei $F$ der momentane Zustand.
+Dann ist
+\[
+finished(F) \Leftrightarrow |destroyed(F)|=ship\_count
+\]
+wahr gdw. alle Schiffe zerstört wurden.
+\end{definition}
+
+\subsection{Verteilungsfunktionen}
 
 \begin{satz}
 Seien $C_{pos}$ die Zellen, die belegt werden sollen. Seien $C_{neg}$ die Zellen, die nicht belegt werden sollen.
@@ -201,33 +241,33 @@ Dann ist
 %Sei b_{min}(d)=negative\_min\_border(d)=max(\{c_d \mid c \in C_{neg} \wedge c_d < positive\_min(d)\}, 1)
 %Sei b_{max}(d)=negative\_max\_border(d)=min(\{c_d \mid c \in C_{neg} \wedge c_d > positive\_max(d)\}, D)\\
 \[
-location\_count_F(C_{pos}, C_{neg})=TODO (Dennis?)
+location\_count(C_{pos}, C_{neg})=TODO (Dennis?)
 \]
 \end{satz}
 
 \begin{definition}
-Sei $cell\_combinations_F=\mathcal{P}(C_{shot,F})$.
+Sei $cell\_combinations(F)=\mathcal{P}(C_{shot}(F))$.
 \end{definition}
 
 \begin{definition}
-Sei $comb \in cell\_combinations_F$. Dann ist
+Sei $comb \in cell\_combinations(F)$. Dann ist
 \[
-location\_count_F(comb)=location\_count_F(comb, C_{shot,F} \setminus comb)
+location\_count(F,comb)=location\_count(comb, F \setminus comb)
 \]
 eine Kurzform.
 \end{definition}
 
 \begin{definition}
-Sei $comb \in cell\_combinations_F$. Dann ist
+Sei $comb \in cell\_combinations(F)$. Dann ist
 \[
-max\_shared\_ship\_count_F(comb)=min(location\_count_F(comb), \{H_F(c) \mid c \in comb\})
+max\_shared\_ship\_count(F,comb)=min(location\_count(F, comb), \{h \mid (c,h) \in F \wedge c \in comb\})
 \]
 \end{definition}
 
 \begin{definition}
 Sei
 \[
-hit\_count_F(c, s)=\sum_{comb \in \{x \in cell\_combinations_F \mid c \in x\}}{s(comb)}
+hit\_count(F, c, s)=\sum_{comb \in \{x \in cell\_combinations(F) \mid c \in x\}}{s(comb)}
 \]
 \end{definition}
 
@@ -235,9 +275,9 @@ hit\_count_F(c, s)=\sum_{comb \in \{x \in cell\_combinations_F \mid c \in x\}}{s
 Sei
 \begin{align}
 \begin{split}
-sha&re\_functions_F=\{s \colon cell\_combinations_F \rightarrow \N_0 \mid\\
-&\forall{c \in C_{shot,F}}\colon hit\_count_F(c, s)=H_F(c) \wedge \\
-&\forall{comb \in cell\_combinations_F} \colon 0 \leq s(comb) \leq max\_shared\_ship\_count_F(comb)\\
+sha&re\_functions(F)=\{s \colon cell\_combinations(F) \rightarrow \N_0 \mid\\
+&\forall{(c,h) \in F}\colon hit\_count(F, c, s)=h \wedge \\
+&\forall{comb \in cell\_combinations(F)} \colon 0 \leq s(comb) \leq max\_shared\_ship\_count(F, comb)\\
 \}\;\;\;& \nonumber
 \end{split}
 \end{align}
@@ -245,11 +285,13 @@ die Menge an Share-Funktionen, die das LGS (...) lösen.
 \end{definition}
 
 \begin{satz}
-Sei
+Sei $F$ der momentane Zustand und $s \in share\_functions(F)$ eine Verteilungsfunktion.
+Dann ist
 \[
-distribution\_count(s_F)=
-\left( \prod_{comb \in cell\_combinations_F}{{location\_count_F(comb)\choose s_F(comb)}} \right)
+distribution\_count(F, s)=
+\left( \prod_{comb \in cell\_combinations(F)}{{location\_count(F, comb)\choose s(comb)}} \right)
 \]
+die Anzahl an möglichen Schiffsverteilungen für die Verteilungsfunktion $s$.
 \end{satz}
 
 \begin{proof}
@@ -261,11 +303,11 @@ Die gesamte Anzahl an möglichen Schiffsverteilungen ergibt sich dann einfach au
 \begin{definition}
 Sei
 \[
-distribution\_count(F)=\sum_{s_F \in valid\_share\_functions_F}{distribution\_count(s_F)}
+distribution\_count(F)=\sum_{s \in share\_functions(F)}{distribution\_count(s)}
 \]
 \end{definition}
 
-\subsection{Teilungsfunktionen anwenden}
+\subsection{Anwendung von Verteilungsfunktionen}
 
 \begin{satz}
 Sei $L \in distributions(F)$ eine mögliche Schiffsverteilung zum Zustand $F$.
@@ -292,17 +334,17 @@ P(L = L_a \mid F)=\frac{1}{distributions(F)}=\frac{1}{distribution\_count(F)}
 
 \begin{definition}
 Sei $F$ der momentane Zustand.
-Sei außerdem $c \in C_{left,F}$ die beschossene Zelle und $h \in \N_0$.
+Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle und $h \in \N_0$.
 Dann ist
 \[
-distributions\_removed(F,c,h)=distribution\_count(F_t) - distribution\_count(F_t \cup \{(c, h)\})
+distributions\_removed(F,c,h)=distribution\_count(F) - distribution\_count(hypothetically\_fire(F,c, h))
 \]
 die Anzahl an Schiffsverteilungen, die nach diesem Schuss ausgeschlossen werden könnten, falls es genau $h$ Treffer gibt.
 \end{definition}
 
 \begin{definition}
 Sei $F$ der momentane Zustand.
-Sei außerdem $c \in C_{left,F}$ die beschossene Zelle.
+Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
 Dann ist
 \[
 distributions\_removed(F,c)=distributions\_removed(F, c, hit(c))
@@ -312,10 +354,10 @@ die Anzahl an Schiffsverteilungen, die nach diesem Schuss ausgeschlossen werden 
 
 \begin{satz}
 Sei $F$ der momentane Zustand.
-Sei außerdem $c \in C_{left,F}$ die beschossene Zelle und $h \in \N_0$.
+Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle und $h \in \N_0$.
 Dann ist
 \[
-P(hit(c)=h \mid F)=\frac{distribution\_count(F \cup \{(c, h)\})}{distribution\_count(F)}
+P(hit(c)=h \mid F)=\frac{distribution\_count(hypothetically\_fire(F,c, h))}{distribution\_count(F)}
 \]
 \end{satz}
 die Wahrscheinlichkeit zu dem Zustand $F$, dass bei dem Schuss genau $h$ Schiffe getroffen werden.
@@ -328,10 +370,10 @@ Nach Satz () folgt ...
 
 \begin{theorem}
 Sei $F$ der momentane Zustand.
-Sei außerdem $c \in C_{left,{F_t}}$ die beschossene Zelle.
+Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
 Dann ist
 \[
-\mathds{E}(distributions\_removed(F,c))=\sum_{h=0}^{m - |D_F|} P(hit(c)=h) * distributions\_removed(F,c,h)
+\mathds{E}(distributions\_removed(F,c))=\sum_{h=0}^{ship\_count - |D_F|} P(hit(c)=h) * distributions\_removed(F,c,h)
 \]
 \end{theorem}
 
@@ -344,7 +386,7 @@ Definition des Erwartungswertes.
 Sei $F$ der momentane Zustand.
 Dann ist
 \[
-c_{opt}(F)=\max_{c \in C_{left,F}} \mathds{E}(distributions\_removed(F,c))
+c_{opt}(F)=\max_{c \in C_{left}(F)} \mathds{E}(distributions\_removed(F,c))
 \]
 die Zelle, bei welcher bei Beschuss die Anzahl an erwarteten ausgeschlossenen Schiffsverteilungen maximal ist.
 \end{definition}
