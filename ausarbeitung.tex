@@ -364,33 +364,138 @@ die Wahrscheinlichkeit zu dem Zustand $F$, dass bei dem Schuss genau $h$ Schiffe
 
 \begin{proof}
 Vor dem Schuss gibt es noch im Zustand $F$ genau $distribution\_count(F)$ mögliche Schiffsverteilungen.
-Nach dem Schuss gibt es nur noch $distribution\_count(F \cup \{(c, h)\})$ mögliche Schiffsverteilungen.
+Nach dem Schuss gibt es nur noch $distribution\_count(hypothetically\_fire(F,c, h))$ mögliche Schiffsverteilungen.
 Nach Satz () folgt ...
 \end{proof}
 
-\begin{theorem}
+\begin{satz}
 Sei $F$ der momentane Zustand.
 Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
 Dann ist
 \[
 \mathds{E}(distributions\_removed(F,c))=\sum_{h=0}^{ship\_count - |D_F|} P(hit(c)=h) * distributions\_removed(F,c,h)
 \]
-\end{theorem}
-
+\end{satz}
 
 \begin{proof}
 Definition des Erwartungswertes.
 \end{proof}
 
+\subsection{Schuss-Strategien}
+
+\subsubsection{Greedy-Strategie}
 \begin{definition}
 Sei $F$ der momentane Zustand.
 Dann ist
 \[
-c_{opt}(F)=\max_{c \in C_{left}(F)} \mathds{E}(distributions\_removed(F,c))
+greedy(F)=\max_{c \in C_{left}(F)} \mathds{E}(distributions\_removed(F,c))
 \]
 die Zelle, bei welcher bei Beschuss die Anzahl an erwarteten ausgeschlossenen Schiffsverteilungen maximal ist.
 \end{definition}
 
+\subsubsection{Optimale-Strategie}
+
+\begin{definition}
+Sei $F$ der momentane Zustand.
+Dann ist
+\[
+turns_left(L_a, F, strategy)=
+\]
+\end{definition}
+
+\begin{definition}
+Sei $F$ der momentane Zustand.
+Dann ist
+\[
+greedy(F)=\max_{c \in C_{left}(F)} \mathds{E}(distributions\_removed(F,c))
+\]
+die Zelle, bei welcher bei Beschuss die Anzahl an erwarteten ausgeschlossenen Schiffsverteilungen maximal ist.
+\end{definition}
+
+\begin{lemma}
+Sei $F$ der momentane Zustand.
+Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
+Dann ist
+\begin{align}
+&distributions\_removed(L_a, F, strat, turns\_left(L_a, F, strat)) \\
+=\,&distributions\_removed(L_a, F, strat_{alt}, turns\_left(L_a, F, strat_{alt}))
+\end{align}
+\end{lemma}
+
+\begin{proof}
+\end{proof}
+
+\begin{lemma}
+Sei $F$ der momentane Zustand.
+Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
+Dann ist
+\begin{align}
+removals\_per\_turn(L_a, F, strat) \geq removals\_per\_turn(L_a, F, strat_{alt}) \\ \nonumber
+\Leftrightarrow turns\_left(L_a, F, strat) \leq turns\_left(L_a, F, strat_{alt}) \\ \nonumber
+\end{align}
+\end{lemma}
+
+\begin{lemma}
+Sei $F$ der momentane Zustand.
+Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
+Dann ist
+\begin{align}
+\sum_{L_a}{removals\_per\_turn(L_a, F, strat)} \geq \\
+\sum_{L_a}{removals\_per\_turn(L_a, F, strat_{alt}))} \\
+\Leftrightarrow
+\sum_{L_a}{turns\_left(L_a, F, strat)} \leq \\
+\sum_{L_a}{turns\_left(L_a, F, strat_{alt})} \\
+\end{align}
+\end{lemma}
+
+\begin{proof}
+\begin{align}
+\sum_{L_a}{removals\_per\_turn(L_a, F, strat)} \geq \\
+\sum_{L_a}{removals\_per\_turn(L_a, F, strat_{alt}))} \\
+\Leftrightarrow^{Definition} \\
+\sum_{L_a}{\frac{distributions\_removed(L_a, F, strat, turns\_left(L_a, F, strat))}{turns\_left(L_a, F, strat)}} \geq \\
+\sum_{L_a}{\frac{distributions\_removed(L_a, F, strat_{alt}, turns\_left(L_a, F,  strat_{alt}))}{turns\_left(L_a, F, strat)}} \\
+\Leftrightarrow^{Kehrbrüche} \\
+\sum_{L_a}{\frac{turns\_left(L_a, F, strat)}{distributions\_removed(L_a, F, strat, turns\_left(L_a, F, strat))}} \leq \\
+\sum_{L_a}{\frac{turns\_left(L_a, F, strat)}{distributions\_removed(L_a, F, strat_{alt}, turns\_left(L_a, F,  strat_{alt}))}} \\
+\Leftrightarrow^{Lemma (1)} \\
+\sum_{L_a}{turns\_left(L_a, F, strat)} \leq \\
+\sum_{L_a}{turns\_left(L_a, F, strat_{alt})}
+\end{align}
+\end{proof}
+
+\begin{satz}[Optimalität]
+Sei $F$ der momentane Zustand.
+Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
+Dann ist
+\begin{align}
+\mathds{E}(removals\_per\_turn(F, strat)) \geq \mathds{E}(removals\_per\_turn(F, strat_{alt})) \\
+\Leftrightarrow
+\mathds{E}(turns\_left(F, strat)) \leq \mathds{E}(turns\_left(F, strat_{alt})) \\
+\end{align}
+\end{satz}
+
+\newpage
+
+\begin{proof}
+\begin{align}
+\mathds{E}(removals\_per\_turn(F, strat)) \geq \mathds{E}(removals\_per\_turn(F, strat_{alt})) \\
+\Leftrightarrow
+\sum_{L_a}{P(L = L_a \mid F) * removals\_per\_turn(L_a, F, strat)} \geq \\
+\sum_{L_a}{P(L = L_a \mid F) * removals\_per\_turn(L_a, F, strat_{alt})} \\
+\Leftrightarrow
+\frac{1}{distribution\_count(F)} * \sum_{L_a}{removals\_per\_turn(L_a, F, strat)} \geq \\
+\frac{1}{distribution\_count(F)} * \sum_{L_a}{removals\_per\_turn(L_a, F, strat_{alt})} \\
+\Leftrightarrow^{Lemma (3)} \\
+\frac{1}{distribution\_count(F)} * \sum_{L_a}{turns\_left(L_a, F, strat)} \leq \\
+\frac{1}{distribution\_count(F)} * \sum_{L_a}{turns\_left(L_a, F, strat_{alt})} \\
+\Leftrightarrow
+\sum_{L_a}{P(L = L_a \mid F) * turns\_left(L_a, F, strat)} \leq \\
+\sum_{L_a}{P(L = L_a \mid F) * turns\_left(L_a, F, strat_{alt})} \\
+\Leftrightarrow
+\mathds{E}(turns\_left(F, strat)) \leq \mathds{E}(turns\_left(F, strat_{alt})) \\
+\end{align}
+\end{proof}
 
 % Literaturverzeichnis ------------------------------------------------
 \newpage
