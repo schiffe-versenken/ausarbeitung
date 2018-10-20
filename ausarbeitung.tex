@@ -113,7 +113,7 @@ Ein schöner Abstract. Das ist einfach die Kurzzusammenfassung.
 \subsection{Spielbeschreibung}
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
-\subsection{Formalisierung}
+\subsection{Formalisierung des Spielprinzips}
 Um nun die optimalen Spielzüge zu bestimmen, wird das Spiel mithilfe der folgenden Definitionen formalisiert.
 
 \begin{definition}
@@ -232,18 +232,15 @@ wahr gdw. alle Schiffe zerstört wurden.
 
 \subsection{Verteilungsfunktionen}
 
-\begin{satz}
-Seien $C_{pos}$ die Zellen, die belegt werden sollen. Seien $C_{neg}$ die Zellen, die nicht belegt werden sollen.
+\begin{definition}
+Sei $C_{pos}$ eine Menge an Zellen, die belegt werden sollen. Sei außerdem $C_{neg}$ eine Menge an Zellen, die nicht belegt werden sollen.
 
 Dann ist
-%Sei positive\_min(d)=min(\{c_d \mid c \in C_{pos}\})
-%Sei positive\_max(d)=max(\{c_d \mid c \in C_{pos}\})
-%Sei b_{min}(d)=negative\_min\_border(d)=max(\{c_d \mid c \in C_{neg} \wedge c_d < positive\_min(d)\}, 1)
-%Sei b_{max}(d)=negative\_max\_border(d)=min(\{c_d \mid c \in C_{neg} \wedge c_d > positive\_max(d)\}, D)\\
 \[
-location\_count(C_{pos}, C_{neg})=TODO (Dennis?)
+location\_count(C_{pos}, C_{neg})
 \]
-\end{satz}
+die Anzahl der möglichen Schiffspositionen $l \in L_{all}$ für die gilt: $C_{pos} \subseteq cells(l)$ und $C_{neg} \cap cells(l) = \emptyset$.
+\end{definition}
 
 \begin{definition}
 Sei $cell\_combinations(F)=\mathcal{P}(C_{shot}(F))$.
@@ -252,7 +249,7 @@ Sei $cell\_combinations(F)=\mathcal{P}(C_{shot}(F))$.
 \begin{definition}
 Sei $comb \in cell\_combinations(F)$. Dann ist
 \[
-location\_count(F,comb)=location\_count(comb, F \setminus comb)
+location\_count(F,comb)=location\_count(comb, C_{shot}(F) \setminus comb)
 \]
 eine Kurzform.
 \end{definition}
@@ -260,7 +257,7 @@ eine Kurzform.
 \begin{definition}
 Sei $comb \in cell\_combinations(F)$. Dann ist
 \[
-max\_shared\_ship\_count(F,comb)=min(location\_count(F, comb), \{h \mid (c,h) \in F \wedge c \in comb\})
+max\_shared\_ship\_count(F,comb)=\min\{location\_count(F, comb)\} \cup \{h \mid (c,h) \in F \wedge c \in comb\}
 \]
 \end{definition}
 
@@ -308,6 +305,15 @@ distribution\_count(F)=\sum_{s \in share\_functions(F)}{distribution\_count(s)}
 \end{definition}
 
 \subsection{Anwendung von Verteilungsfunktionen}
+
+\begin{definition}
+Sei $F$ der momentane Zustand.
+Dann ist
+\[
+determined(F) \Leftrightarrow distribution\_count(F)=1
+\]
+wahr gdw. die richtige Schiffsverteilung bereits bestimmt ist.
+\end{definition}
 
 \begin{satz}
 Sei $L \in distributions(F)$ eine mögliche Schiffsverteilung zum Zustand $F$.
@@ -381,121 +387,159 @@ Dann ist
 Definition des Erwartungswertes.
 \end{proof}
 
-\subsection{Schuss-Strategien}
+\section{Schuss-Strategien}
 
-\subsubsection{Greedy-Strategie}
 \begin{definition}
-Sei $F$ der momentane Zustand.
+Eine Funktion der Form
+\[
+strat \colon F \rightarrow C_{left}(F)
+\]
+wird Strategiefunktion genannt. Diese weißt jedem Zustand die Zelle zu, auf die als nächstes geschossen werden soll.
+\end{definition}
+
+\begin{definition}
+Sei
+\[
+all\_strategies(F)=\{ strat \colon F \rightarrow C_{left}(F) \}
+\]
+die Menge an allen möglichen Strategiefunktionen.
+\end{definition}
+
+
+\subsection{Greedy-Strategie}
+Die Greedy-Strategie versucht bei jedem Schuss die erwartete Anzahl an ausgeschlossenen Schiffsverteilungen zu maximieren.
+
+\begin{definition}
+Sei $F$ ein Zustand.
 Dann ist
 \[
-greedy(F)=\max_{c \in C_{left}(F)} \mathds{E}(distributions\_removed(F,c))
+strat_{greedy}(F)=\max_{c \in C_{left}(F)} \mathds{E}(distributions\_removed(F,c))
 \]
 die Zelle, bei welcher bei Beschuss die Anzahl an erwarteten ausgeschlossenen Schiffsverteilungen maximal ist.
 \end{definition}
 
-\subsubsection{Optimale-Strategie}
+Diese Strategie funktioniert ziemlich gut und lässt sich verhältnismäßig schnell berechnen, ist jedoch nicht die optimale Strategie.
+
+
+\subsection{Optimale-Strategie}
+
+Um eine optimale Schuss-Strategie zu definieren, werden ein paar Definitionen benötigt, um den Begriff `Optimal` zu definieren.
+
+\subsubsection{Definition von Optimalität}
 
 \begin{definition}
-Sei $F$ der momentane Zustand.
+Sei $L$ die gewählte Schiffsverteilung und $F$ der momentane Zustand und sei $determined(L, F)$ wahr.
 Dann ist
 \[
-turns_left(L_a, F, strategy)=
+shots\_to\_finish(L, F)=\sum_{l \in L_a}{|cells(l) \setminus C_{shot}(F)|}
 \]
+die Anzahl an Schüssen, die noch benötigt werden, um alle Schiffe der bereits bekannten Schiffsverteilung zu versenken.
 \end{definition}
 
 \begin{definition}
-Sei $F$ der momentane Zustand.
+Sei $L$ die gewählte Schiffsverteilung und $F$ der momentane Zustand.
+Sei außerdem $strat \in all\_strategies$ die verwendete Schuss-Strategie.
 Dann ist
 \[
-greedy(F)=\max_{c \in C_{left}(F)} \mathds{E}(distributions\_removed(F,c))
+shots\_left(L, F, strat)=
+  \begin{cases} 
+  	shots\_to\_finish(L, F) & ,determined(L, F) \\
+      shots\_left(L, fire(L, F, strat(F)), strat) + 1 & ,sonst
+   \end{cases}
 \]
-die Zelle, bei welcher bei Beschuss die Anzahl an erwarteten ausgeschlossenen Schiffsverteilungen maximal ist.
+die Anzahl an Schüssen, die benötigt werden, um alle Schiffe der bereits bekannten Schiffsverteilung mit der Schuss-Strategiefunktion $strat$ zu versenken.
 \end{definition}
 
-\begin{lemma}
-Sei $F$ der momentane Zustand.
-Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
+\begin{satz}
+Sei $F$ der momentane Zustand und $strat \in all\_strategies$ die verwendete Schuss-Strategie.
 Dann ist
-\begin{align}
-&distributions\_removed(L_a, F, strat, turns\_left(L_a, F, strat)) \\
-=\,&distributions\_removed(L_a, F, strat_{alt}, turns\_left(L_a, F, strat_{alt}))
-\end{align}
-\end{lemma}
-
-\begin{proof}
-\end{proof}
-
-\begin{lemma}
-Sei $F$ der momentane Zustand.
-Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
-Dann ist
-\begin{align}
-removals\_per\_turn(L_a, F, strat) \geq removals\_per\_turn(L_a, F, strat_{alt}) \\ \nonumber
-\Leftrightarrow turns\_left(L_a, F, strat) \leq turns\_left(L_a, F, strat_{alt}) \\ \nonumber
-\end{align}
-\end{lemma}
-
-\begin{lemma}
-Sei $F$ der momentane Zustand.
-Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
-Dann ist
-\begin{align}
-\sum_{L_a}{removals\_per\_turn(L_a, F, strat)} \geq \\
-\sum_{L_a}{removals\_per\_turn(L_a, F, strat_{alt}))} \\
-\Leftrightarrow
-\sum_{L_a}{turns\_left(L_a, F, strat)} \leq \\
-\sum_{L_a}{turns\_left(L_a, F, strat_{alt})} \\
-\end{align}
-\end{lemma}
+\[
+\mathds{E}(shots\_left(F, strat))=\frac{1}{distribution\_count(F)} * \sum_{L \in distributions(F)}{shots\_left(L, F, strat)}
+\]
+die erwartete Anzahl an Schüssen, die benötigt werden, um alle Schiffe zu versenken.
+\end{satz}
 
 \begin{proof}
 \begin{align}
-\sum_{L_a}{removals\_per\_turn(L_a, F, strat)} \geq \\
-\sum_{L_a}{removals\_per\_turn(L_a, F, strat_{alt}))} \\
-\Leftrightarrow^{Definition} \\
-\sum_{L_a}{\frac{distributions\_removed(L_a, F, strat, turns\_left(L_a, F, strat))}{turns\_left(L_a, F, strat)}} \geq \\
-\sum_{L_a}{\frac{distributions\_removed(L_a, F, strat_{alt}, turns\_left(L_a, F,  strat_{alt}))}{turns\_left(L_a, F, strat)}} \\
-\Leftrightarrow^{Kehrbrüche} \\
-\sum_{L_a}{\frac{turns\_left(L_a, F, strat)}{distributions\_removed(L_a, F, strat, turns\_left(L_a, F, strat))}} \leq \\
-\sum_{L_a}{\frac{turns\_left(L_a, F, strat)}{distributions\_removed(L_a, F, strat_{alt}, turns\_left(L_a, F,  strat_{alt}))}} \\
-\Leftrightarrow^{Lemma (1)} \\
-\sum_{L_a}{turns\_left(L_a, F, strat)} \leq \\
-\sum_{L_a}{turns\_left(L_a, F, strat_{alt})}
+\mathds{E}(shots\_left(F, strat))=\\
+\sum_{L \in distributions(F)}{P(L_a= L \mid F) * shots\_left(L, F, strat)} =\\
+\frac{1}{distribution\_count(F)} * \sum_{L \in distributions(F)}{shots\_left(L, F, strat)}
 \end{align}
+\qed
 \end{proof}
+
+Nun kann definiert werden, was es für eine Strategie heißt, optimal zu sein:
+\begin{definition}
+Eine Strategiefunktion $strat \in all\_strategies$ heißt optimal, falls für alle $strat_{alt} \in all\_strategies$ gilt:
+\[
+\mathds{E}(shots\_left(F, strat)) \leq \mathds{E}(shots\_left(F, strat_{alt}))
+\]
+\end{definition}
+
+\subsubsection{Herleitung}
+
+\begin{lemma}
+Sei $F$ der momentane Zustand, $c$ die Zelle, auf die geschossen werden soll und $strat \in all\_strategies$ die verwendete Schuss-Strategie.
+Dann ist
+\[
+\mathds{E}(shots\_left(F, c, strat))=\mathds{E}(shots\_left(fire(L_a, F, c), strat)) + 1
+\]
+die erwartete Anzahl an Schüssen, die benötigt werden, um alle Schiffe zu versenken, falls der nächste Schuss auf Zelle $c$ abgefeuert wird.
+\end{lemma}
+
+\begin{proof}
+Trivial
+\end{proof}
+
+\begin{definition}
+Sei $F$ der momentane Zustand und $strat \in all\_strategies$ die verwendete Schuss-Strategie.
+Dann ist
+\[
+min\_expected\_shots(F, strat)=\min_{c \in C_{left}(F)} \mathds{E}(shots\_left(F, c, strat))
+\]
+die minimale erwartete Anzahl an Schüssen um alle Schiffe zu versenken, falls die nächste beschossene Zelle frei gewählt werden kann und danach die Schuss-Strategie $strat$ verwendet wird.
+\end{definition}
+
+\begin{definition}
+Sei $F$ ein Zustand.
+Dann ist
+\[
+strat_{opt}(F)=c \in C_{left}(F) \mid min\_expected\_shots(F, strat_{opt})= \mathds{E}(shots\_left(F, c, strat_{opt}))
+\]
+die optimale Strategiefunktion.
+Diese wählt für den Zustand $F$ eine Zelle aus, welche nach Beschuss die Anzahl an benötigten Schüssen um alle Schiffe zu versenken, minimiert.
+\end{definition}
 
 \begin{satz}[Optimalität]
-Sei $F$ der momentane Zustand.
-Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
-Dann ist
-\begin{align}
-\mathds{E}(removals\_per\_turn(F, strat)) \geq \mathds{E}(removals\_per\_turn(F, strat_{alt})) \\
-\Leftrightarrow
-\mathds{E}(turns\_left(F, strat)) \leq \mathds{E}(turns\_left(F, strat_{alt})) \\
-\end{align}
+Sei $strat_{opt}$ die optimale Strategiefunktion und $strat_{alt} \in all\_strategies$ eine andere Strategiefunktion.
+Dann gilt:
+\[
+\mathds{E}(shots\_left(F, strat_{opt})) \leq \mathds{E}(shots\_left(F, strat_{alt}))
+\]
 \end{satz}
+
+\begin{proof}
+\begin{align}
+\mathds{E}(shots\_left(F, strat_{opt})) =\mathds{E}(shots\_left(F, strat_{opt}(F), strat_{opt}))=\\
+\min_{c \in C_{left}(F)} \mathds{E}(shots\_left(F, c, strat)) \leq \mathds{E}(shots\_left(F, c_{other}, strat)), c_{other} \in C_{left}(F)\\
+\Rightarrow\\
+\mathds{E}(shots\_left(F, strat_{opt})) \leq \mathds{E}(shots\_left(F, strat_{alt}))
+\end{align}
+\qed
+\end{proof}
 
 \newpage
 
-\begin{proof}
-\begin{align}
-\mathds{E}(removals\_per\_turn(F, strat)) \geq \mathds{E}(removals\_per\_turn(F, strat_{alt})) \\
-\Leftrightarrow
-\sum_{L_a}{P(L = L_a \mid F) * removals\_per\_turn(L_a, F, strat)} \geq \\
-\sum_{L_a}{P(L = L_a \mid F) * removals\_per\_turn(L_a, F, strat_{alt})} \\
-\Leftrightarrow
-\frac{1}{distribution\_count(F)} * \sum_{L_a}{removals\_per\_turn(L_a, F, strat)} \geq \\
-\frac{1}{distribution\_count(F)} * \sum_{L_a}{removals\_per\_turn(L_a, F, strat_{alt})} \\
-\Leftrightarrow^{Lemma (3)} \\
-\frac{1}{distribution\_count(F)} * \sum_{L_a}{turns\_left(L_a, F, strat)} \leq \\
-\frac{1}{distribution\_count(F)} * \sum_{L_a}{turns\_left(L_a, F, strat_{alt})} \\
-\Leftrightarrow
-\sum_{L_a}{P(L = L_a \mid F) * turns\_left(L_a, F, strat)} \leq \\
-\sum_{L_a}{P(L = L_a \mid F) * turns\_left(L_a, F, strat_{alt})} \\
-\Leftrightarrow
-\mathds{E}(turns\_left(F, strat)) \leq \mathds{E}(turns\_left(F, strat_{alt})) \\
-\end{align}
-\end{proof}
+Dennis:
+
+\section{Effiziente Berechnung von Schiffspositionen}
+
+Joel und Samuel:
+
+\section{Implementierung der Strategien}
+
+\section{Vergleich der Strategien}
+
 
 % Literaturverzeichnis ------------------------------------------------
 \newpage
