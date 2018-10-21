@@ -91,7 +91,6 @@
 % ============================================================================
 % =============  AB HIER DARF UND SOLL GETIPPT WERDEN ========================
 % ============================================================================
-
 \author{Viel Schreiber}
 \index{Viel Schreiber}
 
@@ -110,11 +109,35 @@ Ein schöner Abstract. Das ist einfach die Kurzzusammenfassung.
 
 % Einleitung -----------------------------------------------------------------
 \section{Einleitung}
-\subsection{Spielbeschreibung}
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
-\subsection{Formalisierung des Spielprinzips}
-Um nun die optimalen Spielzüge zu bestimmen, wird das Spiel mithilfe der folgenden Definitionen formalisiert.
+\subsection{Spielbeschreibung}
+Diese Ausarbeitung beschäftigt sich mit der Umsetzung von Schiffe-Versenken in beliebig viele Dimensionen.
+Die generelle Funktionsweise von dem normalen Schiffe-Versenken bleibt erhalten, muss jedoch um einige Dinge erweitert werden, um auch in höheren Dimensionen gut spielbar zu sein.
+
+Wir betrachten das Spielgeschehen zur Einfachheit halber nur aus der Sicht eines Spielers.
+Zu Beginn platziert der Gegner eine feste und bekannte Anzahl an Schiffen auf seinem Spielfeld. Es wird davon ausgegangen, dass die Schiffspositionen rein zufällig ausgewählt wurden. (Hier mehr Details mit Permutation)
+Natürlich sind die Schiffspositionen dem Spieler nicht bekannt.
+Die Gesamtheit aller gewählten Schiffspositionen wird auch die Schiffsverteilung genannt.
+Nun kann der Spieler anfangen, auf bestimmte Positionen auf dem Spielfeld, auch Zellen genannt, zu schießen.
+Nach jedem Schuss erfährt der Spieler von seinem Gegner, die Anzahl an getroffenen Schiffen.
+Falls keine Schiffe getroffen wurden ist die Anzahl 0.
+Da Schiffe überlappen können, kann die Anzahl auch größer als 1 sein.
+Sobald alle Schiffe versenkt wurden, ist das Spiel beendet.
+
+Das Ziel des Spielers ist es, mit möglichst wenig Schüssen alle Schiffe zu versenken.
+
+\bildbreite{figures/einleitung.jpg}{15cm}{Einleitung}{Bild}{as}
+
+\subsection{Inhalt}
+Zu Beginn wird das beschriebene Spielprinzip formalisiert, sodass man damit mathematisch arbeiten kann.
+
+Anschließend werden verschiedene Spielstrategien vorgestellt.
+
+Danach werden verschiedene Möglichkeiten präsentiert, die Spielstrategien so gut wie möglich zu optimieren, damit sie auch mit sehr vielen Dimensionen immernoch effizient berechenbar sind.
+
+Zum Schluss werden dann die Strategien mithilfe der vorherigen Kenntnisse implementiert und die Ergebnisse in Bezug auf Laufzeiteffizienz verglichen.
+
+\section{Formalisierung des Spielprinzips}
 
 \begin{definition}
 Sei $C_{all}=\{1, \dots, N\}^d$ die Menge aller Zellen (cells) des Spielfeldes mit jeweils $N$ Zellen in $d$ Dimensionen.
@@ -160,7 +183,7 @@ Sei $ship\_count$ die Anzahl der platzierten Schiffe.
 \end{definition}
 
 \begin{definition}
-Sei $all\_distributions=\{L \subseteq L_{all} \mid |L|=m\}$ die Menge von allen möglichen Schiffsverteilungen.
+Sei $all\_distributions=\{L \subseteq L_{all} \mid |L|=ship\_count\}$ die Menge von allen möglichen Schiffsverteilungen.
 \end{definition}
 
 \begin{definition}
@@ -168,26 +191,15 @@ Sei $L_a \in all\_distributions$ die eigentliche und geheime Schiffsverteilung.
 \end{definition}
 
 \begin{definition}
-Sei $cell \in C_{all}$.
+Sei $c \in C_{all}$.
 Dann ist 
 \[
-hit(cell)=|\{l \in L_{all} \mid cell \in cells(l)\} \cap L_a|
+hit(L, c)=|\{l \in L_{all} \mid c \in cells(l)\} \cap L_a|
 \]
 die Treffer-Funktion, welche angibt, wie viele Schiffe $h$ bei einem Schuss auf Zelle $c$ getroffen wurden.
 \end{definition}
 
-\begin{definition}
-Sei $cells=\{c_1, \dots, c_k\} \subseteq C_{all}$ eine Menge an Zellen.
-Dann ist
-\[
-destroyed(cells)=\{l \in L_a \mid cells(l) \subseteq cells\}
-\]
-die Menge an Schiffen, welche durch die Schüsse auf die Zellen $cells$ bereits versenkt wurden.
-\end{definition}
-
-\section{Optimale Schüsse berechnen}
-
-\subsection{Zustände}
+\section{Zustände}
 
 \begin{definition}
 Sei $F=\{(c_1, h_1), \dots , (c_t, h_t)\}$ der Zustand nach $t$ Schüssen.
@@ -207,19 +219,30 @@ Dann ist $C_{left}(F)=C_{all} \setminus C_{shot}(F)$ die Menge an Zellen, auf di
 Sei $F$ der momentane Zustand und $cell \in C_{left}(F)$ die beschossene Zelle.
 Dann ist
 \[
-fire(F, cell)=F \cup \{(cell,hit(cell))\}
+fire(L, F, cell)=F \cup \{(cell,hit(L, cell))\}
 \]
 die Schuss-Funktion, welche die Zelle dem Zustand $F$ hinzufügt.
 \end{definition}
 
 \begin{definition}
-Sei $F$ der momentane Zustand und $cell \in C_{left}(F)$ die beschossene Zelle und $h \in \N_0$.
+Sei $F$ ein Zustand.
 Dann ist
 \[
-hypothetically\_fire(F, cell, hits)=F \cup \{(cell,hits)\}
+distributions(F)=
 \]
-die Schuss-Funktion, welche die Zelle dem Zustand $F$ hinzufügt.
+die Menge aller Schiffsverteilungen, auf die die Treffer-Informationen vom Zustand $F$ zutreffen.
+In anderen Worten, die Menge an zum Zustand $F$ noch möglichen Schiffsverteilungen.
 \end{definition}
+
+\begin{definition}
+Sei $F$ ein Zustand.
+Dann ist
+\[
+distribution\_count(F)=|distributions(F)|
+\]
+\end{definition}
+
+\subsection{Aussagen über Zustände}
 
 \begin{definition}
 Sei $F$ der momentane Zustand.
@@ -230,90 +253,26 @@ finished(F) \Leftrightarrow |destroyed(F)|=ship\_count
 wahr gdw. alle Schiffe zerstört wurden.
 \end{definition}
 
-\subsection{Verteilungsfunktionen}
-
-\begin{definition}
-Sei $C_{pos}$ eine Menge an Zellen, die belegt werden sollen. Sei außerdem $C_{neg}$ eine Menge an Zellen, die nicht belegt werden sollen.
-
-Dann ist
-\[
-location\_count(C_{pos}, C_{neg})
-\]
-die Anzahl der möglichen Schiffspositionen $l \in L_{all}$ für die gilt: $C_{pos} \subseteq cells(l)$ und $C_{neg} \cap cells(l) = \emptyset$.
-\end{definition}
-
-\begin{definition}
-Sei $cell\_combinations(F)=\mathcal{P}(C_{shot}(F))$.
-\end{definition}
-
-\begin{definition}
-Sei $comb \in cell\_combinations(F)$. Dann ist
-\[
-location\_count(F,comb)=location\_count(comb, C_{shot}(F) \setminus comb)
-\]
-eine Kurzform.
-\end{definition}
-
-\begin{definition}
-Sei $comb \in cell\_combinations(F)$. Dann ist
-\[
-max\_shared\_ship\_count(F,comb)=\min\{location\_count(F, comb)\} \cup \{h \mid (c,h) \in F \wedge c \in comb\}
-\]
-\end{definition}
-
-\begin{definition}
-Sei
-\[
-hit\_count(F, c, s)=\sum_{comb \in \{x \in cell\_combinations(F) \mid c \in x\}}{s(comb)}
-\]
-\end{definition}
-
-\begin{definition}
-Sei
-\begin{align}
-\begin{split}
-sha&re\_functions(F)=\{s \colon cell\_combinations(F) \rightarrow \N_0 \mid\\
-&\forall{(c,h) \in F}\colon hit\_count(F, c, s)=h \wedge \\
-&\forall{comb \in cell\_combinations(F)} \colon 0 \leq s(comb) \leq max\_shared\_ship\_count(F, comb)\\
-\}\;\;\;& \nonumber
-\end{split}
-\end{align}
-die Menge an Share-Funktionen, die das LGS (...) lösen.
-\end{definition}
-
-\begin{satz}
-Sei $F$ der momentane Zustand und $s \in share\_functions(F)$ eine Verteilungsfunktion.
-Dann ist
-\[
-distribution\_count(F, s)=
-\left( \prod_{comb \in cell\_combinations(F)}{{location\_count(F, comb)\choose s(comb)}} \right)
-\]
-die Anzahl an möglichen Schiffsverteilungen für die Verteilungsfunktion $s$.
-\end{satz}
-
-\begin{proof}
-Für jede Teilkombination $comb \in cell\_combinations_F$ gibt es $location\_count_F(comb)$ Positionen, die genau die Zellen der Teilkombination belegen. Aus diesen Positionen werden dann mit der Funktion $s_F$ genau $s_F(comb)$ Positionen für Schiffe ausgewählt. Daher gibt es für jede Teilkombination ${location\_count_F(comb)\choose s_F(comb)}$ verschiedene Schiffspositionen.
-
-Die gesamte Anzahl an möglichen Schiffsverteilungen ergibt sich dann einfach aus der Multiplikation der Anzahl an Schiffspositionen der einzelnen Teilkombinationen.
-\end{proof}
-
-\begin{definition}
-Sei
-\[
-distribution\_count(F)=\sum_{s \in share\_functions(F)}{distribution\_count(s)}
-\]
-\end{definition}
-
-\subsection{Anwendung von Verteilungsfunktionen}
-
 \begin{definition}
 Sei $F$ der momentane Zustand.
 Dann ist
 \[
-determined(F) \Leftrightarrow distribution\_count(F)=1
+determined(L, F) \Leftrightarrow distribution\_count(F)=1
 \]
 wahr gdw. die richtige Schiffsverteilung bereits bestimmt ist.
 \end{definition}
+
+\begin{satz}
+Sei $F$ der momentane Zustand.
+Dann ist
+\[
+determined(L, F) \Leftrightarrow distribution\_count(F)=1
+\]
+wahr gdw. die richtige Schiffsverteilung bereits bestimmt ist.
+\end{satz}
+
+\subsubsection{finished vs determined}
+TODO
 
 \begin{satz}
 Sei $L \in distributions(F)$ eine mögliche Schiffsverteilung zum Zustand $F$.
@@ -328,64 +287,20 @@ die Wahrscheinlichkeit, dass $L$ die richtige Schiffsverteilung ist.
 \begin{proof}
 Strukturelle Induktion über $F$:\\
 Induktionsanfang: $F=\emptyset$:\\
-Zu Beginn herrscht eine Gleichverteilung, d.h. die Wahrscheinlichkeit, dass eine bestimmte Schiffsverteilung gewählt wird, ist für alle Schiffsverteilungen gleich:
+Zu Beginn herrscht per Definition eine Gleichverteilung, d.h. die Wahrscheinlichkeit, dass eine bestimmte Schiffsverteilung gewählt wird, ist für alle Schiffsverteilungen gleich:
 \[
 P(L = L_a \mid F)=P(L = L_a)=\frac{1}{|all\_distributions|}=\frac{1}{distribution\_count(F)}
 \]
-Induktionsschritt mit: $F'=F \cup (c,s)$:\\
+Induktionsschritt mit: $F'=F \cup (c,s)$ und $L \in distributions(F')$:\\
 \[
-P(L = L_a \mid F)=\frac{1}{distributions(F)}=\frac{1}{distribution\_count(F)}
+P(L = L_a \mid F')=
+\begin{cases}
+\frac{1}{distributions(F)}=\frac{1}{distribution\_count(F)}
+\end{cases}
 \]
+\qed
 \end{proof}
 
-\begin{definition}
-Sei $F$ der momentane Zustand.
-Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle und $h \in \N_0$.
-Dann ist
-\[
-distributions\_removed(F,c,h)=distribution\_count(F) - distribution\_count(hypothetically\_fire(F,c, h))
-\]
-die Anzahl an Schiffsverteilungen, die nach diesem Schuss ausgeschlossen werden könnten, falls es genau $h$ Treffer gibt.
-\end{definition}
-
-\begin{definition}
-Sei $F$ der momentane Zustand.
-Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
-Dann ist
-\[
-distributions\_removed(F,c)=distributions\_removed(F, c, hit(c))
-\]
-die Anzahl an Schiffsverteilungen, die nach diesem Schuss ausgeschlossen werden können.
-\end{definition}
-
-\begin{satz}
-Sei $F$ der momentane Zustand.
-Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle und $h \in \N_0$.
-Dann ist
-\[
-P(hit(c)=h \mid F)=\frac{distribution\_count(hypothetically\_fire(F,c, h))}{distribution\_count(F)}
-\]
-\end{satz}
-die Wahrscheinlichkeit zu dem Zustand $F$, dass bei dem Schuss genau $h$ Schiffe getroffen werden.
-
-\begin{proof}
-Vor dem Schuss gibt es noch im Zustand $F$ genau $distribution\_count(F)$ mögliche Schiffsverteilungen.
-Nach dem Schuss gibt es nur noch $distribution\_count(hypothetically\_fire(F,c, h))$ mögliche Schiffsverteilungen.
-Nach Satz () folgt ...
-\end{proof}
-
-\begin{satz}
-Sei $F$ der momentane Zustand.
-Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
-Dann ist
-\[
-\mathds{E}(distributions\_removed(F,c))=\sum_{h=0}^{ship\_count - |D_F|} P(hit(c)=h) * distributions\_removed(F,c,h)
-\]
-\end{satz}
-
-\begin{proof}
-Definition des Erwartungswertes.
-\end{proof}
 
 \section{Schuss-Strategien}
 
@@ -408,6 +323,29 @@ die Menge an allen möglichen Strategiefunktionen.
 
 \subsection{Greedy-Strategie}
 Die Greedy-Strategie versucht bei jedem Schuss die erwartete Anzahl an ausgeschlossenen Schiffsverteilungen zu maximieren.
+
+\begin{definition}
+Sei $F$ der momentane Zustand.
+Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle und $h \in \N_0$.
+Dann ist
+\[
+distributions\_removed(L, F, c)=distribution\_count(F) - distribution\_count(fire(L, F,c))
+\]
+die Anzahl an Schiffsverteilungen, die nach diesem Schuss ausgeschlossen werden könnten.
+\end{definition}
+
+\begin{satz}
+Sei $F$ der momentane Zustand.
+Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
+Dann ist
+\[
+\mathds{E}(distributions\_removed(F,c))=\frac{1}{distribution\_count(F)} * \sum_{L \in distributions(F)} distributions\_removed(L, F, c)
+\]
+\end{satz}
+
+\begin{proof}
+Definition des Erwartungswertes.
+\end{proof}
 
 \begin{definition}
 Sei $F$ ein Zustand.
@@ -533,6 +471,116 @@ Dann gilt:
 Dennis:
 
 \section{Effiziente Berechnung von Schiffspositionen}
+
+
+\begin{definition}
+Sei $F$ der momentane Zustand und $cell \in C_{left}(F)$ die beschossene Zelle und $h \in \N_0$.
+Dann ist
+\[
+hypothetically\_fire(F, cell, hits)=F \cup \{(cell,hits)\}
+\]
+die Schuss-Funktion, welche die Zelle dem Zustand $F$ hinzufügt.
+\end{definition}
+
+\subsection{Verteilungsfunktionen}
+
+\begin{definition}
+Sei $C_{pos}$ eine Menge an Zellen, die belegt werden sollen. Sei außerdem $C_{neg}$ eine Menge an Zellen, die nicht belegt werden sollen.
+
+Dann ist
+\[
+location\_count(C_{pos}, C_{neg})
+\]
+die Anzahl der möglichen Schiffspositionen $l \in L_{all}$ für die gilt: $C_{pos} \subseteq cells(l)$ und $C_{neg} \cap cells(l) = \emptyset$.
+\end{definition}
+
+\begin{definition}
+Sei $cell\_combinations(F)=\mathcal{P}(C_{shot}(F))$.
+\end{definition}
+
+\begin{definition}
+Sei $comb \in cell\_combinations(F)$. Dann ist
+\[
+location\_count(F,comb)=location\_count(comb, C_{shot}(F) \setminus comb)
+\]
+eine Kurzform.
+\end{definition}
+
+\begin{definition}
+Sei $comb \in cell\_combinations(F)$. Dann ist
+\[
+max\_shared\_ship\_count(F,comb)=\min\{location\_count(F, comb)\} \cup \{h \mid (c,h) \in F \wedge c \in comb\}
+\]
+\end{definition}
+
+\begin{definition}
+Sei
+\[
+hit\_count(F, c, s)=\sum_{comb \in \{x \in cell\_combinations(F) \mid c \in x\}}{s(comb)}
+\]
+\end{definition}
+
+\begin{definition}
+Sei
+\begin{align}
+\begin{split}
+sha&re\_functions(F)=\{s \colon cell\_combinations(F) \rightarrow \N_0 \mid\\
+&\forall{(c,h) \in F}\colon hit\_count(F, c, s)=h \wedge \\
+&\forall{comb \in cell\_combinations(F)} \colon 0 \leq s(comb) \leq max\_shared\_ship\_count(F, comb)\\
+\}\;\;\;& \nonumber
+\end{split}
+\end{align}
+die Menge an Share-Funktionen, die das LGS (...) lösen.
+\end{definition}
+
+\begin{satz}
+Sei $F$ der momentane Zustand und $s \in share\_functions(F)$ eine Verteilungsfunktion.
+Dann ist
+\[
+distribution\_count(F, s)=
+\left( \prod_{comb \in cell\_combinations(F)}{{location\_count(F, comb)\choose s(comb)}} \right)
+\]
+die Anzahl an möglichen Schiffsverteilungen für die Verteilungsfunktion $s$.
+\end{satz}
+
+\begin{proof}
+Für jede Teilkombination $comb \in cell\_combinations_F$ gibt es $location\_count_F(comb)$ Positionen, die genau die Zellen der Teilkombination belegen. Aus diesen Positionen werden dann mit der Funktion $s_F$ genau $s_F(comb)$ Positionen für Schiffe ausgewählt. Daher gibt es für jede Teilkombination ${location\_count_F(comb)\choose s_F(comb)}$ verschiedene Schiffspositionen.
+
+Die gesamte Anzahl an möglichen Schiffsverteilungen ergibt sich dann einfach aus der Multiplikation der Anzahl an Schiffspositionen der einzelnen Teilkombinationen.
+\end{proof}
+
+\begin{definition}
+Sei
+\[
+distribution\_count(F)=\sum_{s \in share\_functions(F)}{distribution\_count(s)}
+\]
+\end{definition}
+
+
+\begin{satz}
+Sei $F$ der momentane Zustand.
+Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle und $h \in \N_0$.
+Dann ist
+\[
+P(hit(c)=h \mid F)=\frac{distribution\_count(hypothetically\_fire(F,c, h))}{distribution\_count(F)}
+\]
+\end{satz}
+die Wahrscheinlichkeit zu dem Zustand $F$, dass bei dem Schuss genau $h$ Schiffe getroffen werden.
+
+\begin{proof}
+Vor dem Schuss gibt es noch im Zustand $F$ genau $distribution\_count(F)$ mögliche Schiffsverteilungen.
+Nach dem Schuss gibt es nur noch $distribution\_count(hypothetically\_fire(F,c, h))$ mögliche Schiffsverteilungen.
+Nach Satz () folgt ...
+\end{proof}
+
+\begin{satz}
+Sei $F$ der momentane Zustand.
+Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
+Dann ist
+\[
+\mathds{E}(distributions\_removed(F,c))=\sum_{h=0}^{ship\_count - |D_F|} P(hit(c)=h) * distributions\_removed(F,c,h)
+\]
+\end{satz}
 
 Joel und Samuel:
 
