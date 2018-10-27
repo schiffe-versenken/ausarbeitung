@@ -81,6 +81,7 @@
 }
 
 \newtheorem{satz}{Satz}
+\newtheorem{korollar}{Korollar}
 
 
 % ============================================================================
@@ -106,6 +107,8 @@
 \begin{abstract}
 Ein schöner Abstract. Das ist einfach die Kurzzusammenfassung.
 \end{abstract}
+
+[Christopher]
 
 % Einleitung -----------------------------------------------------------------
 \section{Einleitung}
@@ -191,15 +194,23 @@ Sei $L_a \in all\_distributions$ die eigentliche und geheime Schiffsverteilung.
 \end{definition}
 
 \begin{definition}
+Sei $L \in all\_distributions$ und $c \in C_{all}$.
+Dann ist 
+\[
+hit(L, c)=|\{l \in L_{all} \mid c \in cells(l)\} \cap L|
+\]
+die Treffer-Funktion, welche angibt, wie viele Schiffe bei einem Schuss auf Zelle $c$ getroffen wurden, unter der annahme, dass $L$ die eigentliche Schiffsverteilung ist.
+\end{definition}
+
+\begin{definition}
 Sei $c \in C_{all}$.
 Dann ist 
 \[
-hit(L, c)=|\{l \in L_{all} \mid c \in cells(l)\} \cap L_a|
+hit(c)=hit(L_a, c)
 \]
-die Treffer-Funktion, welche angibt, wie viele Schiffe $h$ bei einem Schuss auf Zelle $c$ getroffen wurden.
 \end{definition}
 
-\section{Zustände}
+\subsection{Zustände}
 
 \begin{definition}
 Sei $F=\{(c_1, h_1), \dots , (c_t, h_t)\}$ der Zustand nach $t$ Schüssen.
@@ -225,10 +236,19 @@ die Schuss-Funktion, welche die Zelle dem Zustand $F$ hinzufügt.
 \end{definition}
 
 \begin{definition}
+Sei $F$ ein Zustand und $c \in C_{left}(F)$ die beschossene Zelle.
+Dann ist
+\[
+hypo\_fire(F, c, h)=F \cup \{(c, h)\}
+\]
+die hypothetische Schuss-Funktion, welche den Zustand so verändert, als hätte es $h$ Treffer bei dem Schuss auf Zelle $c$ gegeben. Es wird also kein echter Schuss abgegeben, es wird angenommen, dass ein Schuss mit $h$ Treffern abgegeben wird.
+\end{definition}
+
+\begin{definition}
 Sei $F$ ein Zustand.
 Dann ist
 \[
-distributions(F)=
+distributions(F)
 \]
 die Menge aller Schiffsverteilungen, auf die die Treffer-Informationen vom Zustand $F$ zutreffen.
 In anderen Worten, die Menge an zum Zustand $F$ noch möglichen Schiffsverteilungen.
@@ -242,19 +262,19 @@ distribution\_count(F)=|distributions(F)|
 \]
 \end{definition}
 
-\subsection{Aussagen über Zustände}
+\subsubsection{Aussagen über Zustände}
 
 \begin{definition}
-Sei $F$ der momentane Zustand.
+Sei $F$ ein Zustand.
 Dann ist
 \[
-finished(F) \Leftrightarrow |destroyed(F)|=ship\_count
+finished(F) \Leftrightarrow \forall l \in L_a \colon cells(l) \subseteq C_{shot}(F)
 \]
 wahr gdw. alle Schiffe zerstört wurden.
 \end{definition}
 
 \begin{definition}
-Sei $F$ der momentane Zustand.
+Sei $F$ ein Zustand.
 Dann ist
 \[
 determined(L, F) \Leftrightarrow distribution\_count(F)=1
@@ -262,20 +282,10 @@ determined(L, F) \Leftrightarrow distribution\_count(F)=1
 wahr gdw. die richtige Schiffsverteilung bereits bestimmt ist.
 \end{definition}
 
-\begin{satz}
-Sei $F$ der momentane Zustand.
-Dann ist
-\[
-determined(L, F) \Leftrightarrow distribution\_count(F)=1
-\]
-wahr gdw. die richtige Schiffsverteilung bereits bestimmt ist.
-\end{satz}
-
-\subsubsection{finished vs determined}
-TODO
 
 \begin{satz}
-Sei $L \in distributions(F)$ eine mögliche Schiffsverteilung zum Zustand $F$.
+Sei $F$ ein Zustand.
+Sei außerdem $L \in distributions(F)$ eine mögliche Schiffsverteilung.
 
 Dann ist
 \[
@@ -285,24 +295,27 @@ die Wahrscheinlichkeit, dass $L$ die richtige Schiffsverteilung ist.
 \end{satz}
 
 \begin{proof}
-Strukturelle Induktion über $F$:\\
-Induktionsanfang: $F=\emptyset$:\\
-Zu Beginn herrscht per Definition eine Gleichverteilung, d.h. die Wahrscheinlichkeit, dass eine bestimmte Schiffsverteilung gewählt wird, ist für alle Schiffsverteilungen gleich:
-\[
-P(L = L_a \mid F)=P(L = L_a)=\frac{1}{|all\_distributions|}=\frac{1}{distribution\_count(F)}
-\]
-Induktionsschritt mit: $F'=F \cup (c,s)$ und $L \in distributions(F')$:\\
-\[
-P(L = L_a \mid F')=
-\begin{cases}
-\frac{1}{distributions(F)}=\frac{1}{distribution\_count(F)}
-\end{cases}
-\]
-\qed
+TODO
 \end{proof}
 
 
-\section{Schuss-Strategien}
+\begin{satz}
+Sei $F$ ein Zustand.
+Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle und $h \in \N_0$.
+Dann ist
+\[
+P(hit(c)=h \mid F)=\frac{distribution\_count(hypo\_fire(F,c, h))}{distribution\_count(F)}
+\]
+\end{satz}
+die Wahrscheinlichkeit zu dem Zustand $F$, dass bei dem Schuss auf Zelle $c$ genau $h$ Schiffe getroffen werden.
+
+\begin{proof}
+Vor dem Schuss gibt es noch im Zustand $F$ genau $distribution\_count(F)$ mögliche Schiffsverteilungen.
+Nach dem Schuss gibt es nur noch $distribution\_count(hypo\_fire(F,c, h))$ mögliche Schiffsverteilungen.
+\end{proof}
+
+
+\subsection{Schuss-Strategien}
 
 \begin{definition}
 Eine Funktion der Form
@@ -320,9 +333,30 @@ all\_strategies(F)=\{ strat \colon F \rightarrow C_{left}(F) \}
 die Menge an allen möglichen Strategiefunktionen.
 \end{definition}
 
+\section{Greedy-Strategien}
 
-\subsection{Greedy-Strategie}
-Die Greedy-Strategie versucht bei jedem Schuss die erwartete Anzahl an ausgeschlossenen Schiffsverteilungen zu maximieren.
+\subsection{Greedy-Hit-Strategie}
+Die Greedy-Hit-Strategie versucht bei jedem Schuss die erwartete Anzahl an getroffenen Schiffen zu maximieren.
+
+\begin{definition}
+Sei $F$ ein Zustand und $c \in C_{left}(F)$ die beschossene Zelle.
+Dann ist
+\[
+\mathds{E}(hit(c) \mid F)=\sum_{h=0}^{ship\_count} P(hit(c)=h \mid F) * h
+\]
+\end{definition}
+
+\begin{definition}
+Sei $F$ ein Zustand.
+Dann ist
+\[
+strat_{greedy-hit}(F)=\max_{c \in C_{left}(F)} \mathds{E}(hit(c) \mid F)
+\]
+die Zelle, bei welcher bei Beschuss die Anzahl an erwarteten getroffenen Schiffen maximal ist.
+\end{definition}
+
+\subsection{Greedy-Distribution-Strategie}
+Die Greedy-Distribution-Strategie versucht bei jedem Schuss die erwartete Anzahl an ausgeschlossenen Schiffsverteilungen zu maximieren.
 
 \begin{definition}
 Sei $F$ der momentane Zustand.
@@ -338,9 +372,12 @@ die Anzahl an Schiffsverteilungen, die nach diesem Schuss ausgeschlossen werden 
 Sei $F$ der momentane Zustand.
 Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
 Dann ist
-\[
-\mathds{E}(distributions\_removed(F,c))=\frac{1}{distribution\_count(F)} * \sum_{L \in distributions(F)} distributions\_removed(L, F, c)
-\]
+\begin{align}
+\begin{split}
+&\mathds{E}(distributions\_removed(F,c))=\\
+&\frac{1}{distribution\_count(F)} * \sum_{L \in distributions(F)} distributions\_removed(L, F, c) \nonumber
+\end{split}
+\end{align}
 \end{satz}
 
 \begin{proof}
@@ -351,19 +388,191 @@ Definition des Erwartungswertes.
 Sei $F$ ein Zustand.
 Dann ist
 \[
-strat_{greedy}(F)=\max_{c \in C_{left}(F)} \mathds{E}(distributions\_removed(F,c))
+strat_{greedy-distribution}(F)=\max_{c \in C_{left}(F)} \mathds{E}(distributions\_removed(F,c))
 \]
 die Zelle, bei welcher bei Beschuss die Anzahl an erwarteten ausgeschlossenen Schiffsverteilungen maximal ist.
 \end{definition}
 
-Diese Strategie funktioniert ziemlich gut und lässt sich verhältnismäßig schnell berechnen, ist jedoch nicht die optimale Strategie.
+\subsection{Vergleich der Strategien}
+Auf den ersten Blick sieht es aus, dass die beiden vorgestellten Greedy-Strategien zwei verschiedene Definitionen für die gleiche Strategie sind. Im folgenden Abschnitt wird aber gezeigt, dass sich beide Strategien unterscheiden.
+
+\begin{definition}
+Sei $F$ ein Zustand und $c \in C_{left}(F)$ die beschossene Zelle.
+Dann ist
+\[
+asc(F, c)=\{[h_{min}, h_{max}] \mid \forall h,h' \in [h_{min}, h_{max}]  \colon h > h' \Leftrightarrow P(hit(c)=h \mid F) > P(hit(c)=h' \mid F)\}
+\] die Menge aller Intervalle, in denen die Funktion $P(hit(c)=h \mid F)$ streng monoton wachsend ist.
+
+Außerdem ist
+\[
+desc(F, c)=\{[h_{min}, h_{max}] \mid \forall h,h' \in [h_{min}, h_{max}] \colon h > h' \Leftrightarrow P(hit(c)=h \mid F) < P(hit(c)=h' \mid F)\}
+\] die Menge aller Intervalle, in denen die Funktion $P(hit(c)=h \mid F)$ streng monoton fallend ist.
+
+Außerdem ist
+\[
+eq(F, c)=\{[h_{min}, h_{max}] \mid \forall h_{min} \leq h,h' \leq h_{max} \colon P(hit(c)=h \mid F) = P(hit(c)=h' \mid F)\}
+\] die Menge aller Intervalle, in denen die Funktion $P(hit(c)=h \mid F)$ die Steigung 0 hat.
+
+Natürlich sind alles Intervalle in den natürlichen Zahlen, da die Funktion $P(hit(c)=h \mid F)$ nur für natürliche Zahlen definiert ist.
+\end{definition}
+
+\begin{lemma}
+Sei $F$ ein Zustand und $c \in C_{left}(F)$ die beschossene Zelle.
+Sei außerdem $h,h' \in \N$.
+Dann gilt:
+
+Falls $\exists I \in asc(F, c) \colon h,h' \in I$:
+\[
+h > h' \Leftrightarrow P(hit(c)=h \mid F) > P(hit(c)=h' \mid F)
+\]
+
+Falls $\exists I \in desc(F, c) \colon h,h' \in I$:
+\[
+h < h' \Leftrightarrow P(hit(c)=h \mid F) < P(hit(c)=h' \mid F)
+\]
+
+Falls $\exists I \in eq(F, c) \colon h,h' \in I$:
+\[
+P(hit(c)=h \mid F) = P(hit(c)=h' \mid F)
+\]
+
+\end{lemma}
+
+\begin{proof}
+Definitionen der Intervalle.
+\end{proof}
+
+\begin{lemma}
+Sei $F$ ein Zustand und $c \in C_{left}(F)$ die beschossene Zelle.
+Sei außerdem $h,h' \in \N$.
+Dann gilt:
+\begin{align}
+\begin{split}
+&P(hit(c)=h \mid F) < P(hit(c)=h' \mid F) \\
+\Leftrightarrow \; &distribution\_count(hypo\_fire(F, c, h)) < distribution\_count(hypo\_fire(F, c, h))
+\nonumber
+\end{split}
+\end{align}
+\end{lemma}
+
+\begin{proof}
+\begin{align}
+\begin{split}
+&P(hit(c)=h \mid F) < P(hit(c)=h' \mid F) \\
+\Leftrightarrow
+&\frac{distribution\_count(hypo\_fire(F,c, h))}{distribution\_count(F)} < \frac{distribution\_count(hypo\_fire(F,c, h'))}{distribution\_count(F)} \\
+\Leftrightarrow
+&distribution\_count(hypo\_fire(F,c, h)) < distribution\_count(hypo\_fire(F,c, h'))
+\nonumber
+\end{split}
+\end{align}
+\qed
+\end{proof}
+
+\begin{korollar}
+Sei $F$ ein Zustand und $c \in C_{left}(F)$ die beschossene Zelle.
+Sei außerdem $h,h' \in \N$.
+Dann gilt:
+\begin{align}
+\begin{split}
+&P(hit(c)=h \mid F) > P(hit(c)=h' \mid F) \\
+\Leftrightarrow \; &distribution\_count(hypo\_fire(F, c, h)) > distribution\_count(hypo\_fire(F, c, h))
+\nonumber
+\end{split}
+\end{align}
+\end{korollar}
+
+\begin{proof}
+Negation des vorgerigen Lemmas.
+\end{proof}
+
+\begin{satz}
+Sei $F$ ein Zustand und $c \in C_{left}(F)$ die beschossene Zelle.
+Sei außerdem $h,h' \in \N$.
+Dann gilt:
+
+Falls $\exists I \in asc(F, c) \colon h,h' \in I$:
+\[
+h > h' \Leftrightarrow distributions\_removed(F,c, h) > distributions\_removed(F,c, h')
+\]
+
+Falls $\exists I \in desc(F, c) \colon h,h' \in I$:
+\[
+h > h' \Leftrightarrow distributions\_removed(F,c, h) < distributions\_removed(F,c, h')
+\]
+
+Falls $\exists I \in eq(F, c) \colon h,h' \in I$:
+\[
+distributions\_removed(F,c, h) = distributions\_removed(F,c, h')
+\]
+\end{satz}
+
+\begin{proof}
+
+Falls $\exists I \in asc(F, c) \colon h,h' \in I$:
+\begin{align}
+\begin{split}
+&h > h' \\
+\Leftrightarrow &P(hit(c)=h \mid F) > P(hit(c)=h' \mid F) \\
+\Leftrightarrow &distribution\_count(hypo\_fire(F,c, h)) > distribution\_count(hypo\_fire(F,c, h')) \\
+\Leftrightarrow &distribution\_count(F) - distribution\_count(hypo\_fire(F,c, h)) \\
+< &distribution\_count(F) - distribution\_count(hypo\_fire(F,c, h')) \\
+\Leftrightarrow &distributions\_removed(F,c, h) < distributions\_removed(F,c, h')
+\nonumber
+\end{split}
+\end{align}
+
+Falls $\exists I \in desc(F, c) \colon h,h' \in I$:
+\begin{align}
+\begin{split}
+&h > h' \\
+\Leftrightarrow &P(hit(c)=h \mid F) < P(hit(c)=h' \mid F) \\
+\Leftrightarrow &distribution\_count(hypo\_fire(F,c, h)) < distribution\_count(hypo\_fire(F,c, h')) \\
+\Leftrightarrow &distribution\_count(F) - distribution\_count(hypo\_fire(F,c, h)) \\
+> &distribution\_count(F) - distribution\_count(hypo\_fire(F,c, h')) \\
+\Leftrightarrow &distributions\_removed(F,c, h) > distributions\_removed(F,c, h')
+\nonumber
+\end{split}
+\end{align}
+
+Falls $\exists I \in eq(F, c) \colon h,h' \in I$:
+\begin{align}
+\begin{split}
+\Leftrightarrow &P(hit(c)=h \mid F) = P(hit(c)=h' \mid F) \\
+\Leftrightarrow &distribution\_count(hypo\_fire(F,c, h)) = distribution\_count(hypo\_fire(F,c, h')) \\
+\Leftrightarrow &distribution\_count(F) - distribution\_count(hypo\_fire(F,c, h)) \\
+= &distribution\_count(F) - distribution\_count(hypo\_fire(F,c, h')) \\
+\Leftrightarrow &distributions\_removed(F,c, h) = distributions\_removed(F,c, h')
+\nonumber
+\end{split}
+\end{align}
+\qed
+\end{proof}
+
+Daraus folgt, dass abhängig von der Wahrscheinlichkeitsverteilung von $P(hit(c)=h \mid F)$ bei dem Versuch möglichst viele Schiffe zu treffen dadurch entweder auch möglichst viele Schiffsverteilungen ausgeschlossen werden können oder eben auch möglichst wenig Schiffsverteilungen ausgeschlossen werden können.
+
+Daher ist die genaue Korrelation zwischen ausgeschlossenen Schiffsverteilungen und getroffenen Schiffen für jede Zelle individuell, da die Wahrscheinlichkeitsverteilung von $P(hit(c)=h \mid F)$ individuell ist. Für manche Zellen, können beide Strategien äquivalent sein, aber für andere Zellen kann auch eine inverse Korrelation bestehen und mit mit mehr Treffern weniger Schiffsverteilungen ausgeschlossen werden.
+
+In den meisten Situationen lässt sich keine genaue Aussage darüber treffen, ob beide Strategien die gleichen Zellen auswählen. In der folgenden, etwas spezielleren Situation allerdings lässt sich eine Aussage treffen:
+
+\begin{satz}
+Sei $F$ ein Zustand.
+Sei außerdem $c=strat_{greedy-hit}(F)$ und \\
+$\exists c_{other} \in C_{left}(F) \setminus \{c\}\colon \mathds{E}(hit(c_{other}) \mid F) < \mathds{E}(hit(c) \mid F)$, d.h. $c$ ist ein echtes Maximum.
+Dann gilt:
+\[
+[0,ship\_count] \in asc(F, c) \Rightarrow c \neq strat_{greedy-distribution}(F)
+\]
+
+In anderen Worten, falls die Wahrscheinlichkeitsverteilung der nach der greedy-hit-Strategie beschossenen Zelle streng monoton steigend ist, muss die greedy-distribution-Strategie eine andere Zelle beschießen, da die sonst nicht die maximale Anzahl an Schiffsverteilungen ausschliesst. Diese andere Zelle existiert nach Vorraussetzung.
+\end{satz}
 
 
-\subsection{Optimale-Strategie}
+\section{Optimale-Strategie}
 
 Um eine optimale Schuss-Strategie zu definieren, werden ein paar Definitionen benötigt, um den Begriff `Optimal` zu definieren.
 
-\subsubsection{Definition von Optimalität}
+\subsection{Definition von Optimalität}
 
 \begin{definition}
 Sei $L$ die gewählte Schiffsverteilung und $F$ der momentane Zustand und sei $determined(L, F)$ wahr.
@@ -414,7 +623,7 @@ Eine Strategiefunktion $strat \in all\_strategies$ heißt optimal, falls für al
 \]
 \end{definition}
 
-\subsubsection{Herleitung}
+\subsection{Herleitung}
 
 \begin{lemma}
 Sei $F$ der momentane Zustand, $c$ die Zelle, auf die geschossen werden soll und $strat \in all\_strategies$ die verwendete Schuss-Strategie.
@@ -468,22 +677,12 @@ Dann gilt:
 
 \newpage
 
-Dennis:
+\section{Optimierungen}
 
-\section{Effiziente Berechnung von Schiffspositionen}
+Wir nähern uns langsam der Implementation der Schuss-Strategien.
+Um die Laufzeit der Implementation möglichst klein zu halten, werden in diesem Kapitel eine Reihe von Optimierungsmethoden vorgestellt.
 
-
-\begin{definition}
-Sei $F$ der momentane Zustand und $cell \in C_{left}(F)$ die beschossene Zelle und $h \in \N_0$.
-Dann ist
-\[
-hypothetically\_fire(F, cell, hits)=F \cup \{(cell,hits)\}
-\]
-die Schuss-Funktion, welche die Zelle dem Zustand $F$ hinzufügt.
-\end{definition}
-
-\subsection{Verteilungsfunktionen}
-
+\subsection{Berechnung von Schiffspositionen}[Dennis]
 \begin{definition}
 Sei $C_{pos}$ eine Menge an Zellen, die belegt werden sollen. Sei außerdem $C_{neg}$ eine Menge an Zellen, die nicht belegt werden sollen.
 
@@ -493,6 +692,13 @@ location\_count(C_{pos}, C_{neg})
 \]
 die Anzahl der möglichen Schiffspositionen $l \in L_{all}$ für die gilt: $C_{pos} \subseteq cells(l)$ und $C_{neg} \cap cells(l) = \emptyset$.
 \end{definition}
+
+\subsection{Berechnung der Verteilungsanzahl mit Verteilungsfunktionen}[Christopher]
+
+In allen vorherigen Berechnungen wird nur die Anzahl an Schiffsverteilungen zum Zustand $F$, distribution\_count(F), benötigt, da es zu jedem Zustand eine Gleichverteilung an Schiffsverteilungen gibt.
+
+Der naive Ansatz diesen Wert zu berechnen, wäre alle Verteilungen zu konstruieren und dann zusammen zu zählen.
+Mithilfe den sogenannten Verteilungsfunktionen und ein bischen Kombinatorik lässt sich die Anzahl einfacher berechnen.
 
 \begin{definition}
 Sei $cell\_combinations(F)=\mathcal{P}(C_{shot}(F))$.
@@ -555,32 +761,6 @@ Sei
 distribution\_count(F)=\sum_{s \in share\_functions(F)}{distribution\_count(s)}
 \]
 \end{definition}
-
-
-\begin{satz}
-Sei $F$ der momentane Zustand.
-Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle und $h \in \N_0$.
-Dann ist
-\[
-P(hit(c)=h \mid F)=\frac{distribution\_count(hypothetically\_fire(F,c, h))}{distribution\_count(F)}
-\]
-\end{satz}
-die Wahrscheinlichkeit zu dem Zustand $F$, dass bei dem Schuss genau $h$ Schiffe getroffen werden.
-
-\begin{proof}
-Vor dem Schuss gibt es noch im Zustand $F$ genau $distribution\_count(F)$ mögliche Schiffsverteilungen.
-Nach dem Schuss gibt es nur noch $distribution\_count(hypothetically\_fire(F,c, h))$ mögliche Schiffsverteilungen.
-Nach Satz () folgt ...
-\end{proof}
-
-\begin{satz}
-Sei $F$ der momentane Zustand.
-Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
-Dann ist
-\[
-\mathds{E}(distributions\_removed(F,c))=\sum_{h=0}^{ship\_count - |D_F|} P(hit(c)=h) * distributions\_removed(F,c,h)
-\]
-\end{satz}
 
 Joel und Samuel:
 
