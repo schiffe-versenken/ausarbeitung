@@ -399,19 +399,34 @@ Auf den ersten Blick sieht es aus, dass die beiden vorgestellten Greedy-Strategi
 \begin{definition}
 Sei $F$ ein Zustand und $c \in C_{left}(F)$ die beschossene Zelle.
 Dann ist
-\[
-asc(F, c)=\{[h_{min}, h_{max}] \mid \forall h,h' \in [h_{min}, h_{max}]  \colon h > h' \Leftrightarrow P(hit(c)=h \mid F) > P(hit(c)=h' \mid F)\}
-\] die Menge aller Intervalle, in denen die Funktion $P(hit(c)=h \mid F)$ streng monoton wachsend ist.
+\begin{align}
+\begin{split}
+asc(F, c)=\{&[h_{min}, h_{max}] \mid h_{min} < h_{max} \wedge \\ 
+&\forall h,h' \in [h_{min}, h_{max}]  \colon h > h' \Leftrightarrow P(hit(c)=h \mid F) > P(hit(c)=h' \mid F)\}
+\nonumber
+\end{split}
+\end{align}
+die Menge aller Intervalle, in denen die Funktion $P(hit(c)=h \mid F)$ streng monoton wachsend ist.
 
 Außerdem ist
-\[
-desc(F, c)=\{[h_{min}, h_{max}] \mid \forall h,h' \in [h_{min}, h_{max}] \colon h > h' \Leftrightarrow P(hit(c)=h \mid F) < P(hit(c)=h' \mid F)\}
-\] die Menge aller Intervalle, in denen die Funktion $P(hit(c)=h \mid F)$ streng monoton fallend ist.
+\begin{align}
+\begin{split}
+desc(F, c)=\{&[h_{min}, h_{max}] \mid h_{min} < h_{max} \wedge \\ 
+&\forall h,h' \in [h_{min}, h_{max}]  \colon h > h' \Leftrightarrow P(hit(c)=h \mid F) < P(hit(c)=h' \mid F)\}
+\nonumber
+\end{split}
+\end{align}
+die Menge aller Intervalle, in denen die Funktion $P(hit(c)=h \mid F)$ streng monoton fallend ist.
 
 Außerdem ist
-\[
-eq(F, c)=\{[h_{min}, h_{max}] \mid \forall h_{min} \leq h,h' \leq h_{max} \colon P(hit(c)=h \mid F) = P(hit(c)=h' \mid F)\}
-\] die Menge aller Intervalle, in denen die Funktion $P(hit(c)=h \mid F)$ die Steigung 0 hat.
+\begin{align}
+\begin{split}
+eq(F, c)=\{&[h_{min}, h_{max}] \mid h_{min} < h_{max} \wedge \\ 
+&\forall h_{min} \leq h,h' \leq h_{max} \colon P(hit(c)=h \mid F) = P(hit(c)=h' \mid F)\}
+\nonumber
+\end{split}
+\end{align}
+die Menge aller Intervalle, in denen die Funktion $P(hit(c)=h \mid F)$ die Steigung 0 hat.
 
 Natürlich sind alles Intervalle in den natürlichen Zahlen, da die Funktion $P(hit(c)=h \mid F)$ nur für natürliche Zahlen definiert ist.
 \end{definition}
