@@ -454,7 +454,7 @@ h > h' \Leftrightarrow P(hit(c)=h \mid F) > P(hit(c)=h' \mid F)
 
 Falls $\exists I \in desc(F, c) \colon h,h' \in I$:
 \[
-h < h' \Leftrightarrow P(hit(c)=h \mid F) < P(hit(c)=h' \mid F)
+h > h' \Leftrightarrow P(hit(c)=h \mid F) < P(hit(c)=h' \mid F)
 \]
 
 Falls $\exists I \in eq(F, c) \colon h,h' \in I$:
@@ -521,20 +521,16 @@ Falls $\exists I \in asc(F, c) \colon h,h' \in I$:
 \[
 h > h' \Leftrightarrow distributions\_removed(F,c, h) < distributions\_removed(F,c, h')
 \]
-
 Falls $\exists I \in desc(F, c) \colon h,h' \in I$:
 \[
-h < h' \Leftrightarrow distributions\_removed(F,c, h) > distributions\_removed(F,c, h')
+h > h' \Leftrightarrow distributions\_removed(F,c, h) > distributions\_removed(F,c, h')
 \]
-
 Falls $\exists I \in eq(F, c) \colon h,h' \in I$:
 \[
 distributions\_removed(F,c, h) = distributions\_removed(F,c, h')
 \]
 \end{satz}
-
 \begin{proof}
-
 Falls $\exists I \in asc(F, c) \colon h,h' \in I$:
 \begin{align}
 \begin{split}
@@ -547,11 +543,10 @@ Falls $\exists I \in asc(F, c) \colon h,h' \in I$:
 \nonumber
 \end{split}
 \end{align}
-
 Falls $\exists I \in desc(F, c) \colon h,h' \in I$:
 \begin{align}
 \begin{split}
-&h < h' \\
+&h > h' \\
 \Leftrightarrow &P(hit(c)=h \mid F) < P(hit(c)=h' \mid F) \\
 \Leftrightarrow &distribution\_count(hypo\_fire(F,c, h)) < distribution\_count(hypo\_fire(F,c, h')) \\
 \Leftrightarrow &distribution\_count(F) - distribution\_count(hypo\_fire(F,c, h)) \\
@@ -560,7 +555,6 @@ Falls $\exists I \in desc(F, c) \colon h,h' \in I$:
 \nonumber
 \end{split}
 \end{align}
-
 Falls $\exists I \in eq(F, c) \colon h,h' \in I$:
 \begin{align}
 \begin{split}
