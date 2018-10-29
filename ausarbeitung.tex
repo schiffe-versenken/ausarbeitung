@@ -224,12 +224,20 @@ Sei $F=\{(c_1, h_1), \dots , (c_t, h_t)\}\in F^*$ der Zustand nach $t$ Schüssen
 
 \begin{definition}
 Sei $F\in F^*$ der momentane Zustand.
-Dann ist $C_{shot}(F)=\{c \in C_{all} \mid (c,h) \in F, \; h \in N_0\}$ die Menge an Zellen, auf die bereits geschossen wurde.
+Dann ist
+\begin{align}
+C_{shot}(F)=\{c \in C_{all} \mid (c,h) \in F, \; h \in N_0\}
+\end{align}
+ die Menge an Zellen, auf die bereits geschossen wurde.
 \end{definition}
 
 \begin{definition}
 Sei $F\in F^*$ der momentane Zustand.
-Dann ist $C_{left}(F)=C_{all} \setminus C_{shot}(F)$ die Menge an Zellen, auf die noch nicht geschossen wurde.
+Dann ist 
+\begin{align}
+C_{left}(F)=C_{all} \setminus C_{shot}(F)
+\end{align}
+die Menge an Zellen, auf die noch nicht geschossen wurde.
 \end{definition}
 
 \begin{definition}
@@ -246,7 +254,7 @@ die Schuss-Funktion, welche die Zelle dem Zustand $F$ hinzufügt.
 Sei $F\in F^*$ ein Zustand und $c \in C_{left}(F)$ die beschossene Zelle.
 Dann ist
 \begin{align}
-&hypo:F^*\times C_{all}\times N_0 \rightarrow F^* \quad mit \nonumber\\
+&hypo\_fire:F^*\times C_{all}\times N_0 \rightarrow F^* \quad mit \nonumber\\
 &hypo\_fire(F, c, h)=F \cup \{(c, h)\}\nonumber
 \end{align}
 die hypothetische Schuss-Funktion, welche den Zustand so verändert, als hätte es $h$ Treffer bei dem Schuss auf Zelle $c$ gegeben. Es wird also kein echter Schuss abgegeben, es wird angenommen, dass ein Schuss mit $h$ Treffern abgegeben wird.
@@ -268,26 +276,6 @@ Dann ist
 \[
 distribution\_count(F)=|distributions(F)|
 \]
-\end{definition}
-
-\subsubsection{Aussagen über Zustände}
-
-\begin{definition}
-Sei $F\in F^*$ ein Zustand.
-Dann ist
-\[
-finished(F) \Leftrightarrow \forall l \in L_a \colon cells(l) \subseteq C_{shot}(F)
-\]
-wahr gdw. alle Schiffe zerstört wurden.
-\end{definition}
-
-\begin{definition}
-Sei $F\in F^*$ ein Zustand.
-Dann ist
-\[
-determined(L, F) \Leftrightarrow distribution\_count(F)=1
-\]
-wahr gdw. die richtige Schiffsverteilung bereits bestimmt ist.
 \end{definition}
 
 
@@ -326,22 +314,61 @@ Nach dem Schuss gibt es nur noch \\$distribution\_count(hypo\_fire(F,c, h))$ mö
 \end{proof}
 
 
+\begin{definition}
+Sei $F\in F^*$ ein Zustand.
+Dann ist
+\[
+C_{undetermined}(F)=\{ c \in C_{left}(F) \mid \nexists h \in \{0 \dots ship\_count\} \colon P(hit(c)=h \mid F) \in \{0, 1\}\}
+\]
+die Menge an allen Zellen, auf welche noch nicht geschossen wurde und noch nicht genau feststeht, wieviele Schiffe bei einem Schuss darauf getroffen werden.
+\end{definition}
+
+\begin{definition}
+Sei $F\in F^*$ ein Zustand und $c \in C_{undetermined}(F)$ eine Zelle.
+Dann ist
+\[
+max\_hit\_count(F, c)=\max \{h \in \{0, \dots, ship\_count\} \mid P(hit(c) = h \mid F) > 0\}
+\]
+die Menge an allen Zellen, auf welche noch nicht geschossen wurde und noch nicht genau feststeht, wieviele Schiffe bei einem Schuss darauf getroffen werden.
+\end{definition}
+
+\begin{definition}
+Sei $F\in F^*$ ein Zustand.
+Dann ist
+\[
+determined(L, F) \Leftrightarrow distribution\_count(F)=1 \Leftrightarrow C_{undetermined}(F)
+\]
+wahr gdw. die richtige Schiffsverteilung bereits bestimmt ist.
+\end{definition}
+
+
+\begin{definition}
+TODO
+Sei $F\in F^*$ ein Zustand.
+Dann ist
+\[
+finished(F) \Leftrightarrow \forall l \in L_a \colon cells(l) \subseteq C_{shot}(F)
+\]
+wahr gdw. alle Schiffe zerstört wurden.
+\end{definition}
+
+
 \subsection{Schuss-Strategien}
 
 \begin{definition}
 Eine Funktion der Form
-\[
-strat \colon F \rightarrow C_{left}(F)
-\]
+\begin{align}
+&strat:F^* \rightarrow C_{all}\quad mit \nonumber
+\end{align}
 wird Strategiefunktion genannt. Diese weißt jedem Zustand die Zelle zu, auf die als nächstes geschossen werden soll.
 \end{definition}
 
 \begin{definition}
 Sei
 \[
-all\_strategies(F)=\{ strat \colon F \rightarrow C_{left}(F) \}
+valid\_strategies(F)=\{ strat:F^* \rightarrow C_{all} \mid strat(F) \in C_{undetermined}(F)  \}
 \]
-die Menge an allen möglichen Strategiefunktionen.
+die Menge an allen gültigen Strategiefunktionen. Gültige Strategien dürfen nur auf Zellen schießen, bei denen noch nicht feststeht, wie viele Schiffe getroffen werden.
 \end{definition}
 
 \section{Greedy-Strategien}
@@ -350,7 +377,7 @@ die Menge an allen möglichen Strategiefunktionen.
 Die Greedy-Hit-Strategie versucht bei jedem Schuss die erwartete Anzahl an getroffenen Schiffen zu maximieren.
 
 \begin{definition}
-Sei $F\in F^*$ ein Zustand und $c \in C_{left}(F)$ die beschossene Zelle.
+Sei $F\in F^*$ ein Zustand und $c \in C_{undetermined}(F)$ die beschossene Zelle.
 Dann ist
 \[
 \mathds{E}(hit(c) \mid F)=\sum_{h=0}^{ship\_count} P(hit(c)=h \mid F) * h
@@ -361,7 +388,7 @@ Dann ist
 Sei $F\in F^*$ ein Zustand.
 Dann ist
 \[
-strat_{greedy-hit}(F)=\max_{c \in C_{left}(F)} \mathds{E}(hit(c) \mid F)
+strat_{greedy-hit}(F)=\max_{c \in C_{undetermined}(F)} \mathds{E}(hit(c) \mid F)
 \]
 die Zelle, bei welcher bei Beschuss die Anzahl an erwarteten getroffenen Schiffen maximal ist.
 \end{definition}
@@ -371,7 +398,7 @@ Die Greedy-Distribution-Strategie versucht bei jedem Schuss die erwartete Anzahl
 
 \begin{definition}
 Sei $F\in F^*$ der momentane Zustand.
-Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle und $h \in \N_0$.
+Sei außerdem $c \in C_{undetermined}(F)$ die beschossene Zelle.
 Dann ist
 \[
 distributions\_removed(L, F, c)=distribution\_count(F) - distribution\_count(fire(L, F,c))
@@ -399,7 +426,7 @@ Definition des Erwartungswertes.
 Sei $F\in F^*$ ein Zustand.
 Dann ist
 \[
-strat_{greedy-distribution}(F)=\max_{c \in C_{left}(F)} \mathds{E}(distributions\_removed(F,c))
+strat_{greedy-distribution}(F)=\max_{c \in C_{undetermined}(F)} \mathds{E}(distributions\_removed(F,c))
 \]
 die Zelle, bei welcher bei Beschuss die Anzahl an erwarteten ausgeschlossenen Schiffsverteilungen maximal ist.
 \end{definition}
@@ -569,22 +596,24 @@ Falls $\exists I \in eq(F, c) \colon h,h' \in I$:
 \qed
 \end{proof}
 
-Daraus folgt, dass abhängig von der Wahrscheinlichkeitsverteilung von $P(hit(c)=h \mid F)$ bei dem Versuch möglichst viele Schiffe zu treffen dadurch entweder auch möglichst viele Schiffsverteilungen ausgeschlossen werden können oder eben auch möglichst wenig Schiffsverteilungen ausgeschlossen werden können.
+Daraus folgt, dass abhängig von der Wahrscheinlichkeitsverteilung von $P(hit(c)=h \mid F)$ bei dem Versuch möglichst viele Schiffe zu treffen dadurch entweder auch möglichst viele Schiffsverteilungen oder eben auch möglichst wenig Schiffsverteilungen ausgeschlossen werden können.
 
 Daher ist die genaue Korrelation zwischen ausgeschlossenen Schiffsverteilungen und getroffenen Schiffen für jede Zelle individuell, da die Wahrscheinlichkeitsverteilung von $P(hit(c)=h \mid F)$ individuell ist. Für manche Zellen, können beide Strategien äquivalent sein, aber für andere Zellen kann auch eine inverse Korrelation bestehen und mit mehr Treffern weniger Schiffsverteilungen ausgeschlossen werden.
 
 In den meisten Situationen lässt sich keine genaue Aussage darüber treffen, ob beide Strategien die gleichen Zellen auswählen. In der folgenden, etwas spezielleren Situation allerdings lässt sich eine Aussage treffen:
 
 \begin{satz}
-Sei $F\in F^*$ ein Zustand.
-Sei außerdem $c=strat_{greedy-hit}(F)$ und \\
-$\exists c_{other} \in C_{left}(F) \setminus \{c\}\colon \mathds{E}(hit(c_{other}) \mid F) < \mathds{E}(hit(c) \mid F)$, d.h. $c$ ist ein echtes Maximum.
+Sei $F\in F^*$ ein Zustand und $c_1, c_2 \in C_{undetermined}(F)$ Zellen.
 Dann gilt:
-\[
-[0,ship\_count] \in asc(F, c) \Rightarrow c \neq strat_{greedy-distribution}(F)
-\]
+\begin{align}
+\begin{split}
+[0,max\_hit\_count(F, c)] \in eq(F, c_1) \wedge \\
+([0,max\_hit\_count(F, c)] \in asc(F, c_2) \lor [0,max\_hit\_count(F, c)] \in desc(F, c_2)) \\
+\Rightarrow strat_{greedy-hit}(F) \neq strat_{greedy-distribution}(F)
+\end{split}
+\end{align}
 
-In anderen Worten, falls die Wahrscheinlichkeitsverteilung der nach der greedy-hit-Strategie beschossenen Zelle streng monoton steigend ist, muss die greedy-distribution-Strategie eine andere Zelle beschießen, da die sonst nicht die maximale Anzahl an Schiffsverteilungen ausschliesst. Diese andere Zelle existiert nach Vorraussetzung.
+
 \end{satz}
 
 
@@ -662,7 +691,7 @@ Trivial
 Sei $F\in F^*$ der momentane Zustand und $strat \in all\_strategies$ die verwendete Schuss-Strategie.
 Dann ist
 \[
-min\_expected\_shots(F, strat)=\min_{c \in C_{left}(F)} \mathds{E}(shots\_left(F, c, strat))
+min\_expected\_shots(F, strat)=\min_{c \in C_{undetermined}(F)} \mathds{E}(shots\_left(F, c, strat))
 \]
 die minimale erwartete Anzahl an Schüssen um alle Schiffe zu versenken, falls die nächste beschossene Zelle frei gewählt werden kann und danach die Schuss-Strategie $strat$ verwendet wird.
 \end{definition}
@@ -671,7 +700,7 @@ die minimale erwartete Anzahl an Schüssen um alle Schiffe zu versenken, falls d
 Sei $F\in F^*$ ein Zustand.
 Dann ist
 \[
-strat_{opt}(F)=c \in C_{left}(F) \mid min\_expected\_shots(F, strat_{opt})= \mathds{E}(shots\_left(F, c, strat_{opt}))
+strat_{opt}(F)=c \in C_{undetermined}(F) \mid min\_expected\_shots(F, strat_{opt})= \mathds{E}(shots\_left(F, c, strat_{opt}))
 \]
 die optimale Strategiefunktion.
 Diese wählt für den Zustand $F$ eine Zelle aus, welche nach Beschuss die Anzahl an benötigten Schüssen um alle Schiffe zu versenken, minimiert.
@@ -688,7 +717,7 @@ Dann gilt:
 \begin{proof}
 \begin{align}
 \mathds{E}(shots\_left(F, strat_{opt})) =\mathds{E}(shots\_left(F, strat_{opt}(F), strat_{opt}))=\\
-\min_{c \in C_{left}(F)} \mathds{E}(shots\_left(F, c, strat)) \leq \mathds{E}(shots\_left(F, c_{other}, strat)), c_{other} \in C_{left}(F)\\
+\min_{c \in C_{left}(F)} \mathds{E}(shots\_left(F, c, strat)) \leq \mathds{E}(shots\_left(F, c_{other}, strat)), c_{other} \in C_{undetermined}(F)\\
 \Rightarrow\\
 \mathds{E}(shots\_left(F, strat_{opt})) \leq \mathds{E}(shots\_left(F, strat_{alt}))
 \end{align}
