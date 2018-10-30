@@ -320,45 +320,53 @@ Dann ist
 \[
 C_{undetermined}(F)=\{ c \in C_{left}(F) \mid \nexists h \in \{0 \dots ship\_count\} \colon P(hit(c)=h \mid F) \in \{0, 1\}\}
 \]
-die Menge an allen Zellen, auf welche noch nicht geschossen wurde und noch nicht genau feststeht, wieviele Schiffe bei einem Schuss darauf getroffen werden.
-\end{definition}
-
-\begin{definition}
-Sei $F\in F^*$ ein Zustand und $c \in C_{undetermined}(F)$ eine Zelle.
-Dann ist
-\[
-max\_hit\_count(F, c)=\max \{h \in \{0, \dots, ship\_count\} \mid P(hit(c) = h \mid F) > 0\}
-\]
-die Menge an allen Zellen, auf welche noch nicht geschossen wurde und noch nicht genau feststeht, wieviele Schiffe bei einem Schuss darauf getroffen werden.
+die Menge an allen Zellen, auf welche noch nicht geschossen wurde und noch nicht genau feststeht, wie viele Schiffe bei einem Schuss darauf getroffen werden.
 \end{definition}
 
 \begin{definition}
 Sei $F\in F^*$ ein Zustand.
 Dann ist
 \[
-determined(L, F) \Leftrightarrow distribution\_count(F)=1 \Leftrightarrow C_{undetermined}(F)
+determined(F) \Leftrightarrow distribution\_count(F)=1 \Leftrightarrow C_{undetermined}(F)
 \]
 wahr gdw. die richtige Schiffsverteilung bereits bestimmt ist.
 \end{definition}
 
 
 \begin{definition}
+Sei $F\in F^*$ ein Zustand.
+Dann ist
+\[
+C_{left\_to\_finish}(F)=\{ c \in C_{left}(F) \mid \exists h \in \{0 \dots ship\_count\} \colon P(hit(c)=h \mid F) = 1\}
+\]
+die Menge an allen Zellen, auf welche noch nicht geschossen wurde und genau feststeht, wie viele Schiffe bei einem Schuss darauf getroffen werden.
+\end{definition}
+
+\begin{definition}
 TODO
 Sei $F\in F^*$ ein Zustand.
 Dann ist
 \[
-finished(F) \Leftrightarrow \forall l \in L_a \colon cells(l) \subseteq C_{shot}(F)
+finished(F) \Leftrightarrow determined(F) \land C_{left\_to\_finish}(F) = \emptyset
 \]
 wahr gdw. alle Schiffe zerstört wurden.
 \end{definition}
 
+\begin{definition}
+Sei $F\in F^*$ ein Zustand und $c \in C_{all}$ eine Zelle.
+Dann ist
+\[
+max\_hit\_count(F, c)=\max \{h \in \{0, \dots, ship\_count\} \mid P(hit(c) = h \mid F) > 0\}
+\]
+die maximale Anzahl an Schiffe, die bei einem Schuss zum Zustand $F$ auf Zelle $c$ getroffen werden können.
+\end{definition}
 
 \subsection{Schuss-Strategien}
 
 \begin{definition}
 Eine Funktion der Form
 \begin{align}
-&strat:F^* \rightarrow C_{all}\quad mit \nonumber
+&strat:F^* \rightarrow C_{all}\nonumber
 \end{align}
 wird Strategiefunktion genannt. Diese weißt jedem Zustand die Zelle zu, auf die als nächstes geschossen werden soll.
 \end{definition}
@@ -369,6 +377,52 @@ Sei
 valid\_strategies(F)=\{ strat:F^* \rightarrow C_{all} \mid strat(F) \in C_{undetermined}(F)  \}
 \]
 die Menge an allen gültigen Strategiefunktionen. Gültige Strategien dürfen nur auf Zellen schießen, bei denen noch nicht feststeht, wie viele Schiffe getroffen werden.
+\end{definition}
+
+\begin{definition}
+Sei $F\in F^*$ ein Zustand.
+Sei $m:C_{undetermined}(F) \rightarrow \R$ die Map-Funktion, welche jedem Element einen reellen Wert zuordnet.
+Sei $s:\mathcal{P}(\R) \rightarrow \R$ die Select-Funktion, welche angibt, welche reellen Werte die Bedingung erfüllen.
+Dann ist
+\begin{align}
+&any:F^* \times m \times s \rightarrow C_{all} \quad mit \nonumber\\
+&any(F, m, c)=x \in \{c \in C_{undetermined}(F) \mid m(c) = s(m(C_{undetermined}(F)))\}
+\nonumber
+\end{align}
+die Any-Funktion, welche einen Wert aus der Menge $X$ auswählt, der die angegebene Bedingung erfüllt.
+\end{definition}
+
+\subsection{Ziel-Funktionen}
+
+\begin{definition}
+Sei $F\in F^*$ ein Zustand.
+Sei außerdem $strat \in valid\_strategies$ die verwendete Schuss-Strategie.
+Dann ist
+\begin{align}
+&target_{strat}:F^*\rightarrow C_{all} \quad mit \nonumber\\
+&target_{strat}(F)=
+\begin{cases}
+c \in C_{left\_to\_finish}(F)&, determined(F) \\
+strat(F)&, sonst
+\end{cases}
+\nonumber
+\end{align}
+die Ziel-Funktion, welche die nächste Zelle, auf die geschossen werden soll, auswählt.
+\end{definition}
+
+
+\begin{definition}
+Sei $L\in L_{all}$ die gewählte Schiffsverteilung und $F\in F^*$ der momentane Zustand.
+Sei außerdem $strat \in valid\_strategies$ die verwendete Schuss-Strategie.
+Dann ist
+\[
+shots\_left(L, F, strat)=
+  \begin{cases} 
+  	|C_{left\_to\_finish}(F)|& ,determined(F) \\
+      shots\_left(L, fire(L, F, strat(F)), strat) + 1 & ,sonst
+   \end{cases}
+\]
+die Anzahl an Schüssen, die von der Ziel-Funktion benötigt werden, um alle Schiffe der bereits bekannten Schiffsverteilung mit der Schuss-Strategiefunktion $strat$ zu versenken.
 \end{definition}
 
 \section{Greedy-Strategien}
@@ -388,9 +442,9 @@ Dann ist
 Sei $F\in F^*$ ein Zustand.
 Dann ist
 \[
-strat_{greedy-hit}(F)=\max_{c \in C_{undetermined}(F)} \mathds{E}(hit(c) \mid F)
+strat_{greedy-hit}(F)=any(\mathds{E}(hit(c) \mid F), max)
 \]
-die Zelle, bei welcher bei Beschuss die Anzahl an erwarteten getroffenen Schiffen maximal ist.
+eine Zelle, bei welcher bei Beschuss die Anzahl an erwarteten getroffenen Schiffen maximal ist.
 \end{definition}
 
 \subsection{Greedy-Distribution-Strategie}
@@ -426,9 +480,9 @@ Definition des Erwartungswertes.
 Sei $F\in F^*$ ein Zustand.
 Dann ist
 \[
-strat_{greedy-distribution}(F)=\max_{c \in C_{undetermined}(F)} \mathds{E}(distributions\_removed(F,c))
+strat_{greedy-distribution}(F)=any(\mathds{E}(distributions\_removed(F,c)), max)
 \]
-die Zelle, bei welcher bei Beschuss die Anzahl an erwarteten ausgeschlossenen Schiffsverteilungen maximal ist.
+eine Zelle, bei welcher bei Beschuss die Anzahl an erwarteten ausgeschlossenen Schiffsverteilungen maximal ist.
 \end{definition}
 
 \subsection{Vergleich der Strategien}
@@ -607,8 +661,7 @@ Sei $F\in F^*$ ein Zustand und $c_1, c_2 \in C_{undetermined}(F)$ Zellen.
 Dann gilt:
 \begin{align}
 \begin{split}
-[0,max\_hit\_count(F, c)] \in eq(F, c_1) \wedge \\
-([0,max\_hit\_count(F, c)] \in asc(F, c_2) \lor [0,max\_hit\_count(F, c)] \in desc(F, c_2)) \\
+[0,max\_hit\_count(F, c)] \in eq(F, c_1) \wedge [0,max\_hit\_count(F, c)] \in asc(F, c_2)\\
 \Rightarrow strat_{greedy-hit}(F) \neq strat_{greedy-distribution}(F)
 \end{split}
 \end{align}
@@ -624,22 +677,13 @@ Um eine optimale Schuss-Strategie zu definieren, werden ein paar Definitionen be
 \subsection{Definition von Optimalität}
 
 \begin{definition}
-Sei $L\in L_{all}$ die gewählte Schiffsverteilung und $F\in F^*$ der momentane Zustand und sei $determined(L, F)$ wahr.
-Dann ist
-\[
-shots\_to\_finish(L, F)=\sum_{l \in L_a}{|cells(l) \setminus C_{shot}(F)|}
-\]
-die Anzahl an Schüssen, die noch benötigt werden, um alle Schiffe der bereits bekannten Schiffsverteilung zu versenken.
-\end{definition}
-
-\begin{definition}
 Sei $L\in L_{all}$ die gewählte Schiffsverteilung und $F\in F^*$ der momentane Zustand.
-Sei außerdem $strat \in all\_strategies$ die verwendete Schuss-Strategie.
+Sei außerdem $strat \in valid\_strategies$ die verwendete Schuss-Strategie.
 Dann ist
 \[
 shots\_left(L, F, strat)=
   \begin{cases} 
-  	shots\_to\_finish(L, F) & ,determined(L, F) \\
+  	|C_{left\_to\_finish}(F)|& ,determined(F) \\
       shots\_left(L, fire(L, F, strat(F)), strat) + 1 & ,sonst
    \end{cases}
 \]
@@ -647,7 +691,7 @@ die Anzahl an Schüssen, die benötigt werden, um alle Schiffe der bereits bekan
 \end{definition}
 
 \begin{satz}
-Sei $F\in F^*$ der momentane Zustand und $strat \in all\_strategies$ die verwendete Schuss-Strategie.
+Sei $F\in F^*$ der momentane Zustand und $strat \in valid\_strategies$ die verwendete Schuss-Strategie.
 Dann ist
 \[
 \mathds{E}(shots\_left(F, strat))=\frac{1}{distribution\_count(F)} * \sum_{L \in distributions(F)}{shots\_left(L, F, strat)}
@@ -666,16 +710,16 @@ die erwartete Anzahl an Schüssen, die benötigt werden, um alle Schiffe zu vers
 
 Nun kann definiert werden, was es für eine Strategie heißt, optimal zu sein:
 \begin{definition}
-Eine Strategiefunktion $strat \in all\_strategies$ heißt optimal, falls für alle $strat_{alt} \in all\_strategies$ gilt:
+Eine Strategiefunktion $strat \in valid\_strategies$ heißt optimal, falls gilt:
 \[
-\mathds{E}(shots\_left(F, strat)) \leq \mathds{E}(shots\_left(F, strat_{alt}))
+\forall strat_{alt} \in valid\_strategies \colon \mathds{E}(shots\_left(F, strat)) \leq \mathds{E}(shots\_left(F, strat_{alt}))
 \]
 \end{definition}
 
 \subsection{Herleitung}
 
 \begin{lemma}
-Sei $F\in F^*$ der momentane Zustand, $c\in C_{all}$ die Zelle, auf die geschossen werden soll und $strat \in all\_strategies$ die verwendete Schuss-Strategie.
+Sei $F\in F^*$ der momentane Zustand, $c\in C_{all}$ die Zelle, auf die geschossen werden soll und $strat \in valid\_strategies$ die verwendete Schuss-Strategie.
 Dann ist
 \[
 \mathds{E}(shots\_left(F, c, strat))=\mathds{E}(shots\_left(fire(L_a, F, c), strat)) + 1
@@ -688,7 +732,7 @@ Trivial
 \end{proof}
 
 \begin{definition}
-Sei $F\in F^*$ der momentane Zustand und $strat \in all\_strategies$ die verwendete Schuss-Strategie.
+Sei $F\in F^*$ der momentane Zustand und $strat \in valid\_strategies$ die verwendete Schuss-Strategie.
 Dann ist
 \[
 min\_expected\_shots(F, strat)=\min_{c \in C_{undetermined}(F)} \mathds{E}(shots\_left(F, c, strat))
@@ -699,15 +743,18 @@ die minimale erwartete Anzahl an Schüssen um alle Schiffe zu versenken, falls d
 \begin{definition}
 Sei $F\in F^*$ ein Zustand.
 Dann ist
-\[
-strat_{opt}(F)=c \in C_{undetermined}(F) \mid min\_expected\_shots(F, strat_{opt})= \mathds{E}(shots\_left(F, c, strat_{opt}))
-\]
+\begin{align}
+\begin{split}
+strat_{opt}(F)=c \in \{c \in C_{undetermined}(F) \mid \\
+min\_expected\_shots(F, strat_{opt})= \mathds{E}(shots\_left(F, c, strat_{opt}))\}
+\end{split}
+\end{align}
 die optimale Strategiefunktion.
-Diese wählt für den Zustand $F$ eine Zelle aus, welche nach Beschuss die Anzahl an benötigten Schüssen um alle Schiffe zu versenken, minimiert.
+Diese wählt für den Zustand $F$ eine Zelle aus, welche nach Beschuss die Anzahl an benötigten Schüssen um alle Schiffe zu versenken, minimiert. Falls es mehrere optimale Zellen gibt, wird eine davon zufällig ausgewählt.
 \end{definition}
 
 \begin{satz}[Optimalität]
-Sei $strat_{opt}$ die optimale Strategiefunktion und $strat_{alt} \in all\_strategies$ eine andere Strategiefunktion.
+Sei $strat_{opt}$ die optimale Strategiefunktion und $strat_{alt} \in valid\_strategies$ eine andere Strategiefunktion.
 Dann gilt:
 \[
 \mathds{E}(shots\_left(F, strat_{opt})) \leq \mathds{E}(shots\_left(F, strat_{alt}))
@@ -716,10 +763,12 @@ Dann gilt:
 
 \begin{proof}
 \begin{align}
+\begin{split}
 \mathds{E}(shots\_left(F, strat_{opt})) =\mathds{E}(shots\_left(F, strat_{opt}(F), strat_{opt}))=\\
-\min_{c \in C_{left}(F)} \mathds{E}(shots\_left(F, c, strat)) \leq \mathds{E}(shots\_left(F, c_{other}, strat)), c_{other} \in C_{undetermined}(F)\\
+\min_{c \in C_{undetermined}(F)} \mathds{E}(shots\_left(F, c, strat)) \leq \mathds{E}(shots\_left(F, c_{other}, strat)), c_{other} \in C_{undetermined}(F)\\
 \Rightarrow\\
 \mathds{E}(shots\_left(F, strat_{opt})) \leq \mathds{E}(shots\_left(F, strat_{alt}))
+\end{split}
 \end{align}
 \qed
 \end{proof}
