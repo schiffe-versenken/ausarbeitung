@@ -396,20 +396,6 @@ Dann ist
 eine Funktion, welche die nach der Strategiefunktion $strat$ besten Zelle aus der Menge $C$ auswählt.
 \end{definition}
 
-\begin{definition}
-Sei
-\begin{align}
-&best\_cells:F_{all} \times P(C) \times S \times \mathbb{N} \rightarrow C_{all} \quad mit \nonumber\\
-&best\_cells(F, C, strat, length)=\\
-&\begin{cases}
-best\_cells(F, C \setminus first\_best(F, C, strat), strat, length-1) \cup first\_best(F, C, strat)&, |C| > 1 \\
-best\_cell(F, C, strat)&, sonst
-\end{cases}
-\nonumber
-\end{align}
-eine Funktion, welche die $length$ besten Zellen aus der Menge $C$ auswählt.
-\end{definition}
-
 \subsection{Ziel-Funktionen}
 
 \begin{definition}
@@ -432,25 +418,26 @@ Sei $L\in L_{all}$ die gewählte Schiffsverteilung und $F\in F_{all}$ der moment
 Sei außerdem $strat \in S$ die verwendete Schuss-Strategie.
 Dann ist
 \begin{align}
-&shot\_counter(L, F, strat, length)=\\
-&\begin{cases}
+&shot\_count(L, F, strat)=\\
+& \begin{cases} 
   	|C_{left\_to\_finish}(F)|& ,determined(F) \\
-      shot\_counter(L, fire(L, F, target(F,strat,length)), strat, length) + |target(F,strat,length)| & ,sonst
+      shot\_count(L, fire(L, F, best\_cell(F, strat, C_{undetermined}(F))), strat) + 1 & ,sonst
    \end{cases}
 \nonumber
 \end{align}
 die Anzahl an Schüssen, die von der Ziel-Funktion benötigt werden, um alle Schiffe der bereits bekannten Schiffsverteilung mit der Schuss-Strategiefunktion $strat$ zu versenken.
 \end{definition}
 
+Somit kann nun ein einfacher Algorithmus formuliert werden, der mithilfe einer festgelegten Strategie versucht, alle Schiffe zu versenken:
 
 \begin{algorithm}[H]
- function solve(strat, length):\\
+ function solve(strat):\\
  $F=\emptyset$\;
- $shot\_counter=0$\;
+ $shot\_count=0$\;
  \While{$\neg finished(F)$}{
-  $next\_targets=target(F, strat, length)$\;
+  $next\_targets=target(F, strat)$\;
   $F=fire(F, next\_targets)$\;
-  $shot\_counter=shot\_counter+|next\_targets|$\;
+  $shot\_count=shot\_count+|next\_targets|$\;
  }
 \end{algorithm}
 
@@ -706,34 +693,20 @@ Um eine optimale Schuss-Strategie zu definieren, werden ein paar Definitionen be
 
 \subsection{Definition von Optimalität}
 
-\begin{definition}
-Sei $L\in L_{all}$ die gewählte Schiffsverteilung und $F\in F_{all}$ der momentane Zustand.
-Sei außerdem $strat \in S$ die verwendete Schuss-Strategie.
-Dann ist
-\[
-shots\_left(L, F, strat)=
-  \begin{cases} 
-  	|C_{left\_to\_finish}(F)|& ,determined(F) \\
-      shots\_left(L, fire(L, F, strat(F)), strat) + 1 & ,sonst
-   \end{cases}
-\]
-die Anzahl an Schüssen, die benötigt werden, um alle Schiffe der bereits bekannten Schiffsverteilung mit der Schuss-Strategiefunktion $strat$ zu versenken.
-\end{definition}
-
 \begin{satz}
 Sei $F\in F_{all}$ der momentane Zustand und $strat \in S$ die verwendete Schuss-Strategie.
 Dann ist
 \[
-\mathds{E}(shots\_left(F, strat))=\frac{1}{distribution\_count(F)} * \sum_{L \in distributions(F)}{shots\_left(L, F, strat)}
+\mathds{E}(shot\_count(F, strat))=\frac{1}{distribution\_count(F)} * \sum_{L \in distributions(F)}{shot\_count(L, F, strat)}
 \]
 die erwartete Anzahl an Schüssen, die benötigt werden, um alle Schiffe zu versenken.
 \end{satz}
 
 \begin{proof}
 \begin{align}
-\mathds{E}(shots\_left(F, strat))=\\
-\sum_{L \in distributions(F)}{P(L_a= L \mid F) * shots\_left(L, F, strat)} =\\
-\frac{1}{distribution\_count(F)} * \sum_{L \in distributions(F)}{shots\_left(L, F, strat)}
+\mathds{E}(shot\_count(F, strat))=\\
+\sum_{L \in distributions(F)}{P(L_a= L \mid F) * shot\_count(L, F, strat)} =\\
+\frac{1}{distribution\_count(F)} * \sum_{L \in distributions(F)}{shot\_count(L, F, strat)}
 \end{align}
 \qed
 \end{proof}
@@ -742,7 +715,7 @@ Nun kann definiert werden, was es für eine Strategie heißt, optimal zu sein:
 \begin{definition}
 Eine Strategiefunktion $strat \in S$ heißt optimal, falls gilt:
 \[
-\forall strat_{alt} \in S \colon \mathds{E}(shots\_left(F, strat)) \leq \mathds{E}(shots\_left(F, strat_{alt}))
+\forall strat_{alt} \in S \colon \mathds{E}(shot\_count(F, strat)) \leq \mathds{E}(shot\_count(F, strat_{alt}))
 \]
 \end{definition}
 
@@ -752,7 +725,7 @@ Eine Strategiefunktion $strat \in S$ heißt optimal, falls gilt:
 Sei $F\in F_{all}$ der momentane Zustand, $c\in C_{all}$ die Zelle, auf die geschossen werden soll und $strat \in S$ die verwendete Schuss-Strategie.
 Dann ist
 \[
-\mathds{E}(shots\_left(F, c, strat))=\mathds{E}(shots\_left(fire(L_a, F, c), strat)) + 1
+\mathds{E}(shot\_count(F, c, strat))=\mathds{E}(shot\_count(fire(L_a, F, c), strat)) + 1
 \]
 die erwartete Anzahl an Schüssen, die benötigt werden, um alle Schiffe zu versenken, falls der nächste Schuss auf Zelle $c$ abgefeuert wird.
 \end{lemma}
@@ -765,7 +738,7 @@ Trivial
 Sei $F\in F_{all}$ der momentane Zustand und $strat \in S$ die verwendete Schuss-Strategie.
 Dann ist
 \[
-min\_expected\_shots(F, strat)=\min_{c \in C_{undetermined}(F)} \mathds{E}(shots\_left(F, c, strat))
+min\_expected\_shots(F, strat)=\min_{c \in C_{undetermined}(F)} \mathds{E}(shot\_count(F, c, strat))
 \]
 die minimale erwartete Anzahl an Schüssen um alle Schiffe zu versenken, falls die nächste beschossene Zelle frei gewählt werden kann und danach die Schuss-Strategie $strat$ verwendet wird.
 \end{definition}
@@ -776,7 +749,7 @@ Dann ist
 \begin{align}
 \begin{split}
 strat_{opt}(F)=c \in \{c \in C_{undetermined}(F) \mid \\
-min\_expected\_shots(F, strat_{opt})= \mathds{E}(shots\_left(F, c, strat_{opt}))\}
+min\_expected\_shots(F, strat_{opt})= \mathds{E}(shot\_count(F, c, strat_{opt}))\}
 \end{split}
 \end{align}
 die optimale Strategiefunktion.
@@ -787,17 +760,17 @@ Diese wählt für den Zustand $F$ eine Zelle aus, welche nach Beschuss die Anzah
 Sei $strat_{opt}$ die optimale Strategiefunktion und $strat_{alt} \in S$ eine andere Strategiefunktion.
 Dann gilt:
 \[
-\mathds{E}(shots\_left(F, strat_{opt})) \leq \mathds{E}(shots\_left(F, strat_{alt}))
+\mathds{E}(shot\_count(F, strat_{opt})) \leq \mathds{E}(shot\_count(F, strat_{alt}))
 \]
 \end{satz}
 
 \begin{proof}
 \begin{align}
 \begin{split}
-\mathds{E}(shots\_left(F, strat_{opt})) =\mathds{E}(shots\_left(F, strat_{opt}(F), strat_{opt}))=\\
-\min_{c \in C_{undetermined}(F)} \mathds{E}(shots\_left(F, c, strat)) \leq \mathds{E}(shots\_left(F, c_{other}, strat)), c_{other} \in C_{undetermined}(F)\\
+\mathds{E}(shot\_count(F, strat_{opt})) =\mathds{E}(shot\_count(F, strat_{opt}(F), strat_{opt}))=\\
+\min_{c \in C_{undetermined}(F)} \mathds{E}(shot\_count(F, c, strat)) \leq \mathds{E}(shot\_count(F, c_{other}, strat)), c_{other} \in C_{undetermined}(F)\\
 \Rightarrow\\
-\mathds{E}(shots\_left(F, strat_{opt})) \leq \mathds{E}(shots\_left(F, strat_{alt}))
+\mathds{E}(shot\_count(F, strat_{opt})) \leq \mathds{E}(shot\_count(F, strat_{alt}))
 \end{split}
 \end{align}
 \qed
