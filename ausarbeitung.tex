@@ -506,185 +506,114 @@ die Greedy-Distribution-Strategie.
 Auf den ersten Blick sieht es aus, dass die beiden vorgestellten Greedy-Strategien zwei verschiedene Definitionen für die gleiche Strategie sind. Im folgenden Abschnitt wird aber gezeigt, dass sich beide Strategien unterscheiden.
 
 \begin{definition}
-Sei $F\in F_{all}$ ein Zustand und $c \in C_{left}(F)$ die beschossene Zelle.
+Sei $F\in F_{all}$ ein Zustand.
+Dann ist
+\[
+H_{F,c}=hit(F,c)
+\]
+\end{definition}
+
+\begin{definition}
+Sei $F\in F_{all}$ ein Zustand.
+Dann ist
+\[
+P(F,c)=\sum_{h=0}^{ship\_count} P(H_{F,c}=h)^2
+\]
+\end{definition}
+
+\begin{definition}
+Sei $F\in F_{all}$ ein Zustand.
+Dann ist
+\[
+I(F,c)=\sum_{i=0}^{ship\_count - 1} F_{H_{F,c}}(i)=\int_{0}^{ship\_count} F_{H_{F,c}}(x) dx
+\]
+\end{definition}
+
+\begin{satz}
+Sei $F\in F_{all}$ der momentane Zustand.
+Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
 Dann ist
 \begin{align}
 \begin{split}
-asc(F, c)=\{&[h_{min}, h_{max}] \mid h_{min} < h_{max} \wedge \\ 
-&\forall h,h' \in [h_{min}, h_{max}]  \colon h > h' \Leftrightarrow P(hit(c)=h \mid F) > P(hit(c)=h' \mid F)\}
-\nonumber
+&\mathds{E}(H_{F,c})=ship\_count - I(F,c)
 \end{split}
 \end{align}
-die Menge aller Intervalle, in denen die Funktion $P(hit(c)=h \mid F)$ streng monoton wachsend ist.
-
-Außerdem ist
-\begin{align}
-\begin{split}
-desc(F, c)=\{&[h_{min}, h_{max}] \mid h_{min} < h_{max} \wedge \\ 
-&\forall h,h' \in [h_{min}, h_{max}]  \colon h > h' \Leftrightarrow P(hit(c)=h \mid F) < P(hit(c)=h' \mid F)\}
-\nonumber
-\end{split}
-\end{align}
-die Menge aller Intervalle, in denen die Funktion $P(hit(c)=h \mid F)$ streng monoton fallend ist.
-
-Außerdem ist
-\begin{align}
-\begin{split}
-eq(F, c)=\{&[h_{min}, h_{max}] \mid h_{min} < h_{max} \wedge \\ 
-&\forall h_{min} \leq h,h' \leq h_{max} \colon P(hit(c)=h \mid F) = P(hit(c)=h' \mid F)\}
-\nonumber
-\end{split}
-\end{align}
-die Menge aller Intervalle, in denen die Funktion $P(hit(c)=h \mid F)$ die Steigung 0 hat.
-
-Natürlich sind alles Intervalle in den natürlichen Zahlen, da die Funktion $P(hit(c)=h \mid F)$ nur für natürliche Zahlen definiert ist.
-\end{definition}
-
-\begin{lemma}
-Sei $F\in F_{all}$ ein Zustand und $c \in C_{left}(F)$ die beschossene Zelle.
-Sei außerdem $h,h' \in \mathbb{N}$.
-Dann gilt:
-
-Falls $\exists I \in asc(F, c) \colon h,h' \in I$:
-\[
-h > h' \Leftrightarrow P(hit(c)=h \mid F) > P(hit(c)=h' \mid F)
-\]
-
-Falls $\exists I \in desc(F, c) \colon h,h' \in I$:
-\[
-h > h' \Leftrightarrow P(hit(c)=h \mid F) < P(hit(c)=h' \mid F)
-\]
-
-Falls $\exists I \in eq(F, c) \colon h,h' \in I$:
-\[
-P(hit(c)=h \mid F) = P(hit(c)=h' \mid F)
-\]
-
-\end{lemma}
-
-\begin{proof}
-Definitionen der Intervalle.
-\end{proof}
-
-\begin{lemma}
-Sei $F\in F_{all}$ ein Zustand und $c \in C_{left}(F)$ die beschossene Zelle.
-Sei außerdem $h,h' \in \mathbb{N}$.
-Dann gilt:
-\begin{align}
-\begin{split}
-&P(hit(c)=h \mid F) < P(hit(c)=h' \mid F) \\
-\Leftrightarrow \; &distribution\_count(hypo\_fire(F, c, h)) < distribution\_count(hypo\_fire(F, c, h))
-\nonumber
-\end{split}
-\end{align}
-\end{lemma}
+\end{satz}
 
 \begin{proof}
 \begin{align}
 \begin{split}
-&P(hit(c)=h \mid F) < P(hit(c)=h' \mid F) \\
-\Leftrightarrow
-&\frac{distribution\_count(hypo\_fire(F,c, h))}{distribution\_count(F)} < \frac{distribution\_count(hypo\_fire(F,c, h'))}{distribution\_count(F)} \\
-\Leftrightarrow
-&distribution\_count(hypo\_fire(F,c, h)) < distribution\_count(hypo\_fire(F,c, h'))
-\nonumber
+&\mathds{E}(H_{F,c})\\
+=&\sum_{h=1}^{ship\_count} P(H_{F,c} \geq h)\\
+=&\sum_{h=1}^{ship\_count} P(H_{F,c}=h) + P(H_{F,c} > h)\\
+=&\sum_{h=1}^{ship\_count} P(H_{F,c}=h) + (1 - P(H_{F,c} \leq h)\\
+=&P(H_{F,c} > 0) + \sum_{h=1}^{ship\_count} (1 - P(H_{F,c} \leq h)\\
+=&1 - F_{H_{F,c}}(0) + ship\_count - \sum_{h=1}^{ship\_count} P(H_{F,c} \leq h)\\
+=&1 - F_{H_{F,c}}(0) + ship\_count - \sum_{h=1}^{ship\_count} F_{H_{F,c}}(h)=\\
+=&1 + ship\_count - \sum_{h=0}^{ship\_count} F_{H_{F,c}}(h)=\\
+=&ship\_count - \sum_{h=0}^{ship\_count - 1} F_{H_{F,c}}(h)=\\
+=&ship\_count - \int_{0}^{ship\_count} F_{H_{F,c}}(h) \; dh\\
+=&ship\_count - I(F,c)\\
 \end{split}
 \end{align}
 \qed
 \end{proof}
 
-\begin{korollar}
-Sei $F\in F_{all}$ ein Zustand und $c \in C_{left}(F)$ die beschossene Zelle.
-Sei außerdem $h,h' \in \mathbb{N}$.
-Dann gilt:
-\begin{align}
-\begin{split}
-&P(hit(c)=h \mid F) > P(hit(c)=h' \mid F) \\
-\Leftrightarrow \; &distribution\_count(hypo\_fire(F, c, h)) > distribution\_count(hypo\_fire(F, c, h))
-\nonumber
-\end{split}
-\end{align}
-\end{korollar}
-
-\begin{proof}
-Negation des vorgerigen Lemmas.
-\end{proof}
 
 \begin{satz}
-Sei $F\in F_{all}$ ein Zustand und $c \in C_{left}(F)$ die beschossene Zelle.
-Sei außerdem $h,h' \in \mathbb{N}$.
-Dann gilt:
-
-Falls $\exists I \in asc(F, c) \colon h,h' \in I$:
-\[
-h > h' \Leftrightarrow distributions\_removed(F,c, h) < distributions\_removed(F,c, h')
-\]
-Falls $\exists I \in desc(F, c) \colon h,h' \in I$:
-\[
-h > h' \Leftrightarrow distributions\_removed(F,c, h) > distributions\_removed(F,c, h')
-\]
-Falls $\exists I \in eq(F, c) \colon h,h' \in I$:
-\[
-distributions\_removed(F,c, h) = distributions\_removed(F,c, h')
-\]
+Sei $F\in F_{all}$ der momentane Zustand.
+Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
+Dann ist
+\begin{align}
+\begin{split}
+\mathds{E}(distribution\_count(fire(F,\{c\})))=distribution\_count(F)\; P(F,c)
+\end{split}
+\end{align}
 \end{satz}
+
 \begin{proof}
-Falls $\exists I \in asc(F, c) \colon h,h' \in I$:
 \begin{align}
 \begin{split}
-&h > h' \\
-\Leftrightarrow &P(hit(c)=h \mid F) > P(hit(c)=h' \mid F) \\
-\Leftrightarrow &distribution\_count(hypo\_fire(F,c, h)) > distribution\_count(hypo\_fire(F,c, h')) \\
-\Leftrightarrow &distribution\_count(F) - distribution\_count(hypo\_fire(F,c, h)) \\
-< &distribution\_count(F) - distribution\_count(hypo\_fire(F,c, h')) \\
-\Leftrightarrow &distributions\_removed(F,c, h) < distributions\_removed(F,c, h')
-\nonumber
-\end{split}
-\end{align}
-Falls $\exists I \in desc(F, c) \colon h,h' \in I$:
-\begin{align}
-\begin{split}
-&h > h' \\
-\Leftrightarrow &P(hit(c)=h \mid F) < P(hit(c)=h' \mid F) \\
-\Leftrightarrow &distribution\_count(hypo\_fire(F,c, h)) < distribution\_count(hypo\_fire(F,c, h')) \\
-\Leftrightarrow &distribution\_count(F) - distribution\_count(hypo\_fire(F,c, h)) \\
-> &distribution\_count(F) - distribution\_count(hypo\_fire(F,c, h')) \\
-\Leftrightarrow &distributions\_removed(F,c, h) > distributions\_removed(F,c, h')
-\nonumber
-\end{split}
-\end{align}
-Falls $\exists I \in eq(F, c) \colon h,h' \in I$:
-\begin{align}
-\begin{split}
-\Leftrightarrow &P(hit(c)=h \mid F) = P(hit(c)=h' \mid F) \\
-\Leftrightarrow &distribution\_count(hypo\_fire(F,c, h)) = distribution\_count(hypo\_fire(F,c, h')) \\
-\Leftrightarrow &distribution\_count(F) - distribution\_count(hypo\_fire(F,c, h)) \\
-= &distribution\_count(F) - distribution\_count(hypo\_fire(F,c, h')) \\
-\Leftrightarrow &distributions\_removed(F,c, h) = distributions\_removed(F,c, h')
-\nonumber
+&\mathds{E}(distribution\_count(fire(F,\{c\})))\\
+=&\sum_{h=0}^{ship\_count} P(H_{F,c} = h) * distribution\_count(hypo\_fire(F,\{(c,h)\}))\\
+=&\sum_{h=0}^{ship\_count} \frac{distribution\_count(hypo\_fire(F,\{(c,h)\}))}{distribution\_count(F)}* distribution\_count(hypo\_fire(F,\{(c,h)\}))\\
+=&\frac{1}{distribution\_count(F)} * \sum_{h=0}^{ship\_count} distribution\_count(hypo\_fire(F,\{(c,h)\}))^2\\
+=&\frac{1}{distribution\_count(F)} * \sum_{h=0}^{ship\_count} (P(H_{F,c} = h) * distribution\_count(F))^2\\
+=&distribution\_count(F) * \sum_{h=0}^{ship\_count} P(H_{F,c} = h)^2\\
+=&distribution\_count(F) * P(F,c)\\
 \end{split}
 \end{align}
 \qed
 \end{proof}
 
-Daraus folgt, dass abhängig von der Wahrscheinlichkeitsverteilung von $P(hit(c)=h \mid F)$ bei dem Versuch möglichst viele Schiffe zu treffen dadurch entweder auch möglichst viele Schiffsverteilungen oder eben auch möglichst wenig Schiffsverteilungen ausgeschlossen werden können.
-
-Daher ist die genaue Korrelation zwischen ausgeschlossenen Schiffsverteilungen und getroffenen Schiffen für jede Zelle individuell, da die Wahrscheinlichkeitsverteilung von $P(hit(c)=h \mid F)$ individuell ist. Für manche Zellen, können beide Strategien äquivalent sein, aber für andere Zellen kann auch eine inverse Korrelation bestehen und mit mehr Treffern weniger Schiffsverteilungen ausgeschlossen werden.
-
-In den meisten Situationen lässt sich keine genaue Aussage darüber treffen, ob beide Strategien die gleichen Zellen auswählen. In der folgenden, etwas spezielleren Situation allerdings lässt sich eine Aussage treffen:
-
 \begin{satz}
-Sei $F\in F_{all}$ ein Zustand und $c_1, c_2 \in C_{undetermined}(F)$ Zellen.
-Dann gilt:
+Sei $F\in F_{all}$ der momentane Zustand.
+Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
+Dann ist
 \begin{align}
 \begin{split}
-[0,max\_hit\_count(F, c)] \in eq(F, c_1) \wedge [0,max\_hit\_count(F, c)] \in asc(F, c_2)\\
-\Rightarrow strat_{greedy-hit}(F) \neq strat_{greedy-distribution}(F)
+&\mathds{E}(distributions\_removed(F,c))\\
+=&distribution\_count(F) (1 - P(F,c))
 \end{split}
 \end{align}
-
-
 \end{satz}
+
+\begin{proof}
+\begin{align}
+\begin{split}
+&\mathds{E}(distributions\_removed(F,c))\\
+=&\mathds{E}(distribution\_count(F) - distribution\_count(fire(F,c)))\\
+=&distribution\_count(F) - \mathds{E}(distribution\_count(fire(F,\{c\})))\\
+=&distribution\_count(F) - (distribution\_count(F)\; P(F,c))\\
+=&distribution\_count(F) (1 - P(F,c))
+\end{split}
+\end{align}
+\end{proof}
+
+
+Daraus folgt, dass beide Werte von unterschiedlichen Eigenschaften der Wahrscheinlichkeitsverteilung von $P(hit(c)=h \mid F)$ abhängen. Daher ist die genaue Korrelation zwischen ausgeschlossenen Schiffsverteilungen und getroffenen Schiffen für jede Zelle individuell, da die Wahrscheinlichkeitsverteilung von $P(hit(c)=h \mid F)$ individuell ist. Für manche Zellen, können beide Strategien äquivalent sein, aber für andere Zellen kann auch eine inverse Korrelation bestehen und mit vielen Treffern gleichzeitig wenig Schiffsverteilungen ausgeschlossen werden.
+
+Mithilfe des Wissens, von was diese zwei verschiedenen Werte abhängen, können jetzt ganz leicht Gegenbeispiele konstruiert werden, in denen beide Strategien unterschiedliche Zellen auswählen.
 
 
 \section{Optimale-Strategie}
