@@ -705,6 +705,86 @@ Dann gilt:
 \qed
 \end{proof}
 
+
+
+
+
+
+\begin{algorithm}[H]
+ function determinants(L, distributions):\\
+ $determinants=\emptyset$\;
+ \For{$f \in P(finished\_states(L))$}{
+   is\_determinant=true\;
+   \For{$L_{other} \in distributions \setminus \{L\}$}{
+     \If{$f \subseteq finished\_node(L_{other})$}{
+       $is\_determinant=false$\;
+       break\;
+     }
+    }
+    \If{is\_determinant}{
+      $determinants = determinants \cup \{f\}$\;
+    }
+ }
+ \Return determinants\;
+\end{algorithm}
+
+\begin{algorithm}[H]
+ function create\_end\_nodes(distributions):\\
+ $nodes=\emptyset$\;
+ \For{$L \in distributions$}{
+   \For{$F \in determinants(L)$}{
+    $x=(\{L\}, F, |C_{left\_to\_finish}(F)|)$\;
+    $nodes=nodes \cup x$\;
+    }
+ }
+  \Return nodes\;
+\end{algorithm}
+
+\begin{algorithm}[H]
+ function create\_previous\_nodes(current\_nodes):\\
+ $previous\_states=\emptyset$\;
+ \For{$x \in current\_nodes$}{
+   \For{$(c,h) \in x.node$}{
+    $f=state(x) \setminus \{(c,h)\}$\;
+    $previous\_states=previous\_states \cup f$\;
+    $previous\_distributions[f]=previous\_distributions \cup distributions(x)$\;
+    $transition\_cells[f]=transition\_cells[f] \cup \{c\}$\;
+    $transitions[f,c,h]=transitions[f,c,h] \cup x$\;
+    }
+ }
+ 
+ $new\_nodes=\emptyset$\;
+  \For{$f \in previous\_states$}{
+    $\mathds{E}_{min}=\inf$\;
+    \For{$c \in transition\_cells[f]$}{
+      $\mathds{E}_{c}=\sum_{h \in H} \frac{|distributions(transitions[f,c,h])|}{|previous\_distributions[f]|} * expected(transitions[x,c,h])$\;
+      \If{$\mathds{E}_{c} < \mathds{E}_{min}$}{
+       $\mathds{E}_{min}=\mathds{E}_{c}$\;
+      }
+    }
+    $new\_nodes = new\_nodes \cup (previous\_distributions[f], f, \mathds{E}_{min} + 1)$\;
+ }
+  \Return nodes\;
+\end{algorithm}
+
+
+\begin{algorithm}[H]
+ function rate\_cell(F, c):\\
+ $nodes=create\_end\_nodes(distributions(F))$\;
+ \While{$L \in distributions$}{
+   \For{$F \in determinants(L)$}{
+    $x=(\{L\}, F, |C_{left\_to\_finish}(F)|)$\;
+    $nodes=nodes \cup x$\;
+    }
+ }
+  \Return nodes\;
+\end{algorithm}
+
+
+
+
+
+
 \newpage
 
 \section{Optimierungen}
