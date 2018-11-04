@@ -650,11 +650,24 @@ Eine Strategiefunktion $strat \in S$ heißt optimal, falls gilt:
 
 \subsection{Herleitung}
 
+\begin{definition}
+Sei $F\in F_{all}$ ein Zustand.
+Dann ist
+\begin{align}
+\begin{split}
+strat_{opt}(F, c)=\mathds{E}(shot\_count(F, c, strat_{opt}))
+\end{split}
+\end{align}
+die optimale Strategiefunktion.
+Diese wählt für den Zustand $F$ eine Zelle aus, welche nach Beschuss die Anzahl an benötigten Schüssen um alle Schiffe zu versenken, minimiert.
+\end{definition}
+
+
 \begin{lemma}
 Sei $F\in F_{all}$ der momentane Zustand, $c\in C_{all}$ die Zelle, auf die geschossen werden soll und $strat \in S$ die verwendete Schuss-Strategie.
 Dann ist
 \[
-\mathds{E}(shot\_count(F, c, strat))=\mathds{E}(shot\_count(fire(L_a, F, c), strat)) + 1
+\mathds{E}(shot\_count(F, c, strat))=\mathds{E}(shot\_count(fire(F, \{c\}), strat)) + 1
 \]
 die erwartete Anzahl an Schüssen, die benötigt werden, um alle Schiffe zu versenken, falls der nächste Schuss auf Zelle $c$ abgefeuert wird.
 \end{lemma}
@@ -663,27 +676,7 @@ die erwartete Anzahl an Schüssen, die benötigt werden, um alle Schiffe zu vers
 Trivial
 \end{proof}
 
-\begin{definition}
-Sei $F\in F_{all}$ der momentane Zustand und $strat \in S$ die verwendete Schuss-Strategie.
-Dann ist
-\[
-min\_expected\_shots(F, strat)=\min_{c \in C_{undetermined}(F)} \mathds{E}(shot\_count(F, c, strat))
-\]
-die minimale erwartete Anzahl an Schüssen um alle Schiffe zu versenken, falls die nächste beschossene Zelle frei gewählt werden kann und danach die Schuss-Strategie $strat$ verwendet wird.
-\end{definition}
 
-\begin{definition}
-Sei $F\in F_{all}$ ein Zustand.
-Dann ist
-\begin{align}
-\begin{split}
-strat_{opt}(F)=c \in \{c \in C_{undetermined}(F) \mid \\
-min\_expected\_shots(F, strat_{opt})= \mathds{E}(shot\_count(F, c, strat_{opt}))\}
-\end{split}
-\end{align}
-die optimale Strategiefunktion.
-Diese wählt für den Zustand $F$ eine Zelle aus, welche nach Beschuss die Anzahl an benötigten Schüssen um alle Schiffe zu versenken, minimiert. Falls es mehrere optimale Zellen gibt, wird eine davon zufällig ausgewählt.
-\end{definition}
 
 \begin{satz}[Optimalität]
 Sei $strat_{opt}$ die optimale Strategiefunktion und $strat_{alt} \in S$ eine andere Strategiefunktion.
@@ -694,21 +687,23 @@ Dann gilt:
 \end{satz}
 
 \begin{proof}
+TODO
 \begin{align}
 \begin{split}
-\mathds{E}(shot\_count(F, strat_{opt})) =\mathds{E}(shot\_count(F, strat_{opt}(F), strat_{opt}))=\\
-\min_{c \in C_{undetermined}(F)} \mathds{E}(shot\_count(F, c, strat)) \leq \mathds{E}(shot\_count(F, c_{other}, strat)), c_{other} \in C_{undetermined}(F)\\
-\Rightarrow\\
-\mathds{E}(shot\_count(F, strat_{opt})) \leq \mathds{E}(shot\_count(F, strat_{alt}))
+&\mathds{E}(shot\_count(F, strat_{opt}))\\
+=&\mathds{E}(shot\_count(F, best\_cell(F, C_{undetermined}(F), strat_{opt}), strat_{opt})) + 1\\
+=&\min_{c \in C_{undetermined}(F)} \mathds{E}(shot\_count(F, c, strat_{opt})) + 1\\
+\leq & \mathds{E}(shot\_count(F, c_{other}, strat_{opt})), c_{other} \in C_{undetermined}(F)\\
+\Rightarrow &\mathds{E}(shot\_count(F, strat_{opt})) \leq \mathds{E}(shot\_count(F, strat_{alt}))
 \end{split}
 \end{align}
 \qed
 \end{proof}
 
+\subsection{Berechnung}
 
 
-
-
+TODO
 
 \begin{algorithm}[H]
  function determinants(L, distributions):\\
@@ -729,22 +724,31 @@ Dann gilt:
 \end{algorithm}
 
 \begin{algorithm}[H]
- function create\_end\_nodes(distributions):\\
+ function create\_end\_nodes($F_{start}$):\\
  $nodes=\emptyset$\;
- \For{$L \in distributions$}{
+ \For{$L \in distributions(F_{start})$}{
    \For{$F \in determinants(L)$}{
-    $x=(\{L\}, F, |C_{left\_to\_finish}(F)|)$\;
-    $nodes=nodes \cup x$\;
+     \If{$F_{start} \subseteq F$}{
+        $x=(\{L\}, F, |C_{left\_to\_finish}(F)|)$\;
+        $nodes=nodes \cup x$\;
+      }
     }
  }
   \Return nodes\;
 \end{algorithm}
 
+\newpage
+
 \begin{algorithm}[H]
- function create\_previous\_nodes(current\_nodes):\\
+ function calculate\_expected\_shots($F_{start}$):\\
+ $nodes=create\_end\_nodes(distributions(F))$\;
+ $transitions[f,c,h]=\emptyset$\;
+ $transitions\_cells[f]=\emptyset$\;
+ $results = \emptyset$\;
+ \While{$nodes \neq \emptyset$}{
  $previous\_states=\emptyset$\;
- \For{$x \in current\_nodes$}{
-   \For{$(c,h) \in x.node$}{
+ \For{$x \in nodes$}{
+   \For{$(c,h) \in (state(F) \setminus F_{start})$}{
     $f=state(x) \setminus \{(c,h)\}$\;
     $previous\_states=previous\_states \cup f$\;
     $previous\_distributions[f]=previous\_distributions \cup distributions(x)$\;
@@ -755,29 +759,33 @@ Dann gilt:
  
  $new\_nodes=\emptyset$\;
   \For{$f \in previous\_states$}{
-    $\mathds{E}_{min}=\inf$\;
+    $\mathds{E}_{min}=\infty $\;
     \For{$c \in transition\_cells[f]$}{
       $\mathds{E}_{c}=\sum_{h \in H} \frac{|distributions(transitions[f,c,h])|}{|previous\_distributions[f]|} * expected(transitions[x,c,h])$\;
+      
+      \If{$f = F_{start}$}{
+       $results = results \cup \{(c,\mathds{E}_{c})\}$\;
+      }
+      
       \If{$\mathds{E}_{c} < \mathds{E}_{min}$}{
        $\mathds{E}_{min}=\mathds{E}_{c}$\;
       }
     }
-    $new\_nodes = new\_nodes \cup (previous\_distributions[f], f, \mathds{E}_{min} + 1)$\;
+    $new\_nodes = new\_nodes \cup \{(previous\_distributions[f], f, \mathds{E}_{min} + 1)\}$\;
  }
-  \Return nodes\;
+ $nodes = new\_nodes$\;
+ }
+
+  \Return results\;
 \end{algorithm}
 
 
 \begin{algorithm}[H]
- function rate\_cell(F, c):\\
- $nodes=create\_end\_nodes(distributions(F))$\;
- \While{$L \in distributions$}{
-   \For{$F \in determinants(L)$}{
-    $x=(\{L\}, F, |C_{left\_to\_finish}(F)|)$\;
-    $nodes=nodes \cup x$\;
-    }
- }
-  \Return nodes\;
+ function $strat_{opt}(F_{start}, c$):\\
+    \If{$(c,e) \in calculate\_expected\_shots(F_{start}), e \in \mathds{R}$}{
+     \Return $-e$\;
+   }
+   \Return $\infty$ \;
 \end{algorithm}
 
 
