@@ -116,7 +116,7 @@ Die generelle Funktionsweise von dem normalen Schiffe-Versenken bleibt erhalten,
 Wir betrachten das Spielgeschehen zur Einfachheit halber nur aus der Sicht eines Spielers.
 Zu Beginn platziert der Gegner eine feste und bekannte Anzahl an Schiffen auf seinem Spielfeld. Es wird davon ausgegangen, dass die Schiffspositionen rein zufällig ausgewählt wurden. (Hier mehr Details mit Permutation)
 Natürlich sind die Schiffspositionen dem Spieler nicht bekannt.
-Die Gesamtheit aller gewählten Schiffspositionen wird auch die Schiffsverteilung genannt.
+Die Gesamtheit aller gewählten Schiffspositionen wird auch die Flotte genannt.
 Nun kann der Spieler anfangen, auf bestimmte Positionen auf dem Spielfeld, auch Zellen genannt, zu schießen.
 Nach jedem Schuss erfährt der Spieler von seinem Gegner, die Anzahl an getroffenen Schiffen.
 Falls keine Schiffe getroffen wurden ist die Anzahl 0.
@@ -125,7 +125,7 @@ Sobald alle Schiffe versenkt wurden, ist das Spiel beendet.
 
 Das Ziel des Spielers ist es, mit möglichst wenig Schüssen alle Schiffe zu versenken.
 
-\bildbreite{figures/einleitung.jpg}{15cm}{Einleitung}{Bild}{as}
+%\bildbreite{figures/einleitung.jpg}{15cm}{Einleitung}{Bild}{as}
 
 \subsection{Inhalt}
 Zu Beginn wird das beschriebene Spielprinzip formalisiert, sodass man damit mathematisch arbeiten kann.
@@ -143,24 +143,33 @@ Sei $C_{all}=\{1, \dots, N\}^d$ die Menge aller Zellen (cells) des Spielfeldes m
 \end{definition}
 
 \begin{definition}
-Sei $l$ eine mögliche Schiffsposition (location), welche mithilfe einer minimalen Ecke $c_{min}(l)$ und einer maximalen Ecke $c_{max}(l)$ bestimmt wird. Dann ist
+Sei
 \[
-cells(l)=
+F=(c_{min}, c_{max})
+\]
+eine mögliche Schiffsposition (location), welche mithilfe einer minimalen Ecke $c_{min} \in C_{all}$ und einer maximalen Ecke $c_{max} \in C_{all}$ bestimmt wird.
+\end{definition}
+
+\begin{definition}
+Sei $F=(c_{min}, c_{max})$ eine mögliche Schiffsposition.
+Dann ist
+\[
+cells(F)=
 \{
 c
 \in
 C
 \mid
-c_{min}(l) \leq c \leq c_{max}(l)
+c_{min} \leq c \leq c_{max}
 \}
 \]
-die Menge aller Zellen, welche sich innerhalb der möglichen Schiffsposition $l$ befinden.
+die Menge aller Zellen, welche sich innerhalb der möglichen Schiffsposition $F$ befinden.
 \end{definition}
 
 \begin{definition}
 Sei 
 \[
-L_{all}=
+F_{all}=
 \{
 \{
 k
@@ -182,60 +191,71 @@ Sei $ship\_count$ die Anzahl der platzierten Schiffe.
 \end{definition}
 
 \begin{definition}
-Sei $all\_distributions=\{L \subseteq L_{all} \mid |L|=ship\_count\}$ die Menge von allen möglichen Schiffsverteilungen.
+Sei $F_{all}=\{F \subseteq F_{all} \mid |F|=ship\_count\}$ die Menge von allen möglichen Flotten, die der Gegner auf dem Spielfeld platzieren kann.
 \end{definition}
 
 \begin{definition}
-Sei $L_a \in all\_distributions$ die eigentliche und geheime Schiffsverteilung.
+Sei $F_a \in F_{all}$ die vom Gegner auf dem Spielfeld platzierte Flotte.
+Da diese geheim ist, wird sie in der restlichen Ausarbeitung auch als unbekannt angesehen.
 \end{definition}
 
 \begin{definition}
-Sei $L \in all\_distributions$ und $c \in C_{all}$.
-Dann ist 
+Sei
 \[
-hit(L, c)=|\{l \in L_{all} \mid c \in cells(l)\} \cap L|
+H=\{0, \dots, ship\_count\}
 \]
-die Treffer-Funktion, welche angibt, wie viele Schiffe bei einem Schuss auf Zelle $c$ getroffen wurden, unter der annahme, dass $L$ die eigentliche Schiffsverteilung ist.
+die Menge an theoretisch möglichen Trefferanzahlen bei einem Schuss auf eine Zelle.
+\end{definition}
+
+\begin{definition}
+Sei $F \in F_{all}$ und $c \in C_{all}$.
+Dann ist 
+\begin{align}
+&hit:F_{all} \times C_{all} \rightarrow H \quad mit \nonumber\\
+&hit(F, c)=|\{F \in F_{all} \mid c \in cells(F)\} \cap F|  \nonumber
+\end{align}
+die Treffer-Funktion, welche angibt, wie viele Schiffe bei einem Schuss auf Zelle $c$ getroffen wurden, falls $F$ die vom Gegner platzierte Flotte ist. In anderen Worten, die Anzahl der Schiffe aus Flotte $F$, die die Zelle $c$ belegen.
 \end{definition}
 
 \begin{definition}
 Sei $c \in C_{all}$.
 Dann ist 
 \[
-hit(c)=hit(L_a, c)
+hit(c)=hit(F_a, c)
 \]
+eine Kurzform. Die Funktionswerte sind ebenfalls unbekannt, da $F_a$ geheim ist. Also wird auch diese Funktion in der restlichen Ausarbeitung auch als unbekannt angesehen.
 \end{definition}
 
 \subsection{Zustände}
 
+In dem Zustand werden alle Informationen über alle vorherigen Schüsse gespeichert.
+Dies sind die beschossenen Zellen und jeweils getroffenen Schiffe.
+
+\begin{definition}
 Sei
 \[
-H=\{0, \dots, ship\_count\}
+S_{all}=\mathscr{P}(C_{all}\times H)
 \]
+die Menge aller möglichen Zustände.
 
-\begin{definition}
-Sei $F_{all}$ die Potenzmenge der Mengen aller Tupel bestehend aus Zelle und Trefferanzahl mit:
-$F_{all}=\mathscr{P}(C_{all}\times H)$.
+Ein Zustand der Form $S=\{(c_1, h_1), \dots , (c_k, h_k)\}\in S_{all}$ ist dann der Zustand nach $k$ Schüssen.
+Das heißt, die Reihenfolge der einzelnen Schüsse spielt hier keine Rolle, da ein Zustand nur eine Menge an Tupeln ist.
 \end{definition}
 
 \begin{definition}
-Sei $F=\{(c_1, h_1), \dots , (c_k, h_k)\}\in F_{all}$ der Zustand nach $k$ Schüssen.
-\end{definition}
-
-\begin{definition}
-Sei $F\in F_{all}$ der momentane Zustand.
+Sei $S\in S_{all}$ der momentane Zustand.
 Dann ist
 \begin{align}
-C_{shot}(F)=\{c \in C_{all} \mid (c,h) \in F, \; h \in N_0\}
+C_{shot}(S)=\{c \in C_{all} \mid (c,h) \in S, \; h \in H\}
 \end{align}
  die Menge an Zellen, auf die bereits geschossen wurde.
 \end{definition}
 
 \begin{definition}
-Sei $F\in F_{all}$ der momentane Zustand.
+Sei $S\in S_{all}$ der momentane Zustand.
 Dann ist 
 \begin{align}
-C_{left}(F)=C_{all} \setminus C_{shot}(F)
+C_{left}(S)=C_{all} \setminus C_{shot}(S)
 \end{align}
 die Menge an Zellen, auf die noch nicht geschossen wurde.
 \end{definition}
@@ -243,120 +263,112 @@ die Menge an Zellen, auf die noch nicht geschossen wurde.
 \begin{definition}
 Sei
 \begin{align}
-&fire:L_{all}\times F_{all}\times P(C_{all}) \rightarrow F_{all} \quad mit \nonumber\\
-&fire(L, F, cells)=F \cup \{(cell,hit(L, cell)) \mid cell \in cells\}  \nonumber
+&fire:F_{all}\times S_{all}\times P(C_{all}) \rightarrow S_{all} \quad mit \nonumber\\
+&fire(F, S, cells)=S \cup \{(cell,hit(F, cell)) \mid cell \in cells\}  \nonumber
 \end{align}
-die Schuss-Funktion, welche die Zellen und die jeweiligen Treffer dem Zustand $F$ hinzufügt.
+die Schuss-Funktion, welche die Zellen und die jeweiligen Treffer dem Zustand $S$ hinzufügt.
 \end{definition}
 
 \begin{definition}
 Sei
 \begin{align}
-&hypo\_fire:F_{all}\times P(C_{all}\times H) \rightarrow F_{all} \quad mit \nonumber\\
-&hypo\_fire(F, cell\_hits)=hypo\_fire(F, \{(c_1,h_1), \dots, (c_k, h_k)\})=F \cup cell\_hits \nonumber
+&hypo\_fire:S_{all}\times P(C_{all}\times H) \rightarrow S_{all} \quad mit \nonumber\\
+&hypo\_fire(S, cell\_hits)=hypo\_fire(S, \{(c_1,h_1), \dots, (c_k, h_k)\})=S \cup cell\_hits \nonumber
 \end{align}
 die hypothetische Schuss-Funktion, welche den Zustand so verändert, als hätte es $h_i$ Treffer bei dem Schuss auf Zelle $c_i$ gegeben. Es werden also keine echten Schüsse abgegeben, es wird angenommen, dass ein Schuss auf Zelle $c_i$mit $h_i$ Treffern abgegeben wird.
 \end{definition}
 
 \begin{definition}
-Sei $F\in F_{all}$ ein Zustand.
+Sei $S\in S_{all}$ ein Zustand.
 Dann ist
 \[
-distributions(F)=\{L\in L_{all} \mid \forall (c,h) \in F \colon hit(L, c)=h\}
+fleets(S)=\{F\in F_{all} \mid \forall (c,h) \in S \colon hit(F, c)=h\}
 \]
-die Menge aller Schiffsverteilungen, auf die die Treffer-Informationen vom Zustand $F$ zutreffen.
-In anderen Worten, die Menge an zum Zustand $F$ noch möglichen Schiffsverteilungen.
+die Menge aller Flotten, auf die die Treffer-Informationen vom Zustand $S$ zutreffen.
+In anderen Worten, die Menge an zum Zustand $S$ noch möglichen Flotten.
 \end{definition}
 
 \begin{definition}
-Sei $F\in F_{all}$ ein Zustand.
+Sei $S\in S_{all}$ ein Zustand.
 Dann ist
 \[
-distribution\_count(F)=|distributions(F)|
+fleet\_count(S)=|fleets(S)|
 \]
 \end{definition}
 
 
 \begin{satz}
-Sei $F\in F_{all}$ ein Zustand.
-Sei außerdem $L \in distributions(F)$ eine mögliche Schiffsverteilung.
+Sei $S\in S_{all}$ ein Zustand.
+Sei außerdem $F \in fleets(S)$ eine mögliche Flotte.
 
 Dann ist
 \[
-P(L = L_a \mid F)=\frac{1}{distribution\_count(F)}
+P(F = F_a \mid S)=\frac{1}{fleet\_count(S)}
 \]
-die Wahrscheinlichkeit, dass $L$ die richtige Schiffsverteilung zum Zustand $F$ ist.
+die Wahrscheinlichkeit, dass $F$ die richtige Flotte zum Zustand $S$ ist.
 \end{satz}
 
 \begin{proof}
+TODO
 Es gilt:
 \begin{align}
-P(L=L_a\mid F)&= \frac{1}{\left|distributions(F)\right|} \nonumber\\
- &= \frac{1}{distributions\_count(F)}\nonumber
+P(F=F_a\mid S)&= \frac{1}{\left|fleets(S)\right|} \nonumber\\
+ &= \frac{1}{fleets\_count(S)}\nonumber
 \end{align}
 \end{proof}
 
 
 \begin{satz}
-Sei $F\in F_{all}$ ein Zustand.
-Seien außerdem $shots \in P(C_{left}(F) \times H)$ die beschossenen Zellen und Trefferangaben.
+Sei $S\in S_{all}$ ein Zustand.
+Seien außerdem $shots \in P(C_{left}(S) \times H)$ die beschossenen Zellen und Trefferangaben.
 Dann ist
 \[
-P(hit(c)=h \mid F)=\frac{distribution\_count(hypo\_fire(F, shots))}{distribution\_count(F)}
+P(hit(c)=h \mid S)=\frac{fleet\_count(hypo\_fire(S, shots))}{fleet\_count(S)}
 \]
 \end{satz}
-die Wahrscheinlichkeit zu dem Zustand $F$, dass bei dem Schuss auf Zelle $c$ genau $h$ Schiffe getroffen werden.
+die Wahrscheinlichkeit zu dem Zustand $S$, dass bei dem Schuss auf Zelle $c$ genau $h$ Schiffe getroffen werden.
 
 \begin{proof}
-Vor dem Schuss gibt es noch im Zustand $F$ genau $distribution\_count(F)$ mögliche Schiffsverteilungen.
-Nach dem Schuss gibt es nur noch \\$distribution\_count(hypo\_fire(F,c, h))$ mögliche Schiffsverteilungen.
+Vor dem Schuss gibt es noch im Zustand $S$ genau $fleet\_count(S)$ mögliche Flotten.
+Nach dem Schuss gibt es nur noch \\$fleet\_count(hypo\_fire(S,c, h))$ mögliche Flotten.
 \end{proof}
 
 
 \begin{definition}
-Sei $F\in F_{all}$ ein Zustand.
+Sei $S\in S_{all}$ ein Zustand.
 Dann ist
 \[
-C_{undetermined}(F)=\{ c \in C_{left}(F) \mid \nexists h \in H \colon P(hit(c)=h \mid F) \in \{0, 1\}\}
+C_{undetermined}(S)=\{ c \in C_{left}(S) \mid \nexists h \in H \colon P(hit(c)=h \mid S) \in \{0, 1\}\}
 \]
 die Menge an allen Zellen, auf welche noch nicht geschossen wurde und noch nicht genau feststeht, wie viele Schiffe bei einem Schuss darauf getroffen werden.
 \end{definition}
 
 \begin{definition}
-Sei $F\in F_{all}$ ein Zustand.
+Sei $S\in S_{all}$ ein Zustand.
 Dann ist
 \[
-determined(F) \Leftrightarrow distribution\_count(F)=1 \Leftrightarrow C_{undetermined}(F) = \emptyset
+determined(S) \Leftrightarrow fleet\_count(S)=1 \Leftrightarrow C_{undetermined}(S) = \emptyset
 \]
-wahr gdw. die richtige Schiffsverteilung bereits bestimmt ist.
+wahr gdw. die richtige Flotte bereits bestimmt ist.
 \end{definition}
 
 
 \begin{definition}
-Sei $F\in F_{all}$ ein Zustand.
+Sei $S\in S_{all}$ ein Zustand.
 Dann ist
 \[
-C_{left\_to\_finish}(F)=\{ c \in C_{left}(F) \mid \exists h \in H \colon P(hit(c)=h \mid F) = 1\}
+C_{left\_to\_finish}(S)=\{ c \in C_{left}(S) \mid \exists h \in H \colon P(hit(c)=h \mid S) = 1\}
 \]
 die Menge an allen Zellen, auf welche noch nicht geschossen wurde und genau feststeht, wie viele Schiffe bei einem Schuss darauf getroffen werden.
 \end{definition}
 
 \begin{definition}
-Sei $F\in F_{all}$ ein Zustand.
+Sei $S\in S_{all}$ ein Zustand.
 Dann ist
 \[
-finished(F) \Leftrightarrow determined(F) \land C_{left\_to\_finish}(F) = \emptyset
+finished(S) \Leftrightarrow determined(S) \land C_{left\_to\_finish}(S) = \emptyset
 \]
 wahr gdw. alle Schiffe zerstört wurden.
-\end{definition}
-
-\begin{definition}
-Sei $F\in F_{all}$ ein Zustand und $c \in C_{all}$ eine Zelle.
-Dann ist
-\[
-max\_hit\_count(F, c)=\max \{h \in H \mid P(hit(c) = h \mid F) > 0\}
-\]
-die maximale Anzahl an Schiffe, die bei einem Schuss zum Zustand $F$ auf Zelle $c$ getroffen werden können.
 \end{definition}
 
 \subsection{Schuss-Strategien}
@@ -364,7 +376,7 @@ die maximale Anzahl an Schiffe, die bei einem Schuss zum Zustand $F$ auf Zelle $
 \begin{definition}
 Eine Funktion der Form
 \begin{align}
-&strat:F_{all} \times C_{all} \rightarrow \mathbb{R} \nonumber
+&strat:S_{all} \times C_{all} \rightarrow \mathbb{R} \nonumber
 \end{align}
 wird Strategiefunktion genannt. Diese weißt zu einem Zustand einer Zelle einen Wert zu, d.h. sie bewertet, wie gut sich jede Zelle als nächstes Schussziel eignet.
 \end{definition}
@@ -372,25 +384,25 @@ wird Strategiefunktion genannt. Diese weißt zu einem Zustand einer Zelle einen 
 \begin{definition}
 Sei
 \[
-S=\{ strat:F_{all} \times C_{all} \rightarrow \mathbb{R} \}
+strategies=\{ strat:S_{all} \times C_{all} \rightarrow \mathbb{R} \}
 \]
 die Menge an allen gültigen Strategiefunktionen.
 \end{definition}
 
 \begin{definition}
-Sei $F\in F_{all}$ ein Zustand.
-Sei außerdem $strat \in S$ die verwendete Schuss-Strategie.
-Sei $C \subseteq C_{undetermined}(F)$ eine Menge an Zellen.
+Sei $S\in S_{all}$ ein Zustand.
+Sei außerdem $strat \in strategies$ die verwendete Schuss-Strategie.
+Sei $C \subseteq C_{undetermined}(S)$ eine Menge an Zellen.
 Dann ist
 \[
-max\_value=\max strat(F, C)
+max\_value=\max strat(S, C)
 \]
 der maximale Wert, den die Strategiefunktion über allen Zellen ausgibt.
 
 Dann ist
 \begin{align}
-&best\_cell:F_{all} \times P(C) \times S \rightarrow C \quad mit \nonumber\\
-&best\_cell(F, C, strat)=x \in \{c \in C \mid strat(F, c) = max\_value\}
+&best\_cell:S_{all} \times P(C) \times strategies \rightarrow C \quad mit \nonumber\\
+&best\_cell(S, C, strat)=x \in \{c \in C \mid strat(S, c) = max\_value\}
 \nonumber
 \end{align}
 eine Funktion, welche die nach der Strategiefunktion $strat$ besten Zelle aus der Menge $C$ auswählt.
@@ -401,11 +413,11 @@ eine Funktion, welche die nach der Strategiefunktion $strat$ besten Zelle aus de
 \begin{definition}
 Sei
 \begin{align}
-&target:F_{all} \times S \rightarrow P(C_{all}) \quad mit \nonumber\\
-&target(F,strat)=
+&target:S_{all} \times strategies \rightarrow P(C_{all}) \quad mit \nonumber\\
+&target(S,strat)=
 \begin{cases}
-C_{left\_to\_finish}(F)&, determined(F) \\
-\{best\_cell(F, strat, C_{undetermined}(F))\}&, sonst
+C_{left\_to\_finish}(S)&, determined(S) \\
+\{best\_cell(S, strat, C_{undetermined}(S))\}&, sonst
 \end{cases}
 \nonumber
 \end{align}
@@ -414,32 +426,36 @@ die Ziel-Funktion, welche die Menge an Zellen bestimmt, auf die als nächstes ge
 
 
 \begin{definition}
-Sei $L\in L_{all}$ die gewählte Schiffsverteilung und $F\in F_{all}$ der momentane Zustand.
+Sei $F\in F_{all}$ die gewählte Flotte und $S\in S_{all}$ der momentane Zustand.
 Sei außerdem $strat \in S$ die verwendete Schuss-Strategie.
 Dann ist
 \begin{align}
-&shot\_count(L, F, strat)=\\
+&shot\_count(F, S, strat)=\\
 & \begin{cases} 
-  	|C_{left\_to\_finish}(F)|& ,determined(F) \\
-      shot\_count(L, fire(L, F, best\_cell(F, strat, C_{undetermined}(F))), strat) + 1 & ,sonst
+  	|C_{left\_to\_finish}(S)|& ,determined(S) \\
+      shot\_count(F, fire(F, S, best\_cell(S, strat, C_{undetermined}(S))), strat) + 1 & ,sonst
    \end{cases}
 \nonumber
 \end{align}
-die Anzahl an Schüssen, die von der Ziel-Funktion benötigt werden, um alle Schiffe der bereits bekannten Schiffsverteilung mit der Schuss-Strategiefunktion $strat$ zu versenken.
+die Anzahl an Schüssen, die von der Ziel-Funktion benötigt werden, um alle Schiffe der bereits bekannten Flotte mit der Schuss-Strategiefunktion $strat$ zu versenken.
 \end{definition}
+
+\subsection{Algorithmus}
 
 Somit kann nun ein einfacher Algorithmus formuliert werden, der mithilfe einer festgelegten Strategie versucht, alle Schiffe zu versenken:
 
 \begin{algorithm}[H]
  function solve(strat):\\
- $F=\emptyset$\;
+ $S=\emptyset$\;
  $shot\_count=0$\;
- \While{$\neg finished(F)$}{
-  $next\_targets=target(F, strat)$\;
-  $F=fire(F, next\_targets)$\;
+ \While{$\neg finished(S)$}{
+  $next\_targets=target(S, strat)$\;
+  $S=fire(S, next\_targets)$\;
   $shot\_count=shot\_count+|next\_targets|$\;
  }
 \end{algorithm}
+
+Dieser Algorithmus bestimmt in jedem Schritt das beste Schussziel und zählt zusätzlich mit, vieviele Schüsse er abgegeben hat.
 
 \section{Greedy-Strategien}
 
@@ -447,44 +463,109 @@ Somit kann nun ein einfacher Algorithmus formuliert werden, der mithilfe einer f
 Die Greedy-Hit-Strategie versucht bei jedem Schuss die erwartete Anzahl an getroffenen Schiffen zu maximieren.
 
 \begin{definition}
-Sei $F\in F_{all}$ ein Zustand und $c \in C_{undetermined}(F)$ die beschossene Zelle.
+Sei $c \in C_{undetermined}(S)$ die beschossene Zelle.
 Dann ist
 \[
-\mathds{E}(hit(c) \mid F)=\sum_{h=0}^{ship\_count} P(hit(c)=h \mid F) * h
+H_{c}=hit(c)
 \]
-die erwartete Anzahl an getroffenen Schiffen im Zustand $F$ bei einem Schuss auf $c$.
+eine Zufallsvariable, die die Anzahl an Treffern bei einem Schuss auf Zelle $c$ angibt.
 \end{definition}
 
 \begin{definition}
-Sei $F\in F_{all}$ ein Zustand.
+Sei $S\in S_{all}$ ein Zustand und $c \in C_{undetermined}(S)$ die beschossene Zelle.
 Dann ist
 \[
-strat_{greedy-hit}(F,c)=\mathds{E}(hit(c) \mid F)
+P_S(H_{c}=h)=P(hit(c)=h \mid S) 
+\]
+die Wahrscheinlichkeit, $h$ Schiffe zum Zustand $S$ bei einem Schuss auf Zelle $c$ zu treffen.
+\end{definition}
+
+\begin{definition}
+Sei $S\in S_{all}$ ein Zustand und $c \in C_{undetermined}(S)$ die beschossene Zelle.
+Dann ist
+\[
+\mathds{E}_S(hit(c))=\sum_{h \in H} P_S(H_{c}=h) * h
+\]
+die erwartete Anzahl an getroffenen Schiffen im Zustand $S$ bei einem Schuss auf $c$.
+\end{definition}
+
+\begin{definition}
+Sei $S\in S_{all}$ ein Zustand.
+Dann ist
+\[
+strat_{greedy-hit}(S,c)=\mathds{E}_S(hit(c))
 \]
 die Greedy-Hit-Strategie.
 \end{definition}
 
-\subsection{Greedy-Distribution-Strategie}
-Die Greedy-Distribution-Strategie versucht bei jedem Schuss die erwartete Anzahl an ausgeschlossenen Schiffsverteilungen zu maximieren.
-
 \begin{definition}
-Sei $F\in F_{all}$ der momentane Zustand.
-Sei außerdem $c \in C_{undetermined}(F)$ die beschossene Zelle.
+Sei $S\in S_{all}$ ein Zustand.
 Dann ist
 \[
-distributions\_removed(L, F, c)=distribution\_count(F) - distribution\_count(fire(L, F,c))
+V_S^{H_{c}}(i)=P_S(H_{c} \leq i)
 \]
-die Anzahl an Schiffsverteilungen, die nach diesem Schuss ausgeschlossen werden könnten.
+die Verteilungsfunktion von $P_S(H_{c}=h)$.
+\end{definition}
+
+\begin{definition}
+Sei $S\in S_{all}$ ein Zustand.
+Dann ist
+\[
+I(c)=\sum_{i=0}^{ship\_count - 1} V_S^{H_{c}}(i)=\int_{0}^{ship\_count} V_S^{H_{c}}(x) dx
+\]
 \end{definition}
 
 \begin{satz}
-Sei $F\in F_{all}$ der momentane Zustand.
-Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
+Sei $S\in S_{all}$ der momentane Zustand.
+Sei außerdem $c \in C_{left}(S)$ die beschossene Zelle.
 Dann ist
 \begin{align}
 \begin{split}
-&\mathds{E}(distributions\_removed(F,c))=\\
-&\frac{1}{distribution\_count(F)} * \sum_{L \in distributions(F)} distributions\_removed(L, F, c) \nonumber
+&\mathds{E}(H_{F,c})=ship\_count - I(S,c)
+\end{split}
+\end{align}
+\end{satz}
+
+\begin{proof}
+\begin{align}
+\begin{split}
+&\mathds{E}_S(H_{c})\\
+=&\sum_{h=1}^{ship\_count} P_S(H_{c} \geq h)\\
+=&\sum_{h=1}^{ship\_count} P_S(H_{c}=h) + P_S(H_{S,c} > h)\\
+=&\sum_{h=1}^{ship\_count} P_S(H_{c}=h) + (1 - P_S(H_{c} \leq h)\\
+=&P_S(H_{c} > 0) + \sum_{h=1}^{ship\_count} (1 - P_S(H_{c} \leq h)\\
+=&1 - V_S^{H_{c}}(0) + ship\_count - \sum_{h=1}^{ship\_count} P_S(H_{c} \leq h)\\
+=&1 - V_S^{H_{c}}(0) + ship\_count - \sum_{h=1}^{ship\_count} V_S^{H_{c}}(h)=\\
+=&1 + ship\_count - \sum_{h=0}^{ship\_count} V_S^{H_{c}}(h)=\\
+=&ship\_count - \sum_{h=0}^{ship\_count - 1} V_S^{H_{c}}(h)=\\
+=&ship\_count - \int_{0}^{ship\_count} V_S^{H_{c}}(h) \; dh\\
+=&ship\_count - I(S,c)\\
+\end{split}
+\end{align}
+\qed
+\end{proof}
+
+\subsection{Greedy-fleet-Strategie}
+Die Greedy-fleet-Strategie versucht bei jedem Schuss die erwartete Anzahl an ausgeschlossenen Flotten zu maximieren.
+
+\begin{definition}
+Sei $S\in S_{all}$ der momentane Zustand.
+Sei außerdem $c \in C_{undetermined}(S)$ die beschossene Zelle.
+Dann ist
+\[
+fleets\_removed(F, S, c)=fleet\_count(S) - fleet\_count(fire(F, S,c))
+\]
+die Anzahl an Flotten, die nach diesem Schuss ausgeschlossen werden könnten.
+\end{definition}
+
+\begin{satz}
+Sei $S\in S_{all}$ der momentane Zustand.
+Sei außerdem $c \in C_{left}(S)$ die beschossene Zelle.
+Dann ist
+\begin{align}
+\begin{split}
+&\mathds{E}(fleets\_removed(S,c))=\\
+&\frac{1}{fleet\_count(S)} * \sum_{F \in fleets(S)} fleets\_removed(F, S, c) \nonumber
 \end{split}
 \end{align}
 \end{satz}
@@ -494,148 +575,103 @@ Definition des Erwartungswertes.
 \end{proof}
 
 \begin{definition}
-Sei $F\in F_{all}$ ein Zustand.
+Sei $S\in S_{all}$ ein Zustand.
 Dann ist
 \[
-strat_{greedy-distribution}(F,c)=\mathds{E}(distributions\_removed(F,c))
+strat_{greedy-fleet}(S,c)=\mathds{E}(fleets\_removed(S,c))
 \]
-die Greedy-Distribution-Strategie.
+die Greedy-fleet-Strategie.
 \end{definition}
+
+
+\begin{definition}
+Sei $S\in S_{all}$ ein Zustand.
+Dann ist
+\[
+Q(S,c)=\sum_{h \in H} P_S(H_{c}=h)^2
+\]
+\end{definition}
+
+\begin{satz}
+Sei $S\in S_{all}$ der momentane Zustand.
+Sei außerdem $c \in C_{left}(S)$ die beschossene Zelle.
+Dann ist
+\begin{align}
+\begin{split}
+\mathds{E}(fleet\_count(fire(S,\{c\})))=fleet\_count(S)\; Q(S,c)
+\end{split}
+\end{align}
+\end{satz}
+
+\begin{proof}
+\begin{align}
+\begin{split}
+&\mathds{E}(fleet\_count(fire(S,\{c\})))\\
+=&\sum_{h \in H} P_S(H_{c} = h) * fleet\_count(hypo\_fire(S,\{(c,h)\}))\\
+=&\sum_{h \in H} \frac{fleet\_count(hypo\_fire(S,\{(c,h)\}))}{fleet\_count(S)}* fleet\_count(hypo\_fire(S,\{(c,h)\}))\\
+=&\frac{1}{fleet\_count(S)} * \sum_{h \in H} fleet\_count(hypo\_fire(S,\{(c,h)\}))^2\\
+=&\frac{1}{fleet\_count(S)} * \sum_{h \in H} (P_S(H_{c} = h) * fleet\_count(S))^2\\
+=&fleet\_count(S) * \sum_{h \in H} P_S(H_{c} = h)^2\\
+=&fleet\_count(S) * Q(S,c)\\
+\end{split}
+\end{align}
+\qed
+\end{proof}
+
+\begin{satz}
+Sei $S\in S_{all}$ der momentane Zustand.
+Sei außerdem $c \in C_{left}(S)$ die beschossene Zelle.
+Dann ist
+\begin{align}
+\begin{split}
+&\mathds{E}(fleets\_removed(S,c))\\
+=&fleet\_count(S) (1 - Q(S,c))
+\end{split}
+\end{align}
+\end{satz}
+
+\begin{proof}
+\begin{align}
+\begin{split}
+&\mathds{E}(fleets\_removed(S,c))\\
+=&\mathds{E}(fleet\_count(S) - fleet\_count(fire(S,c)))\\
+=&fleet\_count(S) - \mathds{E}(fleet\_count(fire(S,\{c\})))\\
+=&fleet\_count(S) - (fleet\_count(S)\; Q(S,c))\\
+=&fleet\_count(S) (1 - Q(S,c))
+\end{split}
+\end{align}
+\end{proof}
 
 \subsection{Vergleich der Strategien}
-Auf den ersten Blick sieht es aus, dass die beiden vorgestellten Greedy-Strategien zwei verschiedene Definitionen für die gleiche Strategie sind. Im folgenden Abschnitt wird aber gezeigt, dass sich beide Strategien unterscheiden.
+Auf den ersten Blick sieht es aus, dass die beiden vorgestellten Greedy-Strategien zwei verschiedene Definitionen für die gleiche Strategie sind. Im vorherigen Abschnitt wurde aber gezeigt, dass sich beide Strategien unterscheiden.
 
-\begin{definition}
-Sei $F\in F_{all}$ ein Zustand.
-Dann ist
-\[
-H_{F,c}=hit(F,c)
-\]
-\end{definition}
-
-\begin{definition}
-Sei $F\in F_{all}$ ein Zustand.
-Dann ist
-\[
-P(F,c)=\sum_{h=0}^{ship\_count} P(H_{F,c}=h)^2
-\]
-\end{definition}
-
-\begin{definition}
-Sei $F\in F_{all}$ ein Zustand.
-Dann ist
-\[
-I(F,c)=\sum_{i=0}^{ship\_count - 1} F_{H_{F,c}}(i)=\int_{0}^{ship\_count} F_{H_{F,c}}(x) dx
-\]
-\end{definition}
-
-\begin{satz}
-Sei $F\in F_{all}$ der momentane Zustand.
-Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
-Dann ist
-\begin{align}
-\begin{split}
-&\mathds{E}(H_{F,c})=ship\_count - I(F,c)
-\end{split}
-\end{align}
-\end{satz}
-
-\begin{proof}
-\begin{align}
-\begin{split}
-&\mathds{E}(H_{F,c})\\
-=&\sum_{h=1}^{ship\_count} P(H_{F,c} \geq h)\\
-=&\sum_{h=1}^{ship\_count} P(H_{F,c}=h) + P(H_{F,c} > h)\\
-=&\sum_{h=1}^{ship\_count} P(H_{F,c}=h) + (1 - P(H_{F,c} \leq h)\\
-=&P(H_{F,c} > 0) + \sum_{h=1}^{ship\_count} (1 - P(H_{F,c} \leq h)\\
-=&1 - F_{H_{F,c}}(0) + ship\_count - \sum_{h=1}^{ship\_count} P(H_{F,c} \leq h)\\
-=&1 - F_{H_{F,c}}(0) + ship\_count - \sum_{h=1}^{ship\_count} F_{H_{F,c}}(h)=\\
-=&1 + ship\_count - \sum_{h=0}^{ship\_count} F_{H_{F,c}}(h)=\\
-=&ship\_count - \sum_{h=0}^{ship\_count - 1} F_{H_{F,c}}(h)=\\
-=&ship\_count - \int_{0}^{ship\_count} F_{H_{F,c}}(h) \; dh\\
-=&ship\_count - I(F,c)\\
-\end{split}
-\end{align}
-\qed
-\end{proof}
-
-
-\begin{satz}
-Sei $F\in F_{all}$ der momentane Zustand.
-Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
-Dann ist
-\begin{align}
-\begin{split}
-\mathds{E}(distribution\_count(fire(F,\{c\})))=distribution\_count(F)\; P(F,c)
-\end{split}
-\end{align}
-\end{satz}
-
-\begin{proof}
-\begin{align}
-\begin{split}
-&\mathds{E}(distribution\_count(fire(F,\{c\})))\\
-=&\sum_{h=0}^{ship\_count} P(H_{F,c} = h) * distribution\_count(hypo\_fire(F,\{(c,h)\}))\\
-=&\sum_{h=0}^{ship\_count} \frac{distribution\_count(hypo\_fire(F,\{(c,h)\}))}{distribution\_count(F)}* distribution\_count(hypo\_fire(F,\{(c,h)\}))\\
-=&\frac{1}{distribution\_count(F)} * \sum_{h=0}^{ship\_count} distribution\_count(hypo\_fire(F,\{(c,h)\}))^2\\
-=&\frac{1}{distribution\_count(F)} * \sum_{h=0}^{ship\_count} (P(H_{F,c} = h) * distribution\_count(F))^2\\
-=&distribution\_count(F) * \sum_{h=0}^{ship\_count} P(H_{F,c} = h)^2\\
-=&distribution\_count(F) * P(F,c)\\
-\end{split}
-\end{align}
-\qed
-\end{proof}
-
-\begin{satz}
-Sei $F\in F_{all}$ der momentane Zustand.
-Sei außerdem $c \in C_{left}(F)$ die beschossene Zelle.
-Dann ist
-\begin{align}
-\begin{split}
-&\mathds{E}(distributions\_removed(F,c))\\
-=&distribution\_count(F) (1 - P(F,c))
-\end{split}
-\end{align}
-\end{satz}
-
-\begin{proof}
-\begin{align}
-\begin{split}
-&\mathds{E}(distributions\_removed(F,c))\\
-=&\mathds{E}(distribution\_count(F) - distribution\_count(fire(F,c)))\\
-=&distribution\_count(F) - \mathds{E}(distribution\_count(fire(F,\{c\})))\\
-=&distribution\_count(F) - (distribution\_count(F)\; P(F,c))\\
-=&distribution\_count(F) (1 - P(F,c))
-\end{split}
-\end{align}
-\end{proof}
-
-
-Daraus folgt, dass beide Werte von unterschiedlichen Eigenschaften der Wahrscheinlichkeitsverteilung von $P(hit(c)=h \mid F)$ abhängen. Daher ist die genaue Korrelation zwischen ausgeschlossenen Schiffsverteilungen und getroffenen Schiffen für jede Zelle individuell, da die Wahrscheinlichkeitsverteilung von $P(hit(c)=h \mid F)$ individuell ist. Für manche Zellen, können beide Strategien äquivalent sein, aber für andere Zellen kann auch eine inverse Korrelation bestehen und mit vielen Treffern gleichzeitig wenig Schiffsverteilungen ausgeschlossen werden.
+Daraus folgt, dass beide Werte von unterschiedlichen Eigenschaften der Wahrscheinlichkeitsverteilung von $P(hit(c)=h \mid S)$ abhängen. Daher ist die genaue Korrelation zwischen ausgeschlossenen Flotten und getroffenen Schiffen für jede Zelle individuell, da die Wahrscheinlichkeitsverteilung von $P(hit(c)=h \mid S)$ individuell ist. Für manche Zellen, können beide Strategien äquivalent sein, aber für andere Zellen kann auch eine inverse Korrelation bestehen und mit vielen Treffern gleichzeitig wenig Flotten ausgeschlossen werden.
 
 Mithilfe des Wissens, von was diese zwei verschiedenen Werte abhängen, können jetzt ganz leicht Gegenbeispiele konstruiert werden, in denen beide Strategien unterschiedliche Zellen auswählen.
 
 
 \section{Optimale-Strategie}
 
+AB HIER NOCH SEHR UNFERTIG
+
 Um eine optimale Schuss-Strategie zu definieren, werden ein paar Definitionen benötigt, um den Begriff `Optimal` zu definieren.
 
 \subsection{Definition von Optimalität}
 
 \begin{satz}
-Sei $F\in F_{all}$ der momentane Zustand und $strat \in S$ die verwendete Schuss-Strategie.
+Sei $S\in S_{all}$ der momentane Zustand und $strat \in S$ die verwendete Schuss-Strategie.
 Dann ist
 \[
-\mathds{E}(shot\_count(F, strat))=\frac{1}{distribution\_count(F)} * \sum_{L \in distributions(F)}{shot\_count(L, F, strat)}
+\mathds{E}(shot\_count(S, strat))=\frac{1}{fleet\_count(S)} * \sum_{F \in fleets(S)}{shot\_count(F, S, strat)}
 \]
 die erwartete Anzahl an Schüssen, die benötigt werden, um alle Schiffe zu versenken.
 \end{satz}
 
 \begin{proof}
 \begin{align}
-\mathds{E}(shot\_count(F, strat))=\\
-\sum_{L \in distributions(F)}{P(L_a= L \mid F) * shot\_count(L, F, strat)} =\\
-\frac{1}{distribution\_count(F)} * \sum_{L \in distributions(F)}{shot\_count(L, F, strat)}
+\mathds{E}(shot\_count(S, strat))=\\
+\sum_{F \in fleets(S)}{P(F_a= F \mid S) * shot\_count(F, S, strat)} =\\
+\frac{1}{fleet\_count(S)} * \sum_{F \in fleets(S)}{shot\_count(F, S, strat)}
 \end{align}
 \qed
 \end{proof}
@@ -644,30 +680,30 @@ Nun kann definiert werden, was es für eine Strategie heißt, optimal zu sein:
 \begin{definition}
 Eine Strategiefunktion $strat \in S$ heißt optimal, falls gilt:
 \[
-\forall strat_{alt} \in S \colon \mathds{E}(shot\_count(F, strat)) \leq \mathds{E}(shot\_count(F, strat_{alt}))
+\forall strat_{alt} \in S \colon \mathds{E}(shot\_count(S, strat)) \leq \mathds{E}(shot\_count(S, strat_{alt}))
 \]
 \end{definition}
 
 \subsection{Herleitung}
 
 \begin{definition}
-Sei $F\in F_{all}$ ein Zustand.
+Sei $S\in S_{all}$ ein Zustand.
 Dann ist
 \begin{align}
 \begin{split}
-strat_{opt}(F, c)=\mathds{E}(shot\_count(F, c, strat_{opt}))
+strat_{opt}(S, c)=\mathds{E}(shot\_count(S, c, strat_{opt}))
 \end{split}
 \end{align}
 die optimale Strategiefunktion.
-Diese wählt für den Zustand $F$ eine Zelle aus, welche nach Beschuss die Anzahl an benötigten Schüssen um alle Schiffe zu versenken, minimiert.
+Diese wählt für den Zustand $S$ eine Zelle aus, welche nach Beschuss die Anzahl an benötigten Schüssen um alle Schiffe zu versenken, minimiert.
 \end{definition}
 
 
 \begin{lemma}
-Sei $F\in F_{all}$ der momentane Zustand, $c\in C_{all}$ die Zelle, auf die geschossen werden soll und $strat \in S$ die verwendete Schuss-Strategie.
+Sei $S\in S_{all}$ der momentane Zustand, $c\in C_{all}$ die Zelle, auf die geschossen werden soll und $strat \in S$ die verwendete Schuss-Strategie.
 Dann ist
 \[
-\mathds{E}(shot\_count(F, c, strat))=\mathds{E}(shot\_count(fire(F, \{c\}), strat)) + 1
+\mathds{E}(shot\_count(S, c, strat))=\mathds{E}(shot\_count(fire(S, \{c\}), strat)) + 1
 \]
 die erwartete Anzahl an Schüssen, die benötigt werden, um alle Schiffe zu versenken, falls der nächste Schuss auf Zelle $c$ abgefeuert wird.
 \end{lemma}
@@ -682,7 +718,7 @@ Trivial
 Sei $strat_{opt}$ die optimale Strategiefunktion und $strat_{alt} \in S$ eine andere Strategiefunktion.
 Dann gilt:
 \[
-\mathds{E}(shot\_count(F, strat_{opt})) \leq \mathds{E}(shot\_count(F, strat_{alt}))
+\mathds{E}(shot\_count(S, strat_{opt})) \leq \mathds{E}(shot\_count(S, strat_{alt}))
 \]
 \end{satz}
 
@@ -690,11 +726,11 @@ Dann gilt:
 TODO
 \begin{align}
 \begin{split}
-&\mathds{E}(shot\_count(F, strat_{opt}))\\
-=&\mathds{E}(shot\_count(F, best\_cell(F, C_{undetermined}(F), strat_{opt}), strat_{opt})) + 1\\
-=&\min_{c \in C_{undetermined}(F)} \mathds{E}(shot\_count(F, c, strat_{opt})) + 1\\
-\leq & \mathds{E}(shot\_count(F, c_{other}, strat_{opt})), c_{other} \in C_{undetermined}(F)\\
-\Rightarrow &\mathds{E}(shot\_count(F, strat_{opt})) \leq \mathds{E}(shot\_count(F, strat_{alt}))
+&\mathds{E}(shot\_count(S, strat_{opt}))\\
+=&\mathds{E}(shot\_count(S, best\_cell(S, C_{undetermined}(S), strat_{opt}), strat_{opt})) + 1\\
+=&\min_{c \in C_{undetermined}(S)} \mathds{E}(shot\_count(S, c, strat_{opt})) + 1\\
+\leq & \mathds{E}(shot\_count(S, c_{other}, strat_{opt})), c_{other} \in C_{undetermined}(S)\\
+\Rightarrow &\mathds{E}(shot\_count(S, strat_{opt})) \leq \mathds{E}(shot\_count(S, strat_{alt}))
 \end{split}
 \end{align}
 \qed
@@ -706,30 +742,30 @@ TODO
 TODO
 
 \begin{algorithm}[H]
- function determinants(L, distributions):\\
+ function determinants(F, fleets):\\
  $determinants=\emptyset$\;
- \For{$f \in P(finished\_states(L))$}{
+ \For{$S \in P(finished\_states(F))$}{
    is\_determinant=true\;
-   \For{$L_{other} \in distributions \setminus \{L\}$}{
-     \If{$f \subseteq finished\_node(L_{other})$}{
+   \For{$F_{other} \in fleets \setminus \{F\}$}{
+     \If{$S \subseteq finished\_node(F_{other})$}{
        $is\_determinant=false$\;
        break\;
      }
     }
     \If{is\_determinant}{
-      $determinants = determinants \cup \{f\}$\;
+      $determinants = determinants \cup \{S\}$\;
     }
  }
  \Return determinants\;
 \end{algorithm}
 
 \begin{algorithm}[H]
- function create\_end\_nodes($F_{start}$):\\
+ function create\_end\_nodes($S_{start}$):\\
  $nodes=\emptyset$\;
- \For{$L \in distributions(F_{start})$}{
-   \For{$F \in determinants(L)$}{
-     \If{$F_{start} \subseteq F$}{
-        $x=(\{L\}, F, |C_{left\_to\_finish}(F)|)$\;
+ \For{$F \in fleets(S_{start})$}{
+   \For{$S \in determinants(F)$}{
+     \If{$S_{start} \subseteq S$}{
+        $x=(\{F\}, S, |C_{left\_to\_finish}(S)|)$\;
         $nodes=nodes \cup x$\;
       }
     }
@@ -740,30 +776,30 @@ TODO
 \newpage
 
 \begin{algorithm}[H]
- function calculate\_expected\_shots($F_{start}$):\\
- $nodes=create\_end\_nodes(distributions(F))$\;
- $transitions[f,c,h]=\emptyset$\;
- $transitions\_cells[f]=\emptyset$\;
+ function calculate\_expected\_shots($S_{start}$):\\
+ $nodes=create\_end\_nodes(fleets(S))$\;
+ $transitions[S,c,h]=\emptyset$\;
+ $transitions\_cells[S]=\emptyset$\;
  $results = \emptyset$\;
  \While{$nodes \neq \emptyset$}{
  $previous\_states=\emptyset$\;
  \For{$x \in nodes$}{
-   \For{$(c,h) \in (state(F) \setminus F_{start})$}{
-    $f=state(x) \setminus \{(c,h)\}$\;
-    $previous\_states=previous\_states \cup f$\;
-    $previous\_distributions[f]=previous\_distributions \cup distributions(x)$\;
-    $transition\_cells[f]=transition\_cells[f] \cup \{c\}$\;
-    $transitions[f,c,h]=transitions[f,c,h] \cup x$\;
+   \For{$(c,h) \in (state(S) \setminus S_{start})$}{
+    $S=state(x) \setminus \{(c,h)\}$\;
+    $previous\_states=previous\_states \cup S$\;
+    $previous\_fleets[S]=previous\_fleets \cup fleets(x)$\;
+    $transition\_cells[S]=transition\_cells[S] \cup \{c\}$\;
+    $transitions[S,c,h]=transitions[S,c,h] \cup x$\;
     }
  }
  
  $new\_nodes=\emptyset$\;
-  \For{$f \in previous\_states$}{
+  \For{$S \in previous\_states$}{
     $\mathds{E}_{min}=\infty $\;
-    \For{$c \in transition\_cells[f]$}{
-      $\mathds{E}_{c}=\sum_{h \in H} \frac{|distributions(transitions[f,c,h])|}{|previous\_distributions[f]|} * expected(transitions[x,c,h])$\;
+    \For{$c \in transition\_cells[S]$}{
+      $\mathds{E}_{c}=\sum_{h \in H} \frac{|fleets(transitions[S,c,h])|}{|previous\_fleets[S]|} * expected(transitions[x,c,h])$\;
       
-      \If{$f = F_{start}$}{
+      \If{$S = S_{start}$}{
        $results = results \cup \{(c,\mathds{E}_{c})\}$\;
       }
       
@@ -771,7 +807,7 @@ TODO
        $\mathds{E}_{min}=\mathds{E}_{c}$\;
       }
     }
-    $new\_nodes = new\_nodes \cup \{(previous\_distributions[f], f, \mathds{E}_{min} + 1)\}$\;
+    $new\_nodes = new\_nodes \cup \{(previous\_fleets[S], S, \mathds{E}_{min} + 1)\}$\;
  }
  $nodes = new\_nodes$\;
  }
@@ -781,8 +817,8 @@ TODO
 
 
 \begin{algorithm}[H]
- function $strat_{opt}(F_{start}, c$):\\
-    \If{$(c,e) \in calculate\_expected\_shots(F_{start}), e \in \mathds{R}$}{
+ function $strat_{opt}(S_{start}, c$):\\
+    \If{$(c,e) \in calculate\_expected\_shots(S_{start}), e \in \mathds{R}$}{
      \Return $-e$\;
    }
    \Return $\infty$ \;
@@ -800,47 +836,92 @@ TODO
 Wir nähern uns langsam der Implementation der Schuss-Strategien.
 Um die Laufzeit der Implementation möglichst klein zu halten, werden in diesem Kapitel eine Reihe von Optimierungsmethoden vorgestellt.
 
-\subsection{Berechnung von Schiffspositionen}[Dennis]
+\subsection{Berechnung von Schiffspositionen}
 \begin{definition}
+Sei $C_{pos} \subseteq C_{shot}(S)$ eine Teilmenge der beschossenen Zellen.
+Sei außerdem $C_{neg}=C_{shot}(S) \setminus C_{pos}$.
+
+Dann heißt
+\[
+s=(C_{pos}, C_{neg})
+\]
+ein Schuss-Schnitt.
+\end{definition}
+
+\begin{definition}
+Sei $s=(C_{pos}, C_{neg})$ ein Schuss-Schnitt.
+
+Dann heißt $s$ zusammenhängend, wenn gilt:
+\[
+\exists d \in D \colon \forall n \in C_{neg} \colon (\forall p \in C_{pos} \colon n_d \leq p_d) \lor (\forall p \in C_{pos} \colon n_d \geq p_d)
+\]
+\end{definition}
+
+\begin{satz}
+Sei $s=(C_{pos}, C_{neg})$ ein Schuss-Schnitt.
+
+Dann gilt:
+\[
+location\_count(S, X) > 0 \Leftrightarrow X ist zusammenhängend \land \forall c \in C_{pos} \colon hit(S,c) > 0
+\]
+\end{satz}
+
+\begin{proof}
+\end{proof}
+
+\begin{definition}
+Sei
+\[
+coherent\_cuts=\{s \mid s ist zusammenhängend\}
+\]
+die Menge aller zusammenhängenden Schnitte.
+\end{definition}
+
+\begin{definition}
+Eine Box $b$ wird von $c$ verdeckt, falls gilt:
+\[
+\forall d \in D \colon (cell(b)_d < c_d \land \forall p \in C_{pos} \colon c_d \leq p_d) \lor (cell(b)_d > c_d \land \forall p \in C_{pos} \colon c_d \geq p_d)
+\]
+
 Sei $C_{pos}$ eine Menge an Zellen, die belegt werden sollen. Sei außerdem $C_{neg}$ eine Menge an Zellen, die nicht belegt werden sollen.
 
 Dann ist
 \[
 location\_count(C_{pos}, C_{neg})
 \]
-die Anzahl der möglichen Schiffspositionen $l \in L_{all}$ für die gilt: $C_{pos} \subseteq cells(l)$ und $C_{neg} \cap cells(l) = \emptyset$.
+die Anzahl der möglichen Schiffspositionen $F \in F_{all}$ für die gilt: $C_{pos} \subseteq cells(F)$ und $C_{neg} \cap cells(F) = \emptyset$.
 \end{definition}
 
 \subsection{Berechnung der Verteilungsanzahl mit Verteilungsfunktionen}[Christopher]
 
-In allen vorherigen Berechnungen wird nur die Anzahl an Schiffsverteilungen zum Zustand $F$, distribution\_count(F), benötigt, da es zu jedem Zustand eine Gleichverteilung an Schiffsverteilungen gibt.
+In allen vorherigen Berechnungen wird nur die Anzahl an Flotten zum Zustand $S$, fleet\_count(S), benötigt, da es zu jedem Zustand eine Gleichverteilung an Flotten gibt.
 
 Der naive Ansatz diesen Wert zu berechnen, wäre alle Verteilungen zu konstruieren und dann zusammen zu zählen.
 Mithilfe den sogenannten Verteilungsfunktionen und ein bischen Kombinatorik lässt sich die Anzahl einfacher berechnen.
 
 \begin{definition}
-Sei $cell\_combinations(F)=\mathcal{P}(C_{shot}(F))$.
+Sei $cell\_combinations(S)=\mathcal{P}(C_{shot}(S))$.
 \end{definition}
 
 \begin{definition}
-Sei $comb \in cell\_combinations(F)$. Dann ist
+Sei $comb \in cell\_combinations(S)$. Dann ist
 \[
-location\_count(F,comb)=location\_count(comb, C_{shot}(F) \setminus comb)
+location\_count(S,comb)=location\_count(comb, C_{shot}(S) \setminus comb)
 \]
 eine Kurzform.
 \end{definition}
 
 \begin{definition}
-Sei $comb \in cell\_combinations(F)$. Dann ist
+Sei $comb \in cell\_combinations(S)$. Dann ist
 \[
-max\_shared\_ship\_count(F,comb)=\min\{location\_count(F, comb)\} \cup \{h \mid (c,h) \in F \wedge c \in comb\}
+max\_shared\_ship\_count(S,comb)=\min\{location\_count(S, comb)\} \cup \{h \mid (c,h) \in S \wedge c \in comb\}
 \]
 \end{definition}
 
 \begin{definition}
 Sei
 \[
-hit\_count(F, c, s)=\sum_{comb \in \{x \in cell\_combinations(F) \mid c \in x\}}{s(comb)}
+hit\_count(S, c, s)=\sum_{comb \in \{x \in cell\_combinations(S) \mid c \in x\}}{s(comb)}
 \]
 \end{definition}
 
@@ -848,9 +929,9 @@ hit\_count(F, c, s)=\sum_{comb \in \{x \in cell\_combinations(F) \mid c \in x\}}
 Sei
 \begin{align}
 \begin{split}
-sha&re\_functions(F)=\{s \colon cell\_combinations(F) \rightarrow \mathbb{N}_0 \mid\\
-&\forall{(c,h) \in F}\colon hit\_count(F, c, s)=h \wedge \\
-&\forall{comb \in cell\_combinations(F)} \colon 0 \leq s(comb) \leq max\_shared\_ship\_count(F, comb)\\
+sha&re\_functions(S)=\{s \colon cell\_combinations(S) \rightarrow \mathbb{N}_0 \mid\\
+&\forall{(c,h) \in S}\colon hit\_count(S, c, s)=h \wedge \\
+&\forall{comb \in cell\_combinations(S)} \colon 0 \leq s(comb) \leq max\_shared\_ship\_count(S, comb)\\
 \}\;\;\;& \nonumber
 \end{split}
 \end{align}
@@ -858,25 +939,25 @@ die Menge an Share-Funktionen, die das LGS (...) lösen.
 \end{definition}
 
 \begin{satz}
-Sei $F\in F_{all}$ der momentane Zustand und $s \in share\_functions(F)$ eine Verteilungsfunktion.
+Sei $S\in S_{all}$ der momentane Zustand und $s \in share\_functions(S)$ eine Verteilungsfunktion.
 Dann ist
 \[
-distribution\_count(F, s)=
-\left( \prod_{comb \in cell\_combinations(F)}{{location\_count(F, comb)\choose s(comb)}} \right)
+fleet\_count(S, s)=
+\left( \prod_{comb \in cell\_combinations(S)}{{location\_count(S, comb)\choose s(comb)}} \right)
 \]
-die Anzahl an möglichen Schiffsverteilungen für die Verteilungsfunktion $s$.
+die Anzahl an möglichen Flotten für die Verteilungsfunktion $s$.
 \end{satz}
 
 \begin{proof}
-Für jede Teilkombination $comb \in cell\_combinations_F$ gibt es $location\_count_F(comb)$ Positionen, die genau die Zellen der Teilkombination belegen. Aus diesen Positionen werden dann mit der Funktion $s_F$ genau $s_F(comb)$ Positionen für Schiffe ausgewählt. Daher gibt es für jede Teilkombination ${location\_count_F(comb)\choose s_F(comb)}$ verschiedene Schiffspositionen.
+Für jede Teilkombination $comb \in cell\_combinations_S$ gibt es $location\_count_S(comb)$ Positionen, die genau die Zellen der Teilkombination belegen. Aus diesen Positionen werden dann mit der Funktion $s_S$ genau $s_S(comb)$ Positionen für Schiffe ausgewählt. Daher gibt es für jede Teilkombination ${location\_count_S(comb)\choose s_S(comb)}$ verschiedene Schiffspositionen.
 
-Die gesamte Anzahl an möglichen Schiffsverteilungen ergibt sich dann einfach aus der Multiplikation der Anzahl an Schiffspositionen der einzelnen Teilkombinationen.
+Die gesamte Anzahl an möglichen Flotten ergibt sich dann einfach aus der Multiplikation der Anzahl an Schiffspositionen der einzelnen Teilkombinationen.
 \end{proof}
 
 \begin{definition}
 Sei
 \[
-distribution\_count(F)=\sum_{s \in share\_functions(F)}{distribution\_count(s)}
+fleet\_count(S)=\sum_{s \in share\_functions(S)}{fleet\_count(s)}
 \]
 \end{definition}
 
