@@ -145,16 +145,16 @@ Sei $C_{all}=\{1, \dots, N\}^d$ die Menge aller Zellen (cells) des Spielfeldes m
 \begin{definition}
 Sei
 \[
-F=(c_{min}, c_{max})
+l=(c_{min}, c_{max})
 \]
 eine mögliche Schiffsposition (location), welche mithilfe einer minimalen Ecke $c_{min} \in C_{all}$ und einer maximalen Ecke $c_{max} \in C_{all}$ bestimmt wird.
 \end{definition}
 
 \begin{definition}
-Sei $F=(c_{min}, c_{max})$ eine mögliche Schiffsposition.
+Sei $l=(c_{min}, c_{max})$ eine mögliche Schiffsposition.
 Dann ist
 \[
-cells(F)=
+cells(l)=
 \{
 c
 \in
@@ -169,7 +169,7 @@ die Menge aller Zellen, welche sich innerhalb der möglichen Schiffsposition $F$
 \begin{definition}
 Sei 
 \[
-F_{all}=
+L_{all}=
 \{
 \{
 k
@@ -191,7 +191,7 @@ Sei $ship\_count$ die Anzahl der platzierten Schiffe.
 \end{definition}
 
 \begin{definition}
-Sei $F_{all}=\{F \subseteq F_{all} \mid |F|=ship\_count\}$ die Menge von allen möglichen Flotten, die der Gegner auf dem Spielfeld platzieren kann.
+Sei $F_{all}=\{L \subseteq L_{all} \mid |L|=ship\_count\}$ die Menge von allen möglichen Flotten, die der Gegner auf dem Spielfeld platzieren kann.
 \end{definition}
 
 \begin{definition}
@@ -200,21 +200,13 @@ Da diese geheim ist, wird sie in der restlichen Ausarbeitung auch als unbekannt 
 \end{definition}
 
 \begin{definition}
-Sei
-\[
-H=\{0, \dots, ship\_count\}
-\]
-die Menge an theoretisch möglichen Trefferanzahlen bei einem Schuss auf eine Zelle.
-\end{definition}
-
-\begin{definition}
 Sei $F \in F_{all}$ und $c \in C_{all}$.
 Dann ist 
 \begin{align}
-&hit:F_{all} \times C_{all} \rightarrow H \quad mit \nonumber\\
-&hit(F, c)=|\{F \in F_{all} \mid c \in cells(F)\} \cap F|  \nonumber
+&hit:F_{all} \times C_{all} \rightarrow L_{all} \quad mit \nonumber\\
+&hit(F, c)=\{l \in F \mid c \in cells(l)\} \nonumber
 \end{align}
-die Treffer-Funktion, welche angibt, wie viele Schiffe bei einem Schuss auf Zelle $c$ getroffen wurden, falls $F$ die vom Gegner platzierte Flotte ist. In anderen Worten, die Anzahl der Schiffe aus Flotte $F$, die die Zelle $c$ belegen.
+die Treffer-Funktion, welche angibt, welche Schiffe bei einem Schuss auf Zelle $c$ getroffen wurden, falls $F$ die vom Gegner platzierte Flotte ist. In anderen Worten, die Menge der Schiffe aus Flotte $F$, die die Zelle $c$ belegen.
 \end{definition}
 
 \begin{definition}
@@ -234,11 +226,11 @@ Dies sind die beschossenen Zellen und jeweils getroffenen Schiffe.
 \begin{definition}
 Sei
 \[
-S_{all}=\mathscr{P}(C_{all}\times H)
+S_{all}=\mathscr{P}(C_{all}\times L_{all})
 \]
 die Menge aller möglichen Zustände.
 
-Ein Zustand der Form $S=\{(c_1, h_1), \dots , (c_k, h_k)\}\in S_{all}$ ist dann der Zustand nach $k$ Schüssen.
+Ein Zustand der Form $S=\{(c_1, L_1), \dots , (c_k, L_k)\}\in S_{all}$ ist dann der Zustand nach $k$ Schüssen.
 Das heißt, die Reihenfolge der einzelnen Schüsse spielt hier keine Rolle, da ein Zustand nur eine Menge an Tupeln ist.
 \end{definition}
 
@@ -246,7 +238,7 @@ Das heißt, die Reihenfolge der einzelnen Schüsse spielt hier keine Rolle, da e
 Sei $S\in S_{all}$ der momentane Zustand.
 Dann ist
 \begin{align}
-C_{shot}(S)=\{c \in C_{all} \mid (c,h) \in S, \; h \in H\}
+C_{shot}(S)=\{c \in C_{all} \mid (c,L) \in S, \; L \in L_{all}\}
 \end{align}
  die Menge an Zellen, auf die bereits geschossen wurde.
 \end{definition}
@@ -261,12 +253,21 @@ die Menge an Zellen, auf die noch nicht geschossen wurde.
 \end{definition}
 
 \begin{definition}
+Sei $S\in S_{all}$ der momentane Zustand.
+Dann ist 
+\begin{align}
+sunk\_ships(S)=\bigcup_{(c,L) \in S} L
+\end{align}
+die Menge an Zellen, auf die noch nicht geschossen wurde.
+\end{definition}
+
+\begin{definition}
 Sei
 \begin{align}
-&fire:F_{all}\times S_{all}\times P(C_{all}) \rightarrow S_{all} \quad mit \nonumber\\
-&fire(F, S, cells)=S \cup \{(cell,hit(F, cell)) \mid cell \in cells\}  \nonumber
+&fire:F_{all}\times S_{all}\times C_{all} \rightarrow S_{all} \quad mit \nonumber\\
+&fire(F, S, c)=S \cup \{(c,hit(F, c))\}  \nonumber
 \end{align}
-die Schuss-Funktion, welche die Zellen und die jeweiligen Treffer dem Zustand $S$ hinzufügt.
+die Schuss-Funktion, welche die Zelle und den jeweiligen Treffer dem Zustand $S$ hinzufügt.
 \end{definition}
 
 \begin{definition}
@@ -333,40 +334,11 @@ Vor dem Schuss gibt es noch im Zustand $S$ genau $fleet\_count(S)$ mögliche Flo
 Nach dem Schuss gibt es nur noch \\$fleet\_count(hypo\_fire(S,c, h))$ mögliche Flotten.
 \end{proof}
 
-
 \begin{definition}
 Sei $S\in S_{all}$ ein Zustand.
 Dann ist
 \[
-C_{undetermined}(S)=\{ c \in C_{left}(S) \mid \nexists h \in H \colon P(hit(c)=h \mid S) \in \{0, 1\}\}
-\]
-die Menge an allen Zellen, auf welche noch nicht geschossen wurde und noch nicht genau feststeht, wie viele Schiffe bei einem Schuss darauf getroffen werden.
-\end{definition}
-
-\begin{definition}
-Sei $S\in S_{all}$ ein Zustand.
-Dann ist
-\[
-determined(S) \Leftrightarrow fleet\_count(S)=1 \Leftrightarrow C_{undetermined}(S) = \emptyset
-\]
-wahr gdw. die richtige Flotte bereits bestimmt ist.
-\end{definition}
-
-
-\begin{definition}
-Sei $S\in S_{all}$ ein Zustand.
-Dann ist
-\[
-C_{left\_to\_finish}(S)=\{ c \in C_{left}(S) \mid \exists h \in H \colon P(hit(c)=h \mid S) = 1\}
-\]
-die Menge an allen Zellen, auf welche noch nicht geschossen wurde und genau feststeht, wie viele Schiffe bei einem Schuss darauf getroffen werden.
-\end{definition}
-
-\begin{definition}
-Sei $S\in S_{all}$ ein Zustand.
-Dann ist
-\[
-finished(S) \Leftrightarrow determined(S) \land C_{left\_to\_finish}(S) = \emptyset
+finished(S) \Leftrightarrow |sunk\_ships(S)|=ship\_count
 \]
 wahr gdw. alle Schiffe zerstört wurden.
 \end{definition}
@@ -392,52 +364,35 @@ die Menge an allen gültigen Strategiefunktionen.
 \begin{definition}
 Sei $S\in S_{all}$ ein Zustand.
 Sei außerdem $strat \in strategies$ die verwendete Schuss-Strategie.
-Sei $C \subseteq C_{undetermined}(S)$ eine Menge an Zellen.
 Dann ist
 \[
-max\_value=\max strat(S, C)
+max\_value=\max strat(S, C_{left})
 \]
 der maximale Wert, den die Strategiefunktion über allen Zellen ausgibt.
 
 Dann ist
 \begin{align}
-&best\_cell:S_{all} \times P(C) \times strategies \rightarrow C \quad mit \nonumber\\
-&best\_cell(S, C, strat)=x \in \{c \in C \mid strat(S, c) = max\_value\}
+&best\_cell:S_{all} \times strategies \rightarrow C \quad mit \nonumber\\
+&best\_cell(S, strat)=x \in \{c \in C_{left}(S) \mid strat(S, c) = max\_value\}
 \nonumber
 \end{align}
 eine Funktion, welche die nach der Strategiefunktion $strat$ besten Zelle aus der Menge $C$ auswählt.
+Falls es mehrere Zellen mit der gleichen Bewertung gibt, soll davon deterministisch eine ausgewählt werden.
 \end{definition}
-
-\subsection{Ziel-Funktionen}
-
-\begin{definition}
-Sei
-\begin{align}
-&target:S_{all} \times strategies \rightarrow P(C_{all}) \quad mit \nonumber\\
-&target(S,strat)=
-\begin{cases}
-C_{left\_to\_finish}(S)&, determined(S) \\
-\{best\_cell(S, strat, C_{undetermined}(S))\}&, sonst
-\end{cases}
-\nonumber
-\end{align}
-die Ziel-Funktion, welche die Menge an Zellen bestimmt, auf die als nächstes geschossen werden soll.
-\end{definition}
-
 
 \begin{definition}
 Sei $F\in F_{all}$ die gewählte Flotte und $S\in S_{all}$ der momentane Zustand.
 Sei außerdem $strat \in S$ die verwendete Schuss-Strategie.
 Dann ist
 \begin{align}
-&shot\_count(F, S, strat)=\\
+&shot\_count(F, S, strat)=
 & \begin{cases} 
-  	|C_{left\_to\_finish}(S)|& ,determined(S) \\
-      shot\_count(F, fire(F, S, best\_cell(S, strat, C_{undetermined}(S))), strat) + 1 & ,sonst
+  	0& ,finished(S) \\
+      shot\_count(F, fire(F, S, best\_cell(S, strat)), strat) + 1 & ,sonst
    \end{cases}
 \nonumber
 \end{align}
-die Anzahl an Schüssen, die von der Ziel-Funktion benötigt werden, um alle Schiffe der bereits bekannten Flotte mit der Schuss-Strategiefunktion $strat$ zu versenken.
+die Anzahl an Schüssen, die benötigt werden, um alle Schiffe mit der Schuss-Strategiefunktion $strat$ zu versenken.
 \end{definition}
 
 \subsection{Algorithmus}
@@ -449,9 +404,9 @@ Somit kann nun ein einfacher Algorithmus formuliert werden, der mithilfe einer f
  $S=\emptyset$\;
  $shot\_count=0$\;
  \While{$\neg finished(S)$}{
-  $next\_targets=target(S, strat)$\;
-  $S=fire(S, next\_targets)$\;
-  $shot\_count=shot\_count+|next\_targets|$\;
+  $next\_target=best\_cell(S, strat)$\;
+  $S=fire(S, next\_target)$\;
+  $shot\_count=shot\_count+1$\;
  }
 \end{algorithm}
 
@@ -521,7 +476,7 @@ Sei außerdem $c \in C_{left}(S)$ die beschossene Zelle.
 Dann ist
 \begin{align}
 \begin{split}
-&\mathds{E}(H_{F,c})=ship\_count - I(S,c)
+&\mathds{E}_S(H_c)=ship\_count - I(S,c)
 \end{split}
 \end{align}
 \end{satz}
