@@ -118,9 +118,10 @@ Zu Beginn platziert der Gegner eine feste und bekannte Anzahl an Schiffen auf se
 Natürlich sind die Schiffspositionen dem Spieler nicht bekannt.
 Die Gesamtheit aller gewählten Schiffspositionen wird auch die Flotte genannt.
 Nun kann der Spieler anfangen, auf bestimmte Positionen auf dem Spielfeld, auch Zellen genannt, zu schießen.
-Nach jedem Schuss erfährt der Spieler von seinem Gegner, die Anzahl an getroffenen Schiffen.
-Falls keine Schiffe getroffen wurden ist die Anzahl 0.
-Da Schiffe überlappen können, kann die Anzahl auch größer als 1 sein.
+Da Schiffe überlappen können, können mit jedem Schuss mehrere Schiffe, also Teilmengen der Flotte getroffen werden.
+Nach jedem Schuss erfährt der Spieler von seinem Gegner, welche Teilmenge der Flotte er getroffenen hat.
+Falls keine Schiffe getroffen wurden ist diese Menge natürlich leer.
+Ein Schiff gilt als versenkt, sobald es getroffen wurde.
 Sobald alle Schiffe versenkt wurden, ist das Spiel beendet.
 
 Das Ziel des Spielers ist es, mit möglichst wenig Schüssen alle Schiffe zu versenken.
@@ -262,6 +263,15 @@ die Menge an Zellen, auf die noch nicht geschossen wurde.
 \end{definition}
 
 \begin{definition}
+Sei $S\in S_{all}$ der momentane Zustand.
+Dann ist 
+\begin{align}
+ships\_left(S)=ship\_count - |sunk\_ships(S)|
+\end{align}
+die Anzahl an Schiffen, welche noch nicht versenkt wurde.
+\end{definition}
+
+\begin{definition}
 Sei
 \begin{align}
 &fire:F_{all}\times S_{all}\times C_{all} \rightarrow S_{all} \quad mit \nonumber\\
@@ -338,7 +348,7 @@ Nach dem Schuss gibt es nur noch \\$fleet\_count(hypo\_fire(S,c, h))$ mögliche 
 Sei $S\in S_{all}$ ein Zustand.
 Dann ist
 \[
-finished(S) \Leftrightarrow |sunk\_ships(S)|=ship\_count
+finished(S) \Leftrightarrow ships\_left(S)=0
 \]
 wahr gdw. alle Schiffe zerstört wurden.
 \end{definition}
@@ -362,6 +372,29 @@ die Menge an allen gültigen Strategiefunktionen.
 \end{definition}
 
 \begin{definition}
+Sei $x,y \in C_{all}$ mit $x \neq y$ und $d_{min}=\min \{d \in D \mid x_d \neq y_d\}$ die erste Dimension, in denen sich beide Zellen in einer Koordinate unterscheiden.
+Dann ist
+\[
+x <_c y \Leftrightarrow x_{d_{min}} < y_{d_{min}}
+\]
+die Koordinatenordnung auf $C_{all}$.
+\end{definition}
+
+\begin{definition}
+Sei $C \subseteq C_{all}$ eine Menge an Zellen.
+Dann gilt:
+\[
+\exists c_{first} \in C \colon \Leftrightarrow \forall c_{other} \in C \setminus \{c_{first}\} \colon , c_{first} <_c c_{other}
+\]
+
+Dieses erste Element kann dann verwendet werden, um die folgende Funktion zu definieren:
+\[
+first(C)=c_{first}
+\]
+Diese gibt für jede Menge $C$ jeweils das nach der Koordinatenordnung erste Element zurück.
+\end{definition}
+
+\begin{definition}
 Sei $S\in S_{all}$ ein Zustand.
 Sei außerdem $strat \in strategies$ die verwendete Schuss-Strategie.
 Dann ist
@@ -373,11 +406,11 @@ der maximale Wert, den die Strategiefunktion über allen Zellen ausgibt.
 Dann ist
 \begin{align}
 &best\_cell:S_{all} \times strategies \rightarrow C \quad mit \nonumber\\
-&best\_cell(S, strat)=x \in \{c \in C_{left}(S) \mid strat(S, c) = max\_value\}
+&best\_cell(S, strat)=first(\{c \in C_{left}(S) \mid strat(S, c) = max\_value\})
 \nonumber
 \end{align}
 eine Funktion, welche die nach der Strategiefunktion $strat$ besten Zelle aus der Menge $C$ auswählt.
-Falls es mehrere Zellen mit der gleichen Bewertung gibt, soll davon deterministisch eine ausgewählt werden.
+Falls es mehrere Zellen mit der gleichen Bewertung gibt, soll davon deterministisch die nach der Koordinatenordnung erste Zelle ausgewählt werden.
 \end{definition}
 
 \begin{definition}
@@ -418,7 +451,7 @@ Dieser Algorithmus bestimmt in jedem Schritt das beste Schussziel und zählt zus
 Die Greedy-Hit-Strategie versucht bei jedem Schuss die erwartete Anzahl an getroffenen Schiffen zu maximieren.
 
 \begin{definition}
-Sei $c \in C_{undetermined}(S)$ die beschossene Zelle.
+Sei $c \in C_{left}(S)$ die beschossene Zelle.
 Dann ist
 \[
 H_{c}=hit(c)
@@ -427,7 +460,7 @@ eine Zufallsvariable, die die Anzahl an Treffern bei einem Schuss auf Zelle $c$ 
 \end{definition}
 
 \begin{definition}
-Sei $S\in S_{all}$ ein Zustand und $c \in C_{undetermined}(S)$ die beschossene Zelle.
+Sei $S\in S_{all}$ ein Zustand und $c \in C_{left}(S)$ die beschossene Zelle.
 Dann ist
 \[
 P_S(H_{c}=h)=P(hit(c)=h \mid S) 
@@ -436,7 +469,7 @@ die Wahrscheinlichkeit, $h$ Schiffe zum Zustand $S$ bei einem Schuss auf Zelle $
 \end{definition}
 
 \begin{definition}
-Sei $S\in S_{all}$ ein Zustand und $c \in C_{undetermined}(S)$ die beschossene Zelle.
+Sei $S\in S_{all}$ ein Zustand und $c \in C_{left}(S)$ die beschossene Zelle.
 Dann ist
 \[
 \mathds{E}_S(hit(c))=\sum_{h \in H} P_S(H_{c}=h) * h
@@ -505,7 +538,7 @@ Die Greedy-fleet-Strategie versucht bei jedem Schuss die erwartete Anzahl an aus
 
 \begin{definition}
 Sei $S\in S_{all}$ der momentane Zustand.
-Sei außerdem $c \in C_{undetermined}(S)$ die beschossene Zelle.
+Sei außerdem $c \in C_{left}(S)$ die beschossene Zelle.
 Dann ist
 \[
 fleets\_removed(F, S, c)=fleet\_count(S) - fleet\_count(fire(F, S,c))
@@ -682,9 +715,9 @@ TODO
 \begin{align}
 \begin{split}
 &\mathds{E}(shot\_count(S, strat_{opt}))\\
-=&\mathds{E}(shot\_count(S, best\_cell(S, C_{undetermined}(S), strat_{opt}), strat_{opt})) + 1\\
-=&\min_{c \in C_{undetermined}(S)} \mathds{E}(shot\_count(S, c, strat_{opt})) + 1\\
-\leq & \mathds{E}(shot\_count(S, c_{other}, strat_{opt})), c_{other} \in C_{undetermined}(S)\\
+=&\mathds{E}(shot\_count(S, best\_cell(S, C_{left}(S), strat_{opt}), strat_{opt})) + 1\\
+=&\min_{c \in C_{left}(S)} \mathds{E}(shot\_count(S, c, strat_{opt})) + 1\\
+\leq & \mathds{E}(shot\_count(S, c_{other}, strat_{opt})), c_{other} \in C_{left}(S)\\
 \Rightarrow &\mathds{E}(shot\_count(S, strat_{opt})) \leq \mathds{E}(shot\_count(S, strat_{alt}))
 \end{split}
 \end{align}
