@@ -367,6 +367,13 @@ ein Tupel, der die Kardinalität der Mengen, die eine Partition von $L_{all}$ bi
 Die genaue Berechnung dieser Werte, wird im Implementations-Kapitel behandelt.
 \end{definition}
 
+\begin{definition}
+Sei $S\in S_{all}$ ein Zustand.
+Dann ist
+\[
+locations\_left(S)=|L_{all}| - |removed\_locations(S)|
+\]
+\end{definition}
 
 \subsection{Flotten}
 
@@ -374,7 +381,48 @@ Die genaue Berechnung dieser Werte, wird im Implementations-Kapitel behandelt.
 Sei $S\in S_{all}$ ein Zustand.
 Dann ist
 \[
-fleets(S)=\{F\in F_{all} \mid \forall (c,L) \in S \colon hit(F, c)=L\}
+k_{min}(S)=sunk\_ships(S)
+\]
+die minimale Größe, die die vom Gegner gewählte Flotte $F_a$ zum Zustand $S$ hat.
+\end{definition}
+
+\begin{definition}
+Sei $S\in S_{all}$ ein Zustand.
+Dann ist
+\[
+k_{max}(S)=locations\_left(S) + sunk\_ships(S)
+\]
+die maximale Größe, die die vom Gegner gewählte Flotte $F_a$ zum Zustand $S$ noch haben kann.
+\end{definition}
+
+\begin{definition}
+Sei $S\in S_{all}$ ein Zustand.
+Sei außerdem $k \in \{k_{min}(S), \dots, k_{max}(S)\}$ die Größe der Flotte.
+Dann ist
+\[
+fleets(S, k)=\{F\in F_{all}(k) \mid \forall (c,L) \in S \colon hit(F, c)=L\}
+\]
+die Menge aller Flotten der Größe $k$, auf die die Treffer-Informationen vom Zustand $S$ zutreffen.
+In anderen Worten, die Menge an zum Zustand $S$ noch möglichen Flotten der Größe $k$.
+\end{definition}
+
+\begin{satz}
+Sei $S\in S_{all}$ ein Zustand.
+Sei außerdem $k \in \{k_{min}(S), \dots, k_{max}(S)\}$ die Größe der Flotte.
+Dann gilt:
+\[
+|fleets(S, k)|=\binom{locations\_left(S)}{ships\_left(S, k)}
+\]
+\end{satz}
+
+\begin{proof}
+\end{proof}
+
+\begin{definition}
+Sei $S\in S_{all}$ ein Zustand.
+Dann ist
+\[
+fleets(S)=\bigcup_{k=k_{min}(S)}^{k_{max}(S)} fleets(S, k)
 \]
 die Menge aller Flotten, auf die die Treffer-Informationen vom Zustand $S$ zutreffen.
 In anderen Worten, die Menge an zum Zustand $S$ noch möglichen Flotten.
@@ -384,9 +432,43 @@ In anderen Worten, die Menge an zum Zustand $S$ noch möglichen Flotten.
 Sei $S\in S_{all}$ ein Zustand.
 Dann gilt:
 \[
-|fleets(S)|=\binom{|L_{all}| - |removed\_locations(S)|}{ships\_left(S)}
+|fleets(S)|=2^{locations\_left(S)}
 \]
+\end{satz}
 
+\begin{proof}
+\begin{align}
+\begin{split}
+&|fleets(S)|=\sum_{k=k_{min}(S)}^{k_{max}(S)} |fleets(S, k)|\\
+=&\sum_{k=k_{min}(S)}^{k_{max}(S)} \binom{locations\_left(S)}{k - sunk\_ships(S, k)} \\
+=&\sum_{k=0}^{k_{max}(S) - k_{min}(S)} \binom{locations\_left(S)}{k} \\
+=&\sum_{k=0}^{locations\_left(S)} \binom{locations\_left(S)}{k} \\
+=&2^{locations\_left(S)}
+\end{split}
+\end{align}
+\qed
+\end{proof}
+
+\begin{definition}
+Sei $S\in S_{all}$ ein Zustand.
+Sei außerdem $k \in \{k_{min}(S), \dots, k_{max}(S)\}$ die Größe der Flotte.
+Sei $c \in C_{left}(S)$ die beschossene Zelle und $h \in \{0, \dots, ships\_left(S, k)\}$ eine Anzahl an Schiffen.
+Dann ist
+\[
+valid\_fleets(S,k,c,h)=\{F \in fleets(S, k) \mid |hit(F, c)|=h\}
+\]
+die Menge aller Flotten der Größe $k$, auf die die Treffer-Informationen vom Zustand $S$ zutreffen und außerdem genau $h$ Schiffe die Zelle $c$ belegen.
+\end{definition}
+
+\begin{satz}
+Sei $S\in S_{all}$ ein Zustand.
+Sei außerdem $k \in \{k_{min}(S), \dots, k_{max}(S)\}$ die Größe der Flotte.
+Sei $c \in C_{left}(S)$ die beschossene Zelle und $h \in \{0, \dots, ships\_left(S, k)\}$ eine Anzahl an Schiffen.
+Sei außerdem $split(S,c)=(u, r, o)$.
+Dann gilt:
+\[
+|valid\_fleets(S,k,c,h)|=\binom{u}{h} \binom{o}{ships\_left(S, k) - h}
+\]
 \end{satz}
 
 \begin{proof}
@@ -394,25 +476,37 @@ Dann gilt:
 
 \begin{definition}
 Sei $S\in S_{all}$ ein Zustand.
-Sei $c \in C_{left}(S)$ die beschossene Zelle und $h \in \{0, \dots, ships\_left(S)\}$ eine Anzahl an Schiffen.
+Sei $c \in C_{left}(S)$ die beschossene Zelle und $h \in \{0, \dots, ships\_left(S, k_{max}(S))\}$ eine Anzahl an Schiffen.
 Dann ist
 \[
-valid\_fleets(S,c,h)=\{F \in fleets(S) \mid |hit(F, c)|=h\}
+valid\_fleets(S,c,h)=\bigcup_{k=k_{min}(S)}^{k_{max}(S)} valid\_fleets(S,k,c,h)
 \]
 die Menge aller Flotten, auf die die Treffer-Informationen vom Zustand $S$ zutreffen und außerdem genau $h$ Schiffe die Zelle $c$ belegen.
 \end{definition}
 
 \begin{satz}
 Sei $S\in S_{all}$ ein Zustand.
-Sei $c \in C_{left}(S)$ die beschossene Zelle und $h \in \{0, \dots, ships\_left(S)\}$ eine Anzahl an Schiffen.
+Sei $c \in C_{left}(S)$ die beschossene Zelle und $h \in \{0, \dots, ships\_left(S, k_{max}(S))\}$ eine Anzahl an Schiffen.
 Sei außerdem $split(S,c)=(u, r, o)$.
 Dann gilt:
 \[
-|valid\_fleets(S,c,h)|=\binom{u}{h} \binom{o}{ships\_left(S) - h}
+|valid\_fleets(S,c,h)|=\binom{u}{h} 2^o
 \]
 \end{satz}
 
 \begin{proof}
+\begin{align}
+\begin{split}
+&|valid\_fleets(S,c,h)|=\sum_{k=k_{min}(S)}^{k_{max}(S)} |valid\_fleets(S,k,c,h)|\\
+=&\sum_{k=k_{min}(S)}^{k_{max}(S)} \binom{u}{h} \binom{o}{k - sunk\_ships(S,k) - h} \\
+=&\binom{u}{h} \sum_{k=0}^{k_{max}(S) - k_{min}(S)} \binom{o}{k - h} \\
+=&\binom{u}{h} \sum_{k=0}^{locations\_left(S) - h} \binom{locations\_left(S) - u}{k} \\
+=&\binom{u}{h} \sum_{k=0}^{locations\_left(S) - u} \binom{locations\_left(S) - u}{k} \\
+=&\binom{u}{h} 2^{locations\_left(S) - u}\\
+=&\binom{u}{h} 2^{o}
+\end{split}
+\end{align}
+\qed
 \end{proof}
 
 \subsection{Wahrscheinlichkeiten}
@@ -452,22 +546,27 @@ Sei $c \in C_{left}(S)$ die beschossene Zelle.
 Sei außerdem $split(S,c)=(u, r, o)$.
 Dann ist
 \[
-P_S(H_c = h)=\frac{\binom{u}{h} \binom{o}{ships\_left(S) - h}}{\binom{|L_{all}| - r}{ships\_left(S)}}
+P_S(H_c = h)=\binom{u}{h} 2^{-u}
 \]
 \end{satz}
 die Wahrscheinlichkeit zu dem Zustand $S$, dass bei dem Schuss auf Zelle $c$ genau $h$ Schiffe getroffen werden.
 
-
-\begin{satz}
-Sei $S\in S_{all}$ ein Zustand.
-Sei $c \in C_{left}(S)$ die beschossene Zelle.
-Sei außerdem $split(S,c)=(u, r, o)$.
-Dann gilt für $H_c$ mit der Wahrscheinlichkeitsfunktion $P_S(H_c = h)$:
-\[
-H_c \sim Hypergeometric(u, |L_{all}| - r, ships\_left(S))
-\]
-\end{satz}
-
+\begin{proof}
+\begin{align}
+\begin{split}
+&P_S(H_c = h)=\sum_{F \in valid\_fleets(S,c,h)} P_S(F = F_a) \\
+=&\sum_{F \in valid\_fleets(S,c,h)} \frac{1}{|fleets(S)|} \\
+=& \frac{1}{|fleets(S)|} \sum_{F \in valid\_fleets(S,c,h)} 1 \\
+=& \frac{1}{|fleets(S)|} |valid\_fleets(S,c,h)| \\
+=& \frac{|valid\_fleets(S,c,h)|}{|fleets(S)|} \\
+=& \frac{\binom{u}{h} 2^o}{2^{locations\_left(S)}} \\
+=& \binom{u}{h} \frac{2^o}{2^{locations\_left(S)}} \\
+=& \binom{u}{h} 2^o - locations\_left(S) \\
+=& \binom{u}{h} 2^{-u}
+\end{split}
+\end{align}
+\qed
+\end{proof}
 
 
 \subsection{Schuss-Strategien}
