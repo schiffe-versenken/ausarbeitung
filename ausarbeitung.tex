@@ -114,7 +114,7 @@ Diese Ausarbeitung beschäftigt sich mit der Umsetzung von Schiffe-Versenken in 
 Die generelle Funktionsweise von dem normalen Schiffe-Versenken bleibt erhalten, muss jedoch um einige Dinge erweitert werden, um auch in höheren Dimensionen gut spielbar zu sein.
 
 Wir betrachten das Spielgeschehen zur Einfachheit halber nur aus der Sicht eines Spielers.
-Zu Beginn platziert der Gegner eine feste und bekannte Anzahl an Schiffen auf seinem Spielfeld. Es wird davon ausgegangen, dass die Schiffspositionen rein zufällig ausgewählt wurden. (Hier mehr Details mit Permutation)
+Zu Beginn platziert der Gegner eine feste und bekannte Anzahl an Schiffen auf seinem Spielfeld. Es wird davon ausgegangen, dass die Schiffspositionen rein zufällig ausgewählt wurden, d.h. dass zu Spielbeginn eine Flotte aus der Menge aller möglichen Flotten ausgewählt wird. Jede mögliche Flotte hat hierbei die gleiche Wahrscheinlichkeit, ausgewählt zu werden.
 Natürlich sind die Schiffspositionen dem Spieler nicht bekannt.
 Die Gesamtheit aller gewählten Schiffspositionen wird auch die Flotte genannt.
 Nun kann der Spieler anfangen, auf bestimmte Positionen auf dem Spielfeld, auch Zellen genannt, zu schießen.
@@ -144,11 +144,19 @@ Sei $C_{all}=\{1, \dots, N\}^d$ die Menge aller Zellen (cells) des Spielfeldes m
 \end{definition}
 
 \begin{definition}
-Sei
+Seien $c, c' \in C_{all}$ Zellen.
+Dann ist
+\[
+c \leq c' \Leftrightarrow \forall i \in \{1, \dots, d\} \colon c_{i} \leq c'_{i} 
+\]
+\end{definition}
+
+\begin{definition}
+Sei $c_{min} \in C_{all}$ und $c_{max} \in C_{all}$ mit $c_{min} \leq c_{max}$.
 \[
 l=(c_{min}, c_{max})
 \]
-eine mögliche Schiffsposition (location), welche mithilfe einer minimalen Ecke $c_{min} \in C_{all}$ und einer maximalen Ecke $c_{max} \in C_{all}$ bestimmt wird.
+eine mögliche Schiffsposition (location), welche mithilfe einer minimalen Ecke $c_{min}$ und einer maximalen Ecke $c_{max}$ bestimmt wird.
 \end{definition}
 
 \begin{definition}
@@ -159,12 +167,28 @@ cells(l)=
 \{
 c
 \in
-C
+C_{all}
 \mid
 c_{min} \leq c \leq c_{max}
 \}
 \]
-die Menge aller Zellen, welche sich innerhalb der möglichen Schiffsposition $F$ befinden.
+die Menge aller Zellen, welche sich innerhalb der möglichen Schiffsposition $l$ befinden.
+\end{definition}
+
+\begin{definition}
+Sei $c \in C_{all}$ eine Zelle.
+Dann ist
+\[
+locations(c)=
+\{
+l
+\in
+L_{all}
+\mid
+c \in cells(l)
+\}
+\]
+die Menge aller Schiffspositionen, welche die Zelle $c$ enthalten.
 \end{definition}
 
 \begin{definition}
@@ -172,16 +196,8 @@ Sei
 \[
 L_{all}=
 \{
-\{
-k
-\in
-C_{all}
+(i, j) \in C_{all} \times C_{all}
 \mid
-i \leq k \leq j
-\}
-\mid
-i,j \in C_{all}
-\wedge
 i \leq j
 \}
 \] die Menge aller möglichen Schiffspositionen.
@@ -232,6 +248,7 @@ S_{all}=\mathscr{P}(C_{all}\times L_{all})
 die Menge aller möglichen Zustände.
 
 Ein Zustand der Form $S=\{(c_1, L_1), \dots , (c_k, L_k)\}\in S_{all}$ ist dann der Zustand nach $k$ Schüssen.
+Jedes Tupel enthält die Zelle, auf die geschossen wurde und die Menge an Schiffen, welche dabei getroffen wurde.
 Das heißt, die Reihenfolge der einzelnen Schüsse spielt hier keine Rolle, da ein Zustand nur eine Menge an Tupeln ist.
 \end{definition}
 
@@ -259,7 +276,7 @@ Dann ist
 \begin{align}
 sunk\_ships(S)=\bigcup_{(c,L) \in S} L
 \end{align}
-die Menge an Zellen, auf die noch nicht geschossen wurde.
+die Menge an Schiffen, die bereits versenkt wurde.
 \end{definition}
 
 \begin{definition}
@@ -278,6 +295,7 @@ Sei
 &fire(F, S, c)=S \cup \{(c,hit(F, c))\}  \nonumber
 \end{align}
 die Schuss-Funktion, welche die Zelle und den jeweiligen Treffer dem Zustand $S$ hinzufügt.
+Es ist zu beachten, dass bereits getroffene und damit versenkte Schiffe bei einem weiteren Treffer an anderer Position dem Zustand nochmal hinzugefügt werden. Dies macht aber in der restlichen Betrachtung keinen Unterschied.
 \end{definition}
 
 \begin{definition}
@@ -289,7 +307,11 @@ finished(S) \Leftrightarrow ships\_left(S)=0
 wahr gdw. alle Schiffe zerstört wurden.
 \end{definition}
 
-\subsection{Wahrscheinlichkeiten}
+\subsection{Unterteilung von Schiffspositionen}
+
+Betrachten wir im Zustand $S\in S_{all}$ eine Zelle $c \in C_{left}(S)$, auf die noch nicht geschossen wurde, so können wir die Menge aller möglichen Schiffspositionen $L_{all}$ in drei Mengen unterteilen. Zum einen die Menge an Schiffspositionen, die bereits durch einen abgegebenen Schuss getroffen wurde, $removed\_locations(S)$. Zum Anderen die Menge an Schiffspositionen, welche noch nicht getroffen wurden, aber bei einem Schuss auf die Zelle $c$ getroffen werden, $unique\_locations(S, c)$. Und zuletzt die Menge an Schiffspositionen, auf die keines der beiden Kriterien zutrifft, $other\_locations(S, c)$.
+
+Kennen wir die Kardinalitäten dieser Mengen, können wir damit einfach unter Ausnutzung der Gleichverteilung von Flotten die Wahrscheinlichkeitsfunktion für die Anzahl an getroffenen Schiffen bei einem Schuss auf die Zelle $c$ berechnen, wie später gezeigt wird.
 
 \begin{definition}
 Sei $S\in S_{all}$ ein Zustand.
