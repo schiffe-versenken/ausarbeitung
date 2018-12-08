@@ -114,7 +114,7 @@ Diese Ausarbeitung beschäftigt sich mit der Umsetzung von Schiffe-Versenken in 
 Die generelle Funktionsweise von dem normalen Schiffe-Versenken bleibt erhalten, muss jedoch um einige Dinge erweitert werden, um auch in höheren Dimensionen gut spielbar zu sein.
 
 Wir betrachten das Spielgeschehen zur Einfachheit halber nur aus der Sicht eines Spielers.
-Zu Beginn platziert der Gegner eine feste und bekannte Anzahl an Schiffen auf seinem Spielfeld. Es wird davon ausgegangen, dass die Schiffspositionen rein zufällig ausgewählt wurden, d.h. dass zu Spielbeginn eine Flotte aus der Menge aller möglichen Flotten ausgewählt wird. Jede mögliche Flotte hat hierbei die gleiche Wahrscheinlichkeit, ausgewählt zu werden.
+Zu Beginn platziert der Gegner eine beliebige Anzahl an Schiffen auf seinem Spielfeld. Es wird davon ausgegangen, dass die Schiffspositionen rein zufällig ausgewählt wurden, d.h. dass zu Spielbeginn eine Flotte aus der Menge aller möglichen Flotten ausgewählt wird. Jede mögliche Flotte hat hierbei die gleiche Wahrscheinlichkeit, ausgewählt zu werden.
 Natürlich sind die Schiffspositionen dem Spieler nicht bekannt.
 Die Gesamtheit aller gewählten Schiffspositionen wird auch die Flotte genannt.
 Nun kann der Spieler anfangen, auf bestimmte Positionen auf dem Spielfeld, auch Zellen genannt, zu schießen.
@@ -204,11 +204,7 @@ i \leq j
 \end{definition}
 
 \begin{definition}
-Sei $ship\_count$ die Anzahl der platzierten Schiffe.
-\end{definition}
-
-\begin{definition}
-Sei $F_{all}=\{L \subseteq L_{all} \mid |L|=ship\_count\}$ die Menge von allen möglichen Flotten, die der Gegner auf dem Spielfeld platzieren kann.
+Sei $F_{all}=P(L_{all}) die Menge von allen möglichen Flotten, die der Gegner auf dem Spielfeld platzieren kann.
 \end{definition}
 
 \begin{definition}
@@ -281,11 +277,12 @@ die Menge an Schiffen, die bereits versenkt wurde.
 
 \begin{definition}
 Sei $S\in S_{all}$ der momentane Zustand.
+Sei $k \in N$ die Flottengröße.
 Dann ist 
 \begin{align}
-ships\_left(S)=ship\_count - |sunk\_ships(S)|
+ships\_left(S, k)=k - |sunk\_ships(S)|
 \end{align}
-die Anzahl an Schiffen, welche noch nicht versenkt wurde.
+die Anzahl an Schiffen, welche noch nicht versenkt wurden, falls die vom Gegner gewählte Flotte die Größe $k$ hat.
 \end{definition}
 
 \begin{definition}
