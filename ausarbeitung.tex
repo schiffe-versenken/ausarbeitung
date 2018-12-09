@@ -204,7 +204,7 @@ i \leq j
 \end{definition}
 
 \begin{definition}
-Sei $F_{all}=P(L_{all}) die Menge von allen möglichen Flotten, die der Gegner auf dem Spielfeld platzieren kann.
+Sei $F_{all}=P(L_{all}) \setminus \emptyset$ die Menge von allen möglichen Flotten, die der Gegner auf dem Spielfeld platzieren kann.
 \end{definition}
 
 \begin{definition}
@@ -378,7 +378,7 @@ locations\_left(S)=|L_{all}| - |removed\_locations(S)|
 Sei $S\in S_{all}$ ein Zustand.
 Dann ist
 \[
-k_{min}(S)=sunk\_ships(S)
+k_{min}(S)=|sunk\_ships(S)| + 1
 \]
 die minimale Größe, die die vom Gegner gewählte Flotte $F_a$ zum Zustand $S$ hat.
 \end{definition}
@@ -387,7 +387,7 @@ die minimale Größe, die die vom Gegner gewählte Flotte $F_a$ zum Zustand $S$ 
 Sei $S\in S_{all}$ ein Zustand.
 Dann ist
 \[
-k_{max}(S)=locations\_left(S) + sunk\_ships(S)
+k_{max}(S)=locations\_left(S) + |sunk\_ships(S)|
 \]
 die maximale Größe, die die vom Gegner gewählte Flotte $F_a$ zum Zustand $S$ noch haben kann.
 \end{definition}
@@ -429,7 +429,7 @@ In anderen Worten, die Menge an zum Zustand $S$ noch möglichen Flotten.
 Sei $S\in S_{all}$ ein Zustand.
 Dann gilt:
 \[
-|fleets(S)|=2^{locations\_left(S)}
+|fleets(S)|=2^{locations\_left(S)} - 1
 \]
 \end{satz}
 
@@ -438,9 +438,10 @@ Dann gilt:
 \begin{split}
 &|fleets(S)|=\sum_{k=k_{min}(S)}^{k_{max}(S)} |fleets(S, k)|\\
 =&\sum_{k=k_{min}(S)}^{k_{max}(S)} \binom{locations\_left(S)}{k - sunk\_ships(S, k)} \\
-=&\sum_{k=0}^{k_{max}(S) - k_{min}(S)} \binom{locations\_left(S)}{k} \\
-=&\sum_{k=0}^{locations\_left(S)} \binom{locations\_left(S)}{k} \\
-=&2^{locations\_left(S)}
+=&\sum_{k=k_{min}(S)-sunk\_ships(S, k)}^{k_{max}(S) - sunk\_ships(S, k)} \binom{locations\_left(S)}{k} \\
+=&\sum_{k=1}^{locations\_left(S)} \binom{locations\_left(S)}{k} \\
+=&(\sum_{k=0}^{locations\_left(S)} \binom{locations\_left(S)}{k}) - 1\\
+=&2^{locations\_left(S)} - 1
 \end{split}
 \end{align}
 \qed
@@ -481,13 +482,25 @@ valid\_fleets(S,c,h)=\bigcup_{k=k_{min}(S)}^{k_{max}(S)} valid\_fleets(S,k,c,h)
 die Menge aller Flotten, auf die die Treffer-Informationen vom Zustand $S$ zutreffen und außerdem genau $h$ Schiffe die Zelle $c$ belegen.
 \end{definition}
 
+\begin{definition}
+Sei $h \in N_0$ eine Anzahl an Schiffen.
+Dann ist
+\[
+h_0(h)=
+\begin{cases}
+1, h=0 \\
+0, sonst
+\end{cases}
+\]
+\end{definition}
+
 \begin{satz}
 Sei $S\in S_{all}$ ein Zustand.
 Sei $c \in C_{left}(S)$ die beschossene Zelle und $h \in \{0, \dots, ships\_left(S, k_{max}(S))\}$ eine Anzahl an Schiffen.
 Sei außerdem $split(S,c)=(u, r, o)$.
 Dann gilt:
 \[
-|valid\_fleets(S,c,h)|=\binom{u}{h} 2^o
+|valid\_fleets(S,c,h)|=\binom{u}{h} 2^o - h_0(h)
 \]
 \end{satz}
 
@@ -496,11 +509,12 @@ Dann gilt:
 \begin{split}
 &|valid\_fleets(S,c,h)|=\sum_{k=k_{min}(S)}^{k_{max}(S)} |valid\_fleets(S,k,c,h)|\\
 =&\sum_{k=k_{min}(S)}^{k_{max}(S)} \binom{u}{h} \binom{o}{k - sunk\_ships(S,k) - h} \\
-=&\binom{u}{h} \sum_{k=0}^{k_{max}(S) - k_{min}(S)} \binom{o}{k - h} \\
-=&\binom{u}{h} \sum_{k=0}^{locations\_left(S) - h} \binom{locations\_left(S) - u}{k} \\
-=&\binom{u}{h} \sum_{k=0}^{locations\_left(S) - u} \binom{locations\_left(S) - u}{k} \\
-=&\binom{u}{h} 2^{locations\_left(S) - u}\\
-=&\binom{u}{h} 2^{o}
+=&\binom{u}{h} \sum_{k=k_{min}(S)-sunk\_ships(S, k)}^{k_{max}(S) - sunk\_ships(S, k)} \binom{o}{k - h} \\
+=&\binom{u}{h} \sum_{k=1}^{locations\_left(S)} \binom{locations\_left(S) - u}{k - h} \\
+=&\binom{u}{h} \sum_{k=\max(1 - h, 0)}^{locations\_left(S) - h} \binom{locations\_left(S) - u}{k} \\
+=&\binom{u}{h} \sum_{k=\max(1 - h, 0)}^{locations\_left(S) - u} \binom{locations\_left(S) - u}{k} \\
+=&\binom{u}{h} 2^{locations\_left(S) - u} - h_0(h)\\
+=&\binom{u}{h} 2^{o} - h_0(h)
 \end{split}
 \end{align}
 \qed
@@ -543,7 +557,7 @@ Sei $c \in C_{left}(S)$ die beschossene Zelle.
 Sei außerdem $split(S,c)=(u, r, o)$.
 Dann ist
 \[
-P_S(H_c = h)=\binom{u}{h} 2^{-u}
+P_S(H_c = h)=\binom{u}{h} 2^{-u} - \frac{h_0(h)}{2^{locations\_left(S)}}
 \]
 \end{satz}
 die Wahrscheinlichkeit zu dem Zustand $S$, dass bei dem Schuss auf Zelle $c$ genau $h$ Schiffe getroffen werden.
@@ -556,10 +570,10 @@ die Wahrscheinlichkeit zu dem Zustand $S$, dass bei dem Schuss auf Zelle $c$ gen
 =& \frac{1}{|fleets(S)|} \sum_{F \in valid\_fleets(S,c,h)} 1 \\
 =& \frac{1}{|fleets(S)|} |valid\_fleets(S,c,h)| \\
 =& \frac{|valid\_fleets(S,c,h)|}{|fleets(S)|} \\
-=& \frac{\binom{u}{h} 2^o}{2^{locations\_left(S)}} \\
-=& \binom{u}{h} \frac{2^o}{2^{locations\_left(S)}} \\
-=& \binom{u}{h} 2^o - locations\_left(S) \\
-=& \binom{u}{h} 2^{-u}
+=& \frac{\binom{u}{h} 2^o - h_0(h)}{2^{locations\_left(S)}} \\
+=& \binom{u}{h} \frac{2^o - h_0(h)}{2^{locations\_left(S)}} \\
+=& \binom{u}{h} 2^{o - locations\_left(S)} \\
+=& \binom{u}{h} 2^{-u} - \frac{h_0(h)}{2^{locations\_left(S)}}
 \end{split}
 \end{align}
 \qed
