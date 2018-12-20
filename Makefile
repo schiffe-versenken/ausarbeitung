@@ -5,14 +5,15 @@
 #############################################################################
 SRC=ausarbeitung
 BIN=Ausarbeitung_Vorlage
+PDFLATEX = pdflatex -shell-escape
 
 all:
-	pdflatex $(SRC).tex
+	$(PDFLATEX) $(SRC).tex
 	bibtex $(SRC)
-	pdflatex $(SRC).tex 
-	pdflatex $(SRC).tex
+	$(PDFLATEX) $(SRC).tex 
+	$(PDFLATEX) $(SRC).tex
 
-.PHONY	: all show clean ps pdf showps veryclean
+.PHONY	: all show clean veryclean
 
 clean:
 	rm -rf *.dvi *.pdf
@@ -20,14 +21,9 @@ clean:
 veryclean: clean
 	rm -f *.log *.aux *.dvi *.bbl *.blg *.ilg *.toc *.lof *.lot *.idx *.ind *.ps  *~ *.out *.tpt
 
-show:
+show: final
 	@evince $(BIN).pdf &
-	@open $(BIN).pdf
 
-final: 	
-	pdflatex $(SRC).tex 
-	bibtex $(SRC)
-	pdflatex $(SRC).tex 
-	pdflatex $(SRC).tex 
+final: all
 	mv $(SRC).pdf $(BIN).pdf
 
