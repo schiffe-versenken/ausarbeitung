@@ -34,8 +34,14 @@
 %\newtheorem{definition}{Definition}
 \usepackage{doc}
 \usepackage{mathrsfs}
-%TODO Die nächsten drei Zeilen sollten in der finalen Version deaktiviert werden.
+%TODO Die nächsten Zeilen sollten in der finalen Version deaktiviert werden.
+\usepackage{ifplatform}
+\ifwindows
+%\immediate\write18{"\@percentchar ProgramFiles\string\Git\string\bin\string\sh.exe" gitinfo2.sh}
+\immediate\write18{"\percentchar ProgramFiles\percentchar \string\Git\string\bin\string\sh.exe" gitinfo2.sh}
+\else
 \immediate\write18{./gitinfo2.sh}
+\fi
 \usepackage[local,grumpy,dirty={, geändert}]{gitinfo2}
 \usepackage{todonotes}
 
