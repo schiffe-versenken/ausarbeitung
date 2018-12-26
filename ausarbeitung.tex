@@ -1,3 +1,8 @@
+% !TeX document-id = {88ddee8b-8eb6-46e0-9af4-2c10d8b61c04}
+% !TeX spellcheck = de-DE
+% !TeX encoding = utf8
+% !TeX TXS-program:compile = txs:///pdflatex/[--shell-escape]
+
 % This is LLNCS.DEM the demonstration file of
 % the LaTeX macro package from Springer-Verlag
 \documentclass[a4paper,12pt]{llncs}
@@ -30,6 +35,16 @@
 %\newtheorem{definition}{Definition}
 \usepackage{doc}
 \usepackage{mathrsfs}
+%TODO Die nächsten Zeilen sollten in der finalen Version deaktiviert werden.
+\usepackage{ifplatform}
+\ifwindows
+%\immediate\write18{"\@percentchar ProgramFiles\string\Git\string\bin\string\sh.exe" gitinfo2.sh}
+\immediate\write18{"\percentchar ProgramFiles\percentchar \string\Git\string\bin\string\sh.exe" gitinfo2.sh}
+\else
+\immediate\write18{./gitinfo2.sh}
+\fi
+\usepackage[local,grumpy,dirty={, geändert}]{gitinfo2}
+\usepackage{todonotes}
 
 % Seitenformat ===============================================================
 \hoffset=-1.25truecm
@@ -103,6 +118,8 @@
 \title{Meine Seminarausarbeitung}
 
 \maketitle
+
+\todo[inline]{Version \gitAbbrevHash, Branch \gitBranch, \gitCommitterIsoDate \gitDirty}
 
 \thispagestyle{empty}
 
