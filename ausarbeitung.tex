@@ -36,14 +36,8 @@
 \usepackage{doc}
 \usepackage{mathrsfs}
 %TODO Die nächsten Zeilen sollten in der finalen Version deaktiviert werden.
-\usepackage{ifplatform}
-\ifwindows
-%\immediate\write18{"\@percentchar ProgramFiles\string\Git\string\bin\string\sh.exe" gitinfo2.sh}
-\immediate\write18{"\percentchar ProgramFiles\percentchar \string\Git\string\bin\string\sh.exe" gitinfo2.sh}
-\else
-\immediate\write18{./gitinfo2.sh}
-\fi
 \usepackage[local,grumpy,dirty={, geändert}]{gitinfo2}
+\usepackage{mathtools}
 \usepackage{todonotes}
 
 % Seitenformat ===============================================================
@@ -119,7 +113,7 @@
 
 \maketitle
 
-\todo[inline]{Version \gitAbbrevHash, Branch \gitBranch, \gitCommitterIsoDate \gitDirty}
+%\todo[inline]{Version \gitAbbrevHash, Branch \gitBranch, \gitCommitterIsoDate \gitDirty}
 
 \thispagestyle{empty}
 
@@ -149,21 +143,14 @@ Sobald alle Schiffe versenkt wurden, ist das Spiel beendet.
 
 Das Ziel des Spielers ist es, mit möglichst wenig Schüssen alle Schiffe zu versenken.
 
-%\bildbreite{figures/einleitung.jpg}{15cm}{Einleitung}{Bild}{as}
-
-\subsection{Inhalt}
-Zu Beginn wird das beschriebene Spielprinzip formalisiert, sodass man damit mathematisch arbeiten kann.
-
-Anschließend werden verschiedene Spielstrategien vorgestellt.
-
-Danach werden verschiedene Möglichkeiten präsentiert, die Spielstrategien so gut wie möglich zu optimieren, damit sie auch mit sehr vielen Dimensionen immernoch effizient berechenbar sind.
-
-Zum Schluss werden dann die Strategien mithilfe der vorherigen Kenntnisse implementiert und die Ergebnisse in Bezug auf Laufzeiteffizienz verglichen.
-
 \section{Formalisierung des Spielprinzips}
 
 \begin{definition}
-Sei $C_{all}=\{1, \dots, N\}^d$ die Menge aller Zellen (cells) des Spielfeldes mit jeweils $N$ Zellen in $d$ Dimensionen.
+Sei
+\[
+C_{all} \coloneqq \{1, \dots, N\}^d
+\]
+die Menge aller Zellen des Spielfeldes mit jeweils $N$ Zellen in $d$ Dimensionen.
 \end{definition}
 
 \begin{satz}
@@ -193,41 +180,9 @@ eine mögliche Schiffsposition (location), welche mithilfe einer minimalen Ecke 
 \end{definition}
 
 \begin{definition}
-Sei $l=(c_{min}, c_{max})$ eine mögliche Schiffsposition.
-Dann ist
-\[
-cells(l)=
-\{
-c
-\in
-C_{all}
-\mid
-c_{min} \leq c \leq c_{max}
-\}
-\]
-die Menge aller Zellen, welche sich innerhalb der möglichen Schiffsposition $l$ befinden.
-\end{definition}
-
-\begin{definition}
-Sei $c \in C_{all}$ eine Zelle.
-Dann ist
-\[
-locations(c)=
-\{
-l
-\in
-L_{all}
-\mid
-c \in cells(l)
-\}
-\]
-die Menge aller Schiffspositionen, welche die Zelle $c$ enthalten.
-\end{definition}
-
-\begin{definition}
 Sei 
 \[
-L_{all}=
+L_{all} \coloneqq
 \{
 (i, j) \in C_{all} \times C_{all}
 \mid
@@ -235,7 +190,6 @@ i \leq j
 \}
 \] die Menge aller möglichen Schiffspositionen.
 \end{definition}
-
 
 \begin{satz}
 Dann gilt:
@@ -245,16 +199,24 @@ Dann gilt:
 \end{satz}
 
 \begin{definition}
-Sei $k \in \{1, \dots, |L_{all}|\}$ die Größe der Flotte.
+Sei 
+\[
+K \coloneqq \{1, \dots, |L_{all}|\}
+\]
+die Menge aller möglichen Flottengrößen.
+\end{definition}
+
+\begin{definition}
+Sei $k \in K$ die Größe der Flotte.
 Dann ist
 \[
-F_{all}(k)=\{F \in P(L_{all}) \mid |F| = k\}
+F_{all}(k) \coloneqq\{F \in P(L_{all}) \mid |F| = k\}
 \]
 die Menge aller Flotten der Größe $k$.
 \end{definition}
 
 \begin{satz}
-Sei $k \in \{1, \dots, |L_{all}|\}$ die Größe der Flotte.
+Sei $k \in K$ die Größe der Flotte.
 Dann gilt:
 \[
 |F_{all}(k)|=\binom{|L_{all}|}{k}
@@ -267,7 +229,7 @@ Dann gilt:
 \begin{definition}
 Dann ist
 \[
-F_{all}=\bigcup_{k=1}^{|L_{all}|} F_{all}(k)
+F_{all} \coloneqq \bigcup_{k=1}^{|L_{all}|} F_{all}(k)
 \]
 \end{definition}
 
@@ -296,7 +258,7 @@ Sei $F \in F_{all}$ und $c \in C_{all}$.
 Dann ist 
 \begin{align}
 &\hit:F_{all} \times C_{all} \rightarrow L_{all} \quad mit \nonumber\\
-&\hit(F, c)\mapsto \{l \in F \mid c \in cells(l)\} \nonumber
+&\hit(F, c)\mapsto \{(c_{min}, c_{max}) \in F \mid c_{min} \leq c \leq c_{max}\} \nonumber
 \end{align}
 die Treffer-Funktion, welche angibt, welche Schiffe bei einem Schuss auf Zelle $c$ getroffen wurden, falls $F$ die vom Gegner platzierte Flotte ist. In anderen Worten, die Menge der Schiffe aus Flotte $F$, die die Zelle $c$ belegen.
 \end{definition}
@@ -314,16 +276,16 @@ wird Strategiefunktion genannt. Diese wählt die nächste Zelle aus, auf die ges
 \begin{definition}
 Sei
 \[
-\strategies=\{ \strat:P(C_{all}) \rightarrow C_{all} \}
+\strategies  \coloneqq \{ \strat:P(C_{all}) \rightarrow C_{all} \}
 \]
 die Menge an allen Strategiefunktionen.
 \end{definition}
 
 \begin{definition}
-Sei $F\in F_{all}$ die gewählte Flotte und $S$ die Menge an bereits beschossenen Zellen.
+Sei $F\in F_{all}$ die gewählte Flotte und $S \in P(C_{all})$ die Menge an bereits beschossenen Zellen.
 Dann ist:
 \[
-\finished(F, S) \Leftrightarrow \hit(F, S) = F
+\finished(F, S) \Leftrightarrow \bigcup_{c \in S} \hit(F, c) = F
 \]
 wahr, falls alle Schiffe aus der Flotte $F$ versenkt wurden.
 \end{definition}
@@ -351,31 +313,76 @@ Außerdem ist dann
 die Anzahl an Schüssen, die benötigt werden, um alle Schiffe der Flotte $F$ mit der Schuss-Strategiefunktion $\strat$ zu versenken.
 \end{definition}
 
+\subsection{Zufallsvariablen}
+
 \begin{definition}
-Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
-Dann ist
-\begin{align}
-T_{\strat}
-\nonumber
-\end{align}
-eine Zufallsvariable, die die Anzahl an Schüssen zum versenken einer beliebig gewählten Flotte
+Sei $G_{all} \subseteq F_{all}$ eine Menge an Flotten.
+\end{definition}
+
+\begin{definition}
+Sei $G_a \in G_{all} $ eine zufällig usgewählte Flotte aus $G_{all} $. Im folgenden wird davon ausgegangen, dass $G_a$ für den Spieler unbekannt ist.
+Dann gilt:
+\[
+P(G = choose(G_{all})) = \frac{1}{|G_{all}|}
+\]
+In anderen Worten, alle Flotten haben die gleiche Wahrscheinlichkeit, ausgewählt zu werden, d.h. sie sind gleichverteilt.
 \end{definition}
 
 \begin{definition}
 Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
+Sei $G_a \in G_{all}$ die ausgewählte Flotte aus $G_{all}$.
 Dann ist
 \begin{align}
-E(T_{\strat})=\frac{1}{|F_{all}|} \sum_{F\in F_{all}} \shot_count(F, \strat)=\frac{1}{|F_{all}|} \sum_{k=1}^{|L_{all}|}\sum_{F\in F_{all}(k)} \shot_count(F, \strat)
+T_{\strat,G_{all}} \coloneqq \shot_count(choose(G_{all}), \strat)
+\nonumber
+\end{align}
+eine Zufallsvariable, die die Anzahl an Schüssen zum versenken einer beliebig gewählten Flotte aus der Menge $G_{all}$.
+\end{definition}
+
+\subsection{Erwartungswerte}
+
+\begin{satz}
+Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
+Dann ist
+\begin{align}
+E(T_{\strat, G_{all}})=\frac{1}{|G_{all}|} \sum_{G \in G_{all}} \shot_count(G, \strat)
+\nonumber
+\end{align}
+der Erwartungswert von $T_{\strat, G_{all}}$.
+\end{satz}
+
+\begin{proof}
+\begin{align}
+\begin{split}
+E(T_{\strat,G_{all}})&=\sum_{G \in G_{all}} P(G = choose(G_{all})) \shot_count(G, \strat)\\
+&=\frac{1}{|G_{all}|} \sum_{G \in F_{all}} \shot_count(G, \strat)
+\nonumber
+\end{split}
+\end{align}
+\qed
+\end{proof}
+
+\begin{satz}
+Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
+Dann ist
+\begin{align}
+E(T_{\strat,F_{all}})=\frac{1}{|F_{all}|} \sum_{k=1}^{|L_{all}|}\sum_{F\in F_{all}(k)} \shot_count(F, \strat)
 \nonumber
 \end{align}
 der Erwartungswert von $T_{\strat}$.
-\end{definition}
+\end{satz}
 
-\section{Implementation}
-
-\subsection{Implementation eines Monte-Carlo Algorithmus}
-
-Um zu bewerten, wie gut eine Strategiefunktion $\strat$ abschneidet, kann ein Monte-Carlo Algorithmus implementiert werden, der mit einer gewissen Wahrscheinlichkeit und Genauigkeit den Wert von $E(\shot_count(\strat))$ abschätzt.
+\begin{proof}
+\begin{align}
+\begin{split}
+&E(T_{\strat,F_{all}})\\
+=&\frac{1}{|F_{all}|} \sum_{F\in F_{all}} \shot_count(F, \strat)\\
+=&\frac{1}{|F_{all}|} \sum_{k=1}^{|L_{all}|}\sum_{F\in F_{all}(k)} \shot_count(F, \strat)
+\nonumber
+\end{split}
+\end{align}
+\qed
+\end{proof}
 
 \begin{definition}
 Sei $k \in N$ die Flottengröße.
@@ -386,16 +393,68 @@ g_k=\frac{|F_{all}(k)|}{|F_{all}|}=\frac{\binom{|L_{all}|}{k}}{2^{|L_{all}|} - 1
 der Anteil an Flotten der Größe $k$ an der Menge aller Flotten. Dieser Faktor wird später als Gewichtungsfaktor für den Erwartungswert der Flottengröße $k$ verwendet.
 \end{definition}
 
-\begin{definition}
-Sei $r \in N$ die gesamte Anzahl der Durchläufe.
-Dann werden für jede Flottengröße $k$ genau
-\[
-r_k=\lfloor g_k r \rfloor=\lfloor \frac{\binom{|L_{all}|}{k}}{2^{|L_{all}|} - 1} r \rfloor
-\]
-Durchläufe ausgeführt.
+\begin{satz}
+Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
+Dann ist
+\begin{align}
+E(T_{\strat,F_{all}})=\sum_{k=1}^{|L_{all}|} g_k E(T_{\strat,F_{all}(k)})
+\nonumber
+\end{align}
+der Erwartungswert von $T_{\strat,F_{all}}$.
+\end{satz}
 
-Somit wird gewährleistet, dass abhängig von der Anzahl der möglichen Flotten der Größe $k$ immer ein ungefähr gleicher Anteil an Flotten für jedes $k$ ausgewertet wird. Die jeweiligen Anteile sind nicht genau gleich, da eventuell gerundet werden muss, jedoch ist der Unterschied vernachlässigbar.
+
+\subsection{Das Gesetz der großen Zahlen}
+
+\begin{definition}
+Sei im folgenden Abschnitt $\epsilon \in R_+$ die obere Grenze für die akzeptierte Abweichung des errechneten Erwartungswertes vom tatsächlichen Erwartungswert.
+
+Sei im folgenden Abschnitt $\eta \in (0,1]$ die untere Grenze für die akzeptierte Wahrscheinlichkeit, dass Abweichung des errechneten Erwartungswertes kleiner als $\epsilon$ ist. 
 \end{definition}
+
+\begin{satz}
+Sei $\epsilon > 0$ und $F_{sub,k} \subseteq F_{all}(k)$ eine Menge an Flotten der Größe $k$.
+Dann gilt nach dem schwachen Gesetz der großen Zahlen:
+\begin{align}
+P(|E(T_{\strat,F_{sub,k}}) - E(T_{\strat,F_{all}(k)})| \geq \epsilon) \leq \frac{V(T_{\strat,F_{sub,k}})}{|F_{sub,k}| \epsilon^2}
+\nonumber
+\end{align}
+\end{satz}
+
+Diese Aussage kann folgendermaßen umgeformt werden:
+
+\begin{satz}
+Sei $F_{sub,k} \subseteq F_{all}(k)$ eine Menge an Flotten der Größe $k$.
+Dann gilt:
+\begin{align}
+P(|E(T_{\strat,F_{sub,k}}) - E(T_{\strat,F_{all}(k)})| < \epsilon) \geq 1 - \frac{V(T_{\strat,F_{sub,k}})}{|F_{sub,k}| \epsilon^2}
+\nonumber
+\end{align}
+\end{satz}
+
+\begin{proof}
+\begin{align}
+\begin{split}
+&P(|E(T_{\strat,F_{sub,k}}) - E(T_{\strat,F_{all}(k)})| \geq \epsilon) \leq \frac{V(T_{\strat,F_{sub,k}})}{|F_{sub,k}| \epsilon^2}\\
+\Leftrightarrow &1 - P(|E(T_{\strat,F_{sub,k}}) - E(T_{\strat,F_{all}(k)})| < \epsilon) \leq \frac{V(T_{\strat,F_{sub,k}})}{|F_{sub,k}| \epsilon^2}\\
+\Leftrightarrow &P(|E(T_{\strat,F_{sub,k}}) - E(T_{\strat,F_{all}(k)})| < \epsilon) \geq 1 - \frac{V(T_{\strat,F_{sub,k}})}{|F_{sub,k}| \epsilon^2}\\
+\end{split}
+\end{align}
+\qed
+\end{proof}
+
+\begin{satz}
+Damit kann dann eine Abbruchbedingung formuliert werden, welche festlegt, ab wann der mit $F_{sub,k}$ berechnete Erwartungswert für uns gut genug ist:
+
+\begin{align}
+\frac{V(T_{\strat,F_{sub,k}})}{|F_{sub,k}| \epsilon^2} \geq 1 - \eta \Leftrightarrow P(|E(T_{\strat,F_{sub,k}}) - E(T_{\strat,F_{all}(k)})| < \epsilon) \geq \eta
+\nonumber
+\end{align}
+\end{satz}
+
+\section{Implementation eines Monte-Carlo Algorithmus}
+
+Um zu bewerten, wie gut eine Strategiefunktion $\strat$ abschneidet, kann ein Monte-Carlo Algorithmus implementiert werden, der mit einer gewissen Wahrscheinlichkeit und Genauigkeit den Wert von $E(T_{\strat,F_{all}(k)})$ abschätzt.
 
 Um den Wert von $\shot_count(F, \strat)$ für eine gegebene Flotte $F$ zu berechnen, kann folgende Funktion verwendet werden:
 
@@ -411,48 +470,45 @@ Um den Wert von $\shot_count(F, \strat)$ für eine gegebene Flotte $F$ zu berech
   \Return $\shot_count$\;
 \end{algorithm}
 
-
-Damit kann dann eine Funktion implementiert werden, die den Wert von $E(\shot_count(F, \strat))$ für Flotten der Größe $k$ berechnet. Da es sehr viele dieser Flotten gibt, werden $r_k$ viele Flotten aus dieser Menge zufällig ausgewählt. Umso größer das $r_k$, umso weiter nährt sich der Erwartungswert dieser Stichprobe dem echten Erwartungswert an.
+Dann kann eine Funktion implementiert werden, die den Wert von $E(T_{\strat,F_{all}(k)})$ näherungsweise berechnet. Da es sehr viele Flotten gibt, werden nur so viele Flotten aus dieser Menge ausgewertet, bis der berechnete Wert für uns genau genug ist. Dafür wird in jedem Durchlauf der Teilmenge $F_{sub,k}$ eine weitere zufällige Flotte der Größe $k$ hinzugefügt und danach überprüft, ob die vorher definierte Abbruchbedingung
+\[
+\frac{V(T_{\strat,F_{sub,k}})}{|F_{sub,k}| \epsilon^2} \geq 1 - \eta
+\]
+erfüllt ist:
 
 \begin{algorithm}[H]
  function simulate\_rounds(k, strat, $\epsilon, \eta$):\\
- $fleets=generate\_random\_fleets(k, r_k)$\;
  $sum=0$\;
  $q\_sum=0$\;
-   $E =0$\;
-   $V =0$\;
+   $E=0$\;
+   $V=0$\;
     $rounds =0$\;
- \While{$i=1,\dots, r_k$}{
-   $count += shot\_count(fleets[i], \strat)$\;
+ \While{$true$}{
+   $count += shot\_count(generate\_random\_fleet(k), \strat)$\;
    $sum += count$\; 
    $q\_sum += {count}^2$\;
    $E =sum / rounds$\;
    $V =(q\_sum / rounds) - E^2$\;
-     \If {$V / (rounds * \epsilon) \leq \eta$}{
+     \If {$V / (rounds * \epsilon^2) \geq 1 - \eta$}{
      break\;
    }
  }
- \Return $(E, V)$\;
+ \Return $E$\;
 \end{algorithm}
 
-Abschliessend kann dann die Funktion implementiert werden, die den Wert von $E(\shot_count(F, \strat))$ für Flotten beliebiger Größe berechnet. Dafür müssen die Werte für jedes $k$ gewichtet aufsummiert werden. Nebenbei werden auch die Erwartungswerte für jedes $k$ gespeichert, damit diese später auch untersucht werden können.
+Abschliessend kann dann die Funktion implementiert werden, die den Wert von $E(T_{\strat,F_{all}})$ für Flotten beliebiger Größe berechnet. Dafür müssen die Werte für jedes $k$ gewichtet aufsummiert werden. Nebenbei werden auch die Erwartungswerte für jedes $k$ gespeichert, damit diese später auch untersucht werden können.
 
 \begin{algorithm}[H]
- function calculate\_expected\_shot\_count(strat):\\
- $expected\_\shot_count=[]$\;
- $total\_expected\_\shot_count=0$\;
+ function calculate\_expected\_shot\_count(strat, $\epsilon, \eta$):\\
+ $expected\_shot\_count=[]$\;
+ $total\_expected\_shot\_count=0$\;
  \For{$k=1,\dots, |L_{all}|$}{
- $f=\frac{|F_{all}(k)|}{|F_{all}|}$\;
- $r_k=\lfloor f r \rfloor$\;
-  \If {$r_k > 0$}{
-  $expected\_\shot_count[k] = calculate\_expected\_\shot_count(k, r_k, \strat)$\;
-  $total\_expected\_\shot_count+=f * \shot_count[k]$\;
-   }
+ $(E,V)=simulate\_rounds(k, strat, \epsilon, \eta)$\;
+ $expected\_shot\_count[k] = E$\;
+ $g_k=\frac{|F_{all}(k)|}{|F_{all}|}$\;
+  $total\_expected\_shot\_count+=g_k * E$\;
  }
 \end{algorithm}
-
-ALT:
-
 
 % Literaturverzeichnis ------------------------------------------------
 \newpage
