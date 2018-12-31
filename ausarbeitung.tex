@@ -458,7 +458,7 @@ Damit kann dann eine Abbruchbedingung formuliert werden, welche festlegt, ab wan
 
 \section{Implementation eines Monte-Carlo Algorithmus}
 
-Um zu bewerten, wie gut eine Strategiefunktion $\strat$ abschneidet, kann ein Monte-Carlo Algorithmus implementiert werden, der mit einer gewissen Wahrscheinlichkeit und Genauigkeit den Wert von $E(T_{\strat,F_{all,k}})$ abschätzt.
+Um zu bewerten, wie gut eine Strategiefunktion $\strat$ abschneidet, kann ein Monte-Carlo Algorithmus implementiert werden, der mit einer gewissen Wahrscheinlichkeit und Genauigkeit für jede Flottengröße $k \in K$ den Wert von $E(T_{\strat,F_{all,k}})$ abschätzt und am Ende alle diese Werte zum gesamtem Erwartungswert $E(T_{\strat,F_{all}})$ kombiniert.
 
 Um den Wert von $\shot_count(F, \strat)$ für eine gegebene Flotte $F$ zu berechnen, kann folgende Funktion verwendet werden:
 
