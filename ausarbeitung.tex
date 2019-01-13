@@ -27,6 +27,8 @@
 \usepackage[vlined,boxed]{algorithm2e}
 \usepackage{booktabs}               % schönere Tabellen
 \usepackage{color}
+\usepackage{algpseudocode}			% Für Pseudocode Algorithmen
+\usepackage{tcolorbox}
 \usepackage{hyperref}
  \hypersetup{urlcolor=black,citecolor=black}
 
@@ -546,7 +548,36 @@ Abschliessend kann dann die Funktion implementiert werden, die den Wert von $E(\
 \end{algorithm}
 
 \section{Strategien}
+
+Im folgenden Abschnitt sollen einige Schussstrategien näher betrachtet werden. Dabei wird zuerst die aus der Bachelorarbeit bekannte optimale Strategie in unserer Notation noch einmal dargestellt. Anschließend werden noch andere Strategien vorgestellt.
+
+Sei für alle folgenden Strategien $F\in F_{all}$ die aktuell vorliegende unbekannte Flotte.
+
 \subsection{Maximum Strategie}
+
+Diese in der Bachelorarbeit vorgestellte Strategie berechnet zunächst eine Anfangsverteilung. Dabei wird für jeden Punkt im betrachteten $d$-dimensionalen Raum festgestellt wie viele Schiffe diesen Punkt enthalten. Anschließend wird dem Punkt diese Anzahl zugewiesen. Von diesen Punkten wird dann das Maximum bezüglich dieser Anzahl bestimmt. Das ist dann die Zelle auf die als nächstes geschossen wird. Der Strategie wird also der aktuelle Zustand, auf welche Zellen bereits geschossen wurde, in $S$ übergeben und diese bestimmt daraus das nächste Ziel für einen Schuss.
+
+
+\begin{tcolorbox}
+	\begin{algorithmic}
+		\Function{max\_strat}{$S$}{$:cell$}
+		\State $cell = null$;
+		\State $max = 0$;
+		\State $temp = 0$;
+		\State\ForEach{$c\in C_{all}$}{
+		\State $temp=\hit(F,c)$;
+		\State\If{$temp>max$}{
+		\State $max=temp$;
+		\State $cell = c$;
+		}
+		}
+		\State \Return $cell$;
+		\EndFunction
+	\end{algorithmic}
+\end{tcolorbox}
+
+Wie man sieht bewegen wir uns hier bereits in einer Komplexität von $O(\left|C_{all}\right|\cdot O(hit))$. %O(hit) aktuell noch unbekannt, daher unformelle Notation.
+
 \subsection{Monte-Carlo Strategie}
 \subsection{Quasi-Monte-Carlo Strategie}
 
