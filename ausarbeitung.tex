@@ -565,7 +565,7 @@ Diese in der Bachelorarbeit vorgestellte Strategie berechnet zunächst eine Anfa
 		\State $max = 0$;
 		\State $temp = 0$;
 		\State\ForEach{$c\in C_{all}$}{
-		\State $temp=\hit(F,c)$;
+		\State $temp=\left|\hit(F,c)\right|$;
 		\State\If{$temp>max$}{
 		\State $max=temp$;
 		\State $cell = c$;
