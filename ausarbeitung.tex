@@ -24,7 +24,7 @@
 \usepackage{ifthen}                 % Zum Auskommentieren von Textteilen
 \usepackage{amssymb}                % Mathematische Buchstaben
 \usepackage{amsmath}                % Verbesserter Formelsatz
-\usepackage[vlined,boxed]{algorithm2e}
+%\usepackage[vlined,boxed]{algorithm2e}
 \usepackage{booktabs}               % schönere Tabellen
 \usepackage{color}
 \usepackage{algpseudocode}			% Für Pseudocode Algorithmen
@@ -145,9 +145,11 @@ Das Ziel des Spielers ist es, mit möglichst wenig Schüssen alle Schiffe zu ver
 \subsection{Inhalt der Ausarbeitung}
 
 Der erste Teil dieser Ausarbeitung beschäftigt sich mit der Bewertung einer gegebenen Strategie, d.h. mit der Berechnung der erwarteten Anzahl an Schüssen, die mit einer Strategie zum versenken der platzierten Flotte gebraucht werden.
-Da diese Berechnung sehr aufwändig ist, wird ein Monte-Carlo Algorithmus zur nährweisen Berechnung beschrieben, implementiert und ausgewertet.
+Da diese Berechnung sehr aufwändig ist, wird ein Monte-Carlo Algorithmus zur näherungsweisen Berechnung beschrieben, implementiert und ausgewertet.
 
-Zweiter Teil TODO
+Im zweiten Teil werden unter den zuvor etablierten Rahmenbedingungen verschiedene Strategien vorgestellt. Dabei können sich diese von denen in der Bachelorarbeit vorgestellten unterschieden, da es sich um andere Rahmenbedingungen handelt. Zu den Strategien zählen dünne und volle Gitter, klassisches und Quasi Monte Carlo und die optimale Maximum Strategie.
+
+Dritter Teil (Implementierung + Vergleich) TODO 
 
 \section{Formalisierung des Spielprinzips}
 
@@ -492,17 +494,21 @@ Um zu bewerten, wie gut eine Strategiefunktion $\strat$ abschneidet, kann ein Mo
 
 Um den Wert von $\shot_count(F, \strat)$ für eine gegebene Flotte $F$ zu berechnen, kann folgende Funktion verwendet werden:
 
-\begin{algorithm}[H]
- function shot\_count(F, strat):\\
- $S=\emptyset$\;
- $\shot_count=0$\;
- \While{$\neg \sunk(F, S)$}{
-  $next\_target=\strat(S)$\;
-  $S=S \cup \hit(F, next\_target)$\;
-  $\shot_count=\shot_count+1$\;
- }
-  \Return $\shot_count$\;
-\end{algorithm}
+\begin{tcolorbox}
+	\begin{algorithmic}[H]
+		\Function{shot\_count}{$F, \strat$}{:}
+		\State $S=\emptyset$;
+		\State $\shot_count=0$;
+		\While{$\neg \sunk(F, S)$}
+		\State $next\_target=\strat(S)$;
+		\State $S=S \cup \hit(F, next\_target)$;
+		\State $\shot_count=\shot_count+1$;
+		\EndWhile
+		\State\Return $\shot_count$;
+		\EndFunction
+	\end{algorithmic}
+\end{tcolorbox}
+
 
 
 \subsection{Abbruchbedingung}
@@ -513,49 +519,61 @@ Dann kann eine Funktion implementiert werden, die den Wert von $E(\mathbf{T}_{\s
 \]
 erfüllt ist:
 
-\begin{algorithm}[H]
- function simulate\_rounds(k, strat, $\epsilon, \eta$):\\
- $sum=0$\;
- $q\_sum=0$\;
-   $E=0$\;
-   $V=0$\;
-    $rounds =0$\;
- \While{$true$}{
-   $count += shot\_count(generate\_random\_fleet(k), \strat)$\;
-   $sum += count$\; 
-   $q\_sum += {count}^2$\;
-   $E =sum / rounds$\;
-   $V =(q\_sum / rounds) - E^2$\;
-     \If {$V / (rounds * \epsilon^2) \geq 1 - \eta$}{
-     break\;
-   }
- }
- \Return $E$\;
-\end{algorithm}
+\begin{tcolorbox}
+	\begin{algorithmic}[H]
+		\Function{simulate\_rounds}{$k, \strat, \epsilon, \eta$}{:}
+		\State $sum=0$;
+		\State $q\_sum=0$;
+		\State $E=0$;
+		\State $V=0$;
+		\State $rounds =0$;
+		\While{$true$}
+		\State $count += shot\_count(generate\_random\_fleet(k), \strat)$;
+		\State $sum += count$; 
+		\State $q\_sum += {count}^2$;
+		\State $E =sum / rounds$;
+		\State $V =(q\_sum / rounds) - E^2$;
+		\If {$V / (rounds * \epsilon^2) \geq 1 - \eta$}
+		\State	break;
+		\EndIf
+		\EndWhile
+		\State\Return $E$;
+		\EndFunction
+	\end{algorithmic}
+\end{tcolorbox}
+
 
 Abschliessend kann dann die Funktion implementiert werden, die den Wert von $E(\mathbf{T}_{\strat,F_{all}})$ für Flotten beliebiger Größe berechnet. Dafür müssen die Werte für jedes $k$ gewichtet aufsummiert werden. Nebenbei werden auch die Erwartungswerte für jedes $k$ gespeichert, damit diese später auch untersucht werden können.
 
-\begin{algorithm}[H]
- function calculate\_expected\_shot\_count(strat, $\epsilon, \eta$):\\
- $expected\_shot\_count=[]$\;
- $total\_expected\_shot\_count=0$\;
- \For{$k=1,\dots, |L_{all}|$}{
- $(E,V)=simulate\_rounds(k, strat, \epsilon, \eta)$\;
- $expected\_shot\_count[k] = E$\;
- $g_k=\frac{|F_{all,k}|}{|F_{all}|}$\;
-  $total\_expected\_shot\_count+=g_k * E$\;
- }
-\end{algorithm}
+\begin{tcolorbox}
+\begin{algorithmic}[H]
+	\Function{calculate\_expected\_shot\_count}{strat, $\epsilon, \eta$}{:}
+	\State $expected\_shot\_count=[]$;
+	\State $total\_expected\_shot\_count=0$;
+	\For{$k=1$ to $|L_{all}|$}
+	\State $(E,V)=simulate\_rounds(k, strat, \epsilon, \eta)$;
+	\State $expected\_shot\_count[k] = E$;
+	\State $g_k=\frac{|F_{all,k}|}{|F_{all}|}$;
+	\State $total\_expected\_shot\_count+=g_k * E$;
+	\EndFor
+	\EndFunction
+\end{algorithmic}
+\end{tcolorbox}
+
 
 \section{Strategien}
 
-Im folgenden Abschnitt sollen einige Schussstrategien näher betrachtet werden. Dabei wird zuerst die aus der Bachelorarbeit bekannte optimale Strategie in unserer Notation noch einmal dargestellt. Anschließend werden noch andere Strategien vorgestellt.
+Der folgende Abschnitt befasst sich mit Schussstrategien. In \cite{M13} wurden diskrepanzminimierende Diskretisierungsverfahren erstmals als potentielle Schussstrategien eingeführt. Dabei wurden die von diesen Verfahren genutzten Stützstellen meist als Schüsse interpretiert. Zu Beginn wird noch einmal die optimale Strategie aus \cite{M13} aufgegriffen, da sich die Rahmenbedingungen dieser Ausarbeitung doch von \cite{M13} unterscheiden, um diese in der hier eingeführten Notation darzustellen. Anschließend werden noch andere Strategien, wie dünne und voll Gitter, klassisches und Quasi Monte-Carlo betrachtet. 
 
 Sei für alle folgenden Strategien $F\in F_{all}$ die aktuell vorliegende unbekannte Flotte.
 
 \subsection{Maximum Strategie}
 
-Diese in der Bachelorarbeit vorgestellte Strategie berechnet zunächst eine Anfangsverteilung. Dabei wird für jeden Punkt im betrachteten $d$-dimensionalen Raum festgestellt wie viele Schiffe diesen Punkt enthalten. Anschließend wird dem Punkt diese Anzahl zugewiesen. Von diesen Punkten wird dann das Maximum bezüglich dieser Anzahl bestimmt. Das ist dann die Zelle auf die als nächstes geschossen wird. Der Strategie wird also der aktuelle Zustand, auf welche Zellen bereits geschossen wurde, in $S$ übergeben und diese bestimmt daraus das nächste Ziel für einen Schuss.
+Diese in \cite{M13} Abbildung 3.15 vorgestellte Strategie berechnet zunächst eine Anfangsverteilung. Dabei wird für jeden Punkt im betrachteten $d$-dimensionalen Raum festgestellt wie viele Schiffe diesen Punkt enthalten. Anschließend wird dem Punkt diese Anzahl zugewiesen. Von diesen Punkten wird dann das Maximum bezüglich dieser Anzahl bestimmt. Das ist dann die Zelle auf die als nächstes geschossen wird.
+
+In \cite{M13} wurden alle möglichen Schiffspositionen auf einmal betrachtet und von diesen Verteilungen die Maxima berechnet. Allerdings betrachten wir immer nur eine unbekannte Flotte $F$ in vielen Experimenten und versuchen dann durch eine Monte-Carlo Zusammenführung eine Aussage über alle Flotten zu erreichen. Das heißt in diesem Fall wird das Maximum an einer anderen Stelle berechnet als noch in \cite{M13}. 
+
+Der Algorithmus für die Maximum bzw. optimale Strategie sieht dann folgendermaßen aus:
 
 
 \begin{tcolorbox}
@@ -564,13 +582,13 @@ Diese in der Bachelorarbeit vorgestellte Strategie berechnet zunächst eine Anfa
 		\State $cell = null$;
 		\State $max = 0$;
 		\State $temp = 0$;
-		\State\ForEach{$c\in C_{all}$}{
+		\For{\textbf{each } $c\in C_{all}$}
 		\State $temp=\left|\hit(F,c)\right|$;
-		\State\If{$temp>max$}{
+		\If{$temp>max$}
 		\State $max=temp$;
 		\State $cell = c$;
-		}
-		}
+		\EndIf
+		\EndFor
 		\State \Return $cell$;
 		\EndFunction
 	\end{algorithmic}
@@ -578,9 +596,47 @@ Diese in der Bachelorarbeit vorgestellte Strategie berechnet zunächst eine Anfa
 
 Wie man sieht bewegen wir uns hier bereits in einer Komplexität von $O(\left|C_{all}\right|\cdot O(hit))$. %O(hit) aktuell noch unbekannt, daher unformelle Notation.
 
+\subsection{Gitter Strategien}
+
+In Abschnitt 2.2.1 von \cite{M13} werden die hierarchischen Stützstelleninkremente $H_{\underline{m}}$ für Gitter vorgestellt, welche sich von den in \cite{M13} Abbildung 2.2 dargestellten Hütchenfunktionen ableiten. Diese Inkremente bzw. ihre Kombinationen werden sowohl für dünne als auch volle Gitter genutzt. Für unsere Zwecke genügt, dass sich einerseits die Maschenweite mit steigendem Level in eine beliebige Dimension halbiert (Vgl. \cite{P10} Figure 2.5, schön zu sehen, dass Stützstellen höherer Level zwischen den Linien, die durch ihre Vorgänger entstanden, liegen) und andererseits durch Kombinationen von Inkrementen Gitter erzeugen lassen. Unsere Schussfolge ergibt sich dann aus den abgearbeiteten Inkrementen bzw. deren Stützstellen. 
+
+Noch zu beachten ist, dass es bei Gittern so genannte Level gibt, die die Maschenweite und damit die Genauigkeit angeben. Normalerweise legt man ein Level fest und erzeugt sich dann aus Inkrementen ein Gitter eben dieses Levels. In unseren Fall arbeiten wir uns durch die Inkremente aufsteigend durch um immer genauere Gitter zu erzeugen bei steigendem Level, bis wir alle Schiffe der Flotte getroffen haben.
+
+\subsubsection{Volle Gitter Strategie}
+
+In \cite{M13} Definition 2.14 wird beschrieben, wie sich volle Gitter aus den Inkrementen zusammensetzen. Dabei ist lediglich zu beachten, dass die Indeces eines Inkrements $H_{\underline{m}}$ nur kleiner dem Level $n$ sein müssen.  Zur Wiederholung:
+
+\begin{definition}
+	Seien $d,n\in\mathbb{N}$ und $d,n>1$. Ein $d$-dimensionales volles Gitter $G$ mit Level $n$ wird durch Kombination der Inkremente $H_{\underline{m}}$ mit $\underline{m}<(n,\dots,n)$ erzeugt:
+	\begin{equation}
+		G=\biguplus_{m_1=1}^n\biguplus_{m_2=1}^n\dots \biguplus_{m_d=1}^n H_{\underline{m}}
+	\end{equation}
+\end{definition}
+
+\subsubsection{Dünne Gitter Strategie}
+
+In \cite{M13} Definition 2.15 wird beschrieben, wie sich dünne Gitter aus den Inkrementen zusammensetzen. Zur Wiederholung:
+
+\begin{definition}
+	Seien $d,n\in\mathbb{N}$ und $d,n>1$. Ein $d$-dimensionales dünnes Gitter $G$ mit Level $n$ wird durch Kombination der Inkremente $H_{\underline{m}}$ mit $|\underline{m}|_1\leq n+d-1$ erzeugt:
+	\begin{equation}
+	G=\biguplus_{|\underline{m}|_1\leq n+d-1}^n H_{\underline{m}}
+	\end{equation}
+\end{definition}
+
+Wobei für die verwendete Norm gilt (Vgl. \cite{P10} Abschnitt 2.1 Basics):
+
+\begin{definition}
+Die  $|\cdot|_1$-Norm ist definiert als:
+	\begin{equation}
+	|\underline{m}|_1:=\sum_{j=1}^d m_j
+	\end{equation}
+\end{definition}
+
+
 \subsection{Monte-Carlo Strategie}
 
-Ähnlich wie Strategien aus der Diskretisierung durch dünne und volle Gitter gewonnen wurden, kann eine Strategie aus der Monte-Carlo Diskretisierung abgeleitet werden. Dabei stellt die Wahl der Stützstellen, die bei Gittern noch nach Gesetzmäßigkeiten ausgewählt wurden, effektiv die Strategie dar, so dass diese Punkte den Schüssen entsprechen. Da bei Monte-Carlo diese Stützstellen zufällig gewählt werden, tun wir dies auch hier für unsere (erste) Monte-Carlo Strategie.  
+Ähnlich wie Strategien aus der Diskretisierung durch dünne und volle Gitter gewonnen wurden, kann eine Strategie aus der Monte-Carlo Diskretisierung abgeleitet werden. Dabei stellt die Wahl der Stützstellen, die bei Gittern noch nach Gesetzmäßigkeiten ausgewählt wurden, effektiv die Strategie dar, so dass diese Punkte den Schüssen entsprechen. Da bei Monte-Carlo diese Stützstellen zufällig gewählt werden, tun wir dies auch hier für unsere (erste) Monte-Carlo Strategie. 
 
 \subsection{Quasi-Monte-Carlo Strategie}
 
