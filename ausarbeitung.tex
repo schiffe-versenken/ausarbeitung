@@ -233,7 +233,7 @@ die Menge aller möglichen Flottengrößen.
 Sei $k \in K$ die Größe der Flotte.
 Dann ist
 \[
-F_{all,k} \coloneqq\{F \in P(L_{all}) \mid |F| = k\}
+F_{all,k} \coloneqq\{F \in \mathcal{P}(L_{all}) \mid |F| = k\}
 \]
 die Menge aller Flotten der Größe $k$.
 \end{definition}
@@ -249,7 +249,7 @@ Dann gilt:
 \begin{definition}
 Dann ist
 \[
-F_{all} \coloneqq \bigcup_{k=1}^{|L_{all}|} F_{all,k}
+F_{all} \coloneqq \bigcup_{k=1}^{|L_{all}|} F_{all,k} = \mathcal{P}(L_{all}) \setminus \{\emptyset\}
 \]
 \end{definition}
 
@@ -277,7 +277,7 @@ Dann gilt:
 Sei $F \in F_{all}$ und $c \in C_{all}$.
 Dann ist 
 \begin{align}
-&\hit:F_{all} \times C_{all} \rightarrow P(L_{all}) \quad mit \nonumber\\
+&\hit:F_{all} \times C_{all} \rightarrow \mathcal{P}(L_{all}) \quad mit \nonumber\\
 &\hit(F, c)\mapsto \{(c_{min}, c_{max}) \in F \mid c_{min} \leq c \leq c_{max}\} \nonumber
 \end{align}
 die Treffer-Funktion, welche angibt, welche Schiffe bei einem Schuss auf Zelle $c$ getroffen wurden, falls $F$ die vom Gegner platzierte Flotte ist. In anderen Worten, die Menge der Schiffe aus Flotte $F$, die die Zelle $c$ belegen.
@@ -288,7 +288,7 @@ die Treffer-Funktion, welche angibt, welche Schiffe bei einem Schuss auf Zelle $
 \begin{definition}
 Eine Funktion der Form
 \begin{align}
-&\strat:P(C_{all}) \rightarrow C_{all} \nonumber
+&\strat:\mathcal{P}(C_{all}) \rightarrow C_{all} \nonumber
 \end{align}
 wird Strategiefunktion genannt. Diese wählt die nächste Zelle aus, auf die geschossen werden soll, abhängig davon, auf welche Zellen bereits geschossen wurden.
 \end{definition}
