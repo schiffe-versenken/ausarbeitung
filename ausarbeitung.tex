@@ -644,7 +644,39 @@ Die  $|\cdot|_1$-Norm ist definiert als:
 % Literaturverzeichnis ------------------------------------------------
 \newpage
 \bibliographystyle{alphadinLinkLocal}
-\bibliography{literatur} 
+%\bibliography{literatur} 
+
+\begin{thebibliography}{WB95}
+	\providecommand{\url}[1]{\texttt{#1}}
+	\expandafter\ifx\csname urlstyle\endcsname\relax
+	\providecommand{\doi}[1]{doi: #1}\else
+	\providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+	
+	\bibitem[WB95]{WB95}
+	\textsc{Welch}, G. ; \textsc{Bishop}, G.:
+	\newblock An Introduction to the Kalman Filter  / UNC-CH Computer Science.
+	\newblock \,Version:\,1995.
+	\newblock  \url{http://www.cs.unc.edu/~welch/media/pdf/kalman_intro.pdf}
+	(95-041). --
+	\newblock Technical Report. --
+	\newblock Online--Ressource
+	
+	\bibitem[M13]{M13}
+	\textsc{Mehlbeer}, F.:
+	\newblock \textit{Hierarchische Methoden am Beispiel von Schiffe versenken},
+	\newblock Bachelorarbeit Nr.25,
+	\newblock Universität Stuttgart,
+	\newblock 2013
+	
+	\bibitem[P10]{P10}
+	\textsc{Pflüger}, D.:
+	\newblock \textit{Spatially Adaptive Sparse Grids for High-Dimensional Problems},
+	\newblock Dissertation,,
+	\newblock Technische Universität München,
+	\newblock 2010
+	
+\end{thebibliography}
+
 
 %\iffalse
 \end{document}
