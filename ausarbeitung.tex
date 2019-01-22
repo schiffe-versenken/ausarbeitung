@@ -563,7 +563,7 @@ Abschliessend kann dann die Funktion implementiert werden, die den Wert von $E(\
 
 \section{Strategien}
 
-Der folgende Abschnitt befasst sich mit Schussstrategien. In \cite{M13} wurden diskrepanzminimierende Diskretisierungsverfahren erstmals als potentielle Schussstrategien eingeführt. Dabei wurden die von diesen Verfahren genutzten Stützstellen meist als Schüsse interpretiert. Zu Beginn wird noch einmal die optimale Strategie aus \cite{M13} aufgegriffen, da sich die Rahmenbedingungen dieser Ausarbeitung doch von \cite{M13} unterscheiden, um diese in der hier eingeführten Notation darzustellen. Anschließend werden noch andere Strategien, wie dünne und voll Gitter, klassisches und Quasi Monte-Carlo betrachtet. 
+Der folgende Abschnitt befasst sich mit Schussstrategien. In \cite{M13} wurden diskrepanzminimierende Diskretisierungsverfahren erstmals als potentielle Schussstrategien eingeführt. Dabei wurden die von diesen Verfahren genutzten Stützstellen meist als Schüsse interpretiert. Zu Beginn wird noch einmal die optimale Strategie aus \cite{M13} aufgegriffen, da sich die Rahmenbedingungen dieser Ausarbeitung doch von \cite{M13} unterscheiden, um diese in der hier eingeführten Notation darzustellen. Anschließend werden noch andere Strategien, wie dünne und volle Gitter, klassisches und Quasi Monte-Carlo betrachtet. 
 
 Sei für alle folgenden Strategien $F\in F_{all}$ die aktuell vorliegende unbekannte Flotte.
 
@@ -571,10 +571,9 @@ Sei für alle folgenden Strategien $F\in F_{all}$ die aktuell vorliegende unbeka
 
 Diese in \cite{M13} Abbildung 3.15 vorgestellte Strategie berechnet zunächst eine Anfangsverteilung. Dabei wird für jeden Punkt im betrachteten $d$-dimensionalen Raum festgestellt wie viele Schiffe diesen Punkt enthalten. Anschließend wird dem Punkt diese Anzahl zugewiesen. Von diesen Punkten wird dann das Maximum bezüglich dieser Anzahl bestimmt. Das ist dann die Zelle auf die als nächstes geschossen wird.
 
-In \cite{M13} wurden alle möglichen Schiffspositionen auf einmal betrachtet und von diesen Verteilungen die Maxima berechnet. Allerdings betrachten wir immer nur eine unbekannte Flotte $F$ in vielen Experimenten und versuchen dann durch eine Monte-Carlo Zusammenführung eine Aussage über alle Flotten zu erreichen. Das heißt in diesem Fall wird das Maximum an einer anderen Stelle berechnet als noch in \cite{M13}. 
+In \cite{M13} wurden alle möglichen Schiffspositionen auf einmal betrachtet und von diesen Verteilungen die Maxima berechnet. Allerdings betrachten wir in dieser Ausarbeitung nur eine unbekannte Flotte $F$ in vielen Experimenten und versuchen dann durch eine Monte-Carlo Zusammenführung eine Aussage über alle Flotten zu erreichen. Das heißt in diesem Fall wird das Maximum an einer anderen Stelle berechnet als noch in \cite{M13}. 
 
 Der Algorithmus für die Maximum bzw. optimale Strategie sieht dann folgendermaßen aus:
-
 
 \begin{tcolorbox}
 	\begin{algorithmic}
