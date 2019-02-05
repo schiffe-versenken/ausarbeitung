@@ -442,7 +442,26 @@ der Erwartungswert von $\mathbf{T}_{\strat}$ in der Menge $F_{all}$.
 
 Um zu bewerten, wie gut eine Strategiefunktion $\strat$ abschneidet, kann ein Monte-Carlo Algorithmus implementiert werden, der für jede Flottengröße $k \in K$ mit einer Stichprobe den Wert von $E_{F_{all,k}}(\mathbf{T}_{\strat})$ abschätzt und am Ende alle diese Werte zum gesamtem Erwartungswert $E_{F_{all}}(\mathbf{T}_{\strat})$ kombiniert.
 
-Um diesen Algorithmus implementieren zu können, müssen jedoch erst eine Abbruchbedingung formuliert werden, die bestimmt, wann für eine Flottengröße $k \in K$ der Wert von $E_{F_{all,k}}(\mathbf{T}_{\strat})$ gut genug ist.
+Um den Wert von $\shot_count(F, \strat)$ für eine gegebene Flotte $F$ zu berechnen, kann folgende, (naive) Funktion verwendet werden:
+
+\begin{tcolorbox}
+	\begin{algorithmic}[H]
+		\Function{shot\_count}{$F, \strat$}{:}
+		\State $S=\emptyset$;
+		\State $\shot_count=0$;
+		\While{$\neg \sunk(F, S)$}
+		\State $next\_target=\strat(S)$;
+		\State $S=S \cup \hit(F, next\_target)$;
+		\State $\shot_count=\shot_count+1$;
+		\EndWhile
+		\State\Return $\shot_count$;
+		\EndFunction
+	\end{algorithmic}
+\end{tcolorbox}
+
+Um damit dann einen kompletten Algorithmus implementieren zu können, muss jedoch erst eine Abbruchbedingung formuliert werden, die bestimmt, wann für eine Flottengröße $k \in K$ der approximierte Wert von $E_{F_{all,k}}(\mathbf{T}_{\strat})$ gut genug ist.
+
+Dafür ist es nützlich, die Erwartungswertänderung wie in dem folgenden Satz darzustellen:
 
 \begin{satz}
 Sei $G_k^{(n)} \subseteq F_{all,k}$ eine Teilmenge der Flotten mit Größe $k$ mit $|G_k^{(n)}|=n$.
@@ -477,9 +496,7 @@ Dann ist
 \qed
 \end{proof}
 
-Damit kann dann eine Abbruchbedingung formuliert werden, die angibt, wie groß die Flottenanzahl $n$ sein muss, damit Veränderung des Erwartungswertes $\delta$ für eine zusätzlich ausgewertete Flotte $F_k^{(n+1)}$ den Grenzwert $\delta_{min}$ immer unterschreitet.
-
-
+Damit kann dann eine Abbruchbedingung formuliert werden, die angibt, wie groß die Flottenanzahl $n$ sein muss, damit Veränderung des Erwartungswertes $\delta$ für eine zusätzlich ausgewertete Flotte $F_k^{(n+1)}$ einen Grenzwert $\delta_{min}$ immer unterschreitet:
 
 \begin{satz}
 Sei $\delta_{min} > 0$.
@@ -507,26 +524,7 @@ Da $\forall F \in F_{all} \colon \mathbf{T}_{\strat}(F) \leq |C_{all}|$ und $\fo
 \qed
 \end{proof}
 
-\subsection{Implementation}
-
-Um den Wert von $\shot_count(F, \strat)$ für eine gegebene Flotte $F$ zu berechnen, kann folgende, (naive) Funktion verwendet werden:
-
-\begin{tcolorbox}
-	\begin{algorithmic}[H]
-		\Function{shot\_count}{$F, \strat$}{:}
-		\State $S=\emptyset$;
-		\State $\shot_count=0$;
-		\While{$\neg \sunk(F, S)$}
-		\State $next\_target=\strat(S)$;
-		\State $S=S \cup \hit(F, next\_target)$;
-		\State $\shot_count=\shot_count+1$;
-		\EndWhile
-		\State\Return $\shot_count$;
-		\EndFunction
-	\end{algorithmic}
-\end{tcolorbox}
-
-Dann kann eine Funktion implementiert werden, die den Wert von $E_{F_{all,k}}(\mathbf{T}_{\strat})$ näherungsweise berechnet. Da es sehr viele Flotten gibt, werden nur so viele Flotten aus dieser Menge ausgewertet, bis der berechnete Wert für uns genau genug ist. 
+Diese Abschätzung ist sehr großzugüg gewählt. Es wird sehr oft passieren, dass bereits für kleinere Werte von $n$ der Grenzwert $\delta_{min}$ unterschritten wird, jedoch kann mit dieser größeren Wahl von $n$ garantiert werden, dass der Grenzwert $\delta_{min}$ in jedem zusätzlichen Schritt unterschritten wird. Daher muss nicht nach jedem Schritt eine Abbruchbedingung überprüft werden, sondern nur zu Beginn die Anzahl der Schritte $n$ einmalig berechnet werden.
 
 \begin{tcolorbox}
 	\begin{algorithmic}[H]
