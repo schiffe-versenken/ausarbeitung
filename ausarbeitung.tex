@@ -365,10 +365,10 @@ eine Zufallsvariable, die die Anzahl an Schüssen zum versenken einer Flotte $\o
 Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
 Dann ist
 \begin{align}
-E_\Omega(\mathbf{T}_{\strat, \Omega})=\frac{1}{|\Omega|} \sum_{\omega \in \Omega} \shot_count(\omega, \strat)
+E_\Omega(\mathbf{T}_{\strat})=\frac{1}{|\Omega|} \sum_{\omega \in \Omega} \shot_count(\omega, \strat)
 \nonumber
 \end{align}
-der Erwartungswert von $\mathbf{T}_{\strat}$.
+der Erwartungswert von $\mathbf{T}_{\strat}$ in der Menge $\Omega$.
 \end{satz}
 
 \begin{proof}
@@ -389,13 +389,13 @@ Dann ist
 E_{F_{all}}(\mathbf{T}_{\strat})=\frac{1}{|F_{all}|} \sum_{k=1}^{|L_{all}|}\sum_{F\in F_{all,k}} \shot_count(F, \strat)
 \nonumber
 \end{align}
-der Erwartungswert von $\mathbf{T}_{\strat,F_{all}}$.
+der Erwartungswert von $\mathbf{T}_{\strat}$ in der Menge $F_{all}$.
 \end{satz}
 
 \begin{proof}
 \begin{align}
 \begin{split}
-&E(\mathbf{T}_{\strat,F_{all}})\\
+&E_{F_{all}}(\mathbf{T}_{\strat})\\
 =&\frac{1}{|F_{all}|} \sum_{F\in F_{all}} \shot_count(F, \strat)\\
 =&\frac{1}{|F_{all}|} \sum_{k=1}^{|L_{all}|}\sum_{F\in F_{all,k}} \shot_count(F, \strat)
 \nonumber
@@ -417,21 +417,21 @@ der Anteil an Flotten der Größe $k$ an der Menge aller Flotten. Dieser Faktor 
 Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
 Dann ist
 \begin{align}
-E(\mathbf{T}_{\strat,F_{all}})=\sum_{k=1}^{|L_{all}|} g_k E(\mathbf{T}_{\strat,F_{all,k}})
+E_{F_{all}}(\mathbf{T}_{\strat})=\sum_{k=1}^{|L_{all}|} g_k E_{F_{all,k}}(\mathbf{T}_{\strat})
 \nonumber
 \end{align}
-der Erwartungswert von $\mathbf{T}_{\strat,F_{all}}$.
+der Erwartungswert von $\mathbf{T}_{\strat}$ in der Menge $F_{all}$.
 \end{satz}
 
 \begin{proof}
 \begin{align}
 \begin{split}
-&E(\mathbf{T}_{\strat,F_{all}})\\
+&E_{F_{all}}(\mathbf{T}_{\strat})\\
 =&\frac{1}{|F_{all}|} \sum_{k=1}^{|L_{all}|}\sum_{F\in F_{all,k}} \shot_count(F, \strat)\\
 =&\sum_{k=1}^{|L_{all}|} \frac{1}{|F_{all}|} \sum_{F\in F_{all,k}} \shot_count(F, \strat)\\
 =&\sum_{k=1}^{|L_{all}|} \frac{1}{|F_{all}|} |F_{all,k}| \sum_{F\in F_{all,k}} \frac{1}{|F_{all,k}|} \shot_count(F, \strat)\\
-=&\sum_{k=1}^{|L_{all}|} \frac{|F_{all,k}|}{|F_{all}|} E(\mathbf{T}_{\strat,F_{all,k}})\\
-=&\sum_{k=1}^{|L_{all}|} g_k E(\mathbf{T}_{\strat,F_{all,k}})
+=&\sum_{k=1}^{|L_{all}|} \frac{|F_{all,k}|}{|F_{all}|} E_{F_{all,k}}(\mathbf{T}_{\strat})\\
+=&\sum_{k=1}^{|L_{all}|} g_k E_{F_{all,k}}(\mathbf{T}_{\strat})
 \nonumber
 \end{split}
 \end{align}
@@ -509,7 +509,7 @@ Da $\forall F \in F_{all} \colon \mathbf{T}_{\strat}(F) \leq |C_{all}|$ und $\fo
 
 \subsection{Implementation}
 
-Um den Wert von $\shot_count(F, \strat)$ für eine gegebene Flotte $F$ zu berechnen, kann folgende Funktion verwendet werden:
+Um den Wert von $\shot_count(F, \strat)$ für eine gegebene Flotte $F$ zu berechnen, kann folgende, (naive) Funktion verwendet werden:
 
 \begin{tcolorbox}
 	\begin{algorithmic}[H]
@@ -526,41 +526,23 @@ Um den Wert von $\shot_count(F, \strat)$ für eine gegebene Flotte $F$ zu berech
 	\end{algorithmic}
 \end{tcolorbox}
 
-
-
-\subsection{Abbruchbedingung}
-
-Dann kann eine Funktion implementiert werden, die den Wert von $E(\mathbf{T}_{\strat,F_{all,k}})$ näherungsweise berechnet. Da es sehr viele Flotten gibt, werden nur so viele Flotten aus dieser Menge ausgewertet, bis der berechnete Wert für uns genau genug ist. Dafür wird in jedem Durchlauf der Teilmenge $F_{sub,k}$ eine weitere zufällige Flotte der Größe $k$ hinzugefügt und danach überprüft, ob die vorher definierte Abbruchbedingung
-\[
-\frac{V(\mathbf{T}_{\strat,F_{sub,k}})}{|F_{sub,k}| \epsilon^2} \geq 1 - \eta
-\]
-erfüllt ist:
+Dann kann eine Funktion implementiert werden, die den Wert von $E_{F_{all,k}}(\mathbf{T}_{\strat})$ näherungsweise berechnet. Da es sehr viele Flotten gibt, werden nur so viele Flotten aus dieser Menge ausgewertet, bis der berechnete Wert für uns genau genug ist. 
 
 \begin{tcolorbox}
 	\begin{algorithmic}[H]
-		\Function{simulate\_rounds}{$k, \strat, \epsilon, \eta$}{:}
+		\Function{simulate\_rounds}{$k, \strat, \delta_{min}$}{:}
+		\State $n =\lceil \frac{|C_{all}| - 1}{\delta_{min}} \rceil - 1$;
 		\State $sum=0$;
-		\State $q\_sum=0$;
-		\State $E=0$;
-		\State $V=0$;
-		\State $rounds =0$;
-		\While{$true$}
-		\State $count += shot\_count(generate\_random\_fleet(k), \strat)$;
-		\State $sum += count$; 
-		\State $q\_sum += {count}^2$;
-		\State $E =sum / rounds$;
-		\State $V =(q\_sum / rounds) - E^2$;
-		\If {$V / (rounds * \epsilon^2) \geq 1 - \eta$}
-		\State	break;
-		\EndIf
-		\EndWhile
-		\State\Return $E$;
+		\For{$i=1,\dots,n$}
+		\State $sum += shot\_count(generate\_random\_fleet(k), \strat)$;
+		\EndFor
+		\State\Return $\frac{sum}{n}$;
 		\EndFunction
 	\end{algorithmic}
 \end{tcolorbox}
 
 
-Abschliessend kann dann die Funktion implementiert werden, die den Wert von $E(\mathbf{T}_{\strat,F_{all}})$ für Flotten beliebiger Größe berechnet. Dafür müssen die Werte für jedes $k$ gewichtet aufsummiert werden. Nebenbei werden auch die Erwartungswerte für jedes $k$ gespeichert, damit diese später auch untersucht werden können.
+Abschliessend kann dann die Funktion implementiert werden, die den Wert von $E_{F_{all}}(\mathbf{T}_{\strat})$ für Flotten beliebiger Größe berechnet. Dafür müssen die berechneten Werte von $E_{F_{all,k}}(\mathbf{T}_{\strat})$ für jedes $k$ gewichtet aufsummiert werden. Nebenbei werden auch die Erwartungswerte für jedes $k$ gespeichert, damit diese später auch untersucht werden können.
 
 \begin{tcolorbox}
 \begin{algorithmic}[H]
@@ -568,9 +550,10 @@ Abschliessend kann dann die Funktion implementiert werden, die den Wert von $E(\
 	\State $expected\_shot\_count=[]$;
 	\State $total\_expected\_shot\_count=0$;
 	\For{$k=1$ to $|L_{all}|$}
-	\State $(E,V)=simulate\_rounds(k, strat, \epsilon, \eta)$;
-	\State $expected\_shot\_count[k] = E$;
 	\State $g_k=\frac{|F_{all,k}|}{|F_{all}|}$;
+	\State $\delta_k=g_k * \delta$;
+	\State $E=simulate\_rounds(k, strat, \delta_k)$;
+	\State $expected\_shot\_count[k] = E$;
 	\State $total\_expected\_shot\_count+=g_k * E$;
 	\EndFor
 	\EndFunction
