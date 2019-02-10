@@ -530,9 +530,11 @@ Diese Abschätzung ist sehr großzugüg gewählt. Es wird sehr oft passieren, da
 	\begin{algorithmic}[H]
 		\Function{simulate\_rounds}{$k, \strat, \delta_{min}$}{:}
 		\State $n =\lceil \frac{|C_{all}| - 1}{\delta_{min}} \rceil - 1$;
+		\State //Generiere $n$ verschiedene Flotten der Größe $k$;
+		\State $fleets = generate\_random\_fleets(k, n)$;
 		\State $sum=0$;
 		\For{$i=1,\dots,n$}
-		\State $sum += shot\_count(generate\_random\_fleet(k), \strat)$;
+		\State $sum += shot\_count(fleets[i], \strat)$;
 		\EndFor
 		\State\Return $\frac{sum}{n}$;
 		\EndFunction
