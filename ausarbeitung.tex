@@ -643,19 +643,19 @@ Wir können an Abbildung \ref{fig:gitter02} sehen, dass in den neu hinzugekommen
 		\Function{full\_grid\_strat}{$S,K,L$}{$:cell$}
 		\If{$K=\emptyset$}
 		\State $K=\left[\left\lfloor\frac{N}{2}\right\rfloor\right]$
+		\State $max\_coord=K\left[0\right]$
+		\State $L=0$
 		\EndIf
-		\State $max\_coord=K\left[2^{L-1}-1\right]$
 		\If{$S[last\_index]=(max\_coord,\dots,max\_coord)$}
-		\State $temp=[]$
 		\State $min=\left\lceil\frac{K[0]}{2}\right\rceil$
 		\For{\textbf{each } $k\in K$}
-		\State $temp.add(k-min)$
-		\State $temp.add(k+min)$
+		\State $K.add(k-min)$
+		\State $K.add(k+min)$
 		\EndFor
-		\State $K=temp$
 		\State $L++$
+		\State $max\_coord=K\left[2^{L-1}-1\right]$
 		\EndIf
-		\If{$S=\emptyset$\textbf{ or } $!S[last\_index].contain(Any\_of(K))$}
+		\If{$S=\emptyset$}
 		\State \Return $(K[0],\dots,K[0])$
 		\Else
 		\State $s=S[last\_index]$
@@ -690,31 +690,39 @@ Wir brechen nun den obigen Algorithmus Schritt für Schritt herunter um die einz
 	\begin{algorithmic}
 		\If{$K=\emptyset$}
 		\State $K=\left[\left\lfloor\frac{N}{2}\right\rfloor\right]$
+		\State $max\_coord=K\left[0\right]$
+		\State $L=0$
 		\EndIf
 	\end{algorithmic}
 \end{tcolorbox}
 
-Damit wird die erste Koordinate initialisiert. Wenn $K$ leer ist befinden wir uns noch am Anfang und haben noch keinen Schuss abgegeben. Die erste Koordinate, die für das erste volle Gitter benutzt wird ist gerade die Größe des Spielfelds $N$ halbiert. OBdA wird falls $N$ ungerade ist abgerundet. Komplexität $O(1)$.
+Damit wird die erste Koordinate initialisiert. Wenn $K$ leer ist befinden wir uns noch am Anfang und haben noch keinen Schuss abgegeben. Die erste Koordinate, die für das erste volle Gitter benutzt wird ist gerade die Größe des Spielfelds $N$ halbiert. OBdA wird falls $N$ ungerade ist abgerundet. Es wird $max\_coord$ auf diesen einen Wert gesetzt und das Level ist dann ebenfalls bekannt und wird gesetzt. Komplexität $O(1)$.
+
 \smallskip
 \hrule
 \smallskip
 \begin{tcolorbox}
 	\begin{algorithmic}
 		\If{$S[last\_index]=(max\_coord,\dots,max\_coord)$}
-		\State $temp=[]$
 		\State $min=\left\lceil\frac{K[0]}{2}\right\rceil$
 		\For{\textbf{each } $k\in K$}
-		\State $temp.add(k-min)$
-		\State $temp.add(k+min)$
+		\State $K.add(k-min)$
+		\State $K.add(k+min)$
 		\EndFor
-		\State $K=temp$
 		\State $L++$
+		\State $max\_coord=K\left[2^{L-1}-1\right]$
 		\EndIf
 	\end{algorithmic}
 \end{tcolorbox}
-Wir prüfen zunächst ob wir bei den aktuellen Koordinaten bereits den maximalen Schuss erreicht haben, das heißt den Schuss, der nur die maximal mögliche Koordinate verwendet. Sollte das der Fall sein, dann haben wir bereits zuvor alle anderen Kombinationsmöglichkeiten ausgenutzt und müssen nun die Menge an Koordinaten $K$ verändern. Dabei sollen nun neue Koordinaten, die entweder genau zwischen zwei alten Koordinaten oder einem Rand und einer Koordinate liegen aufgenommen werden (Vgl. Abbildung \ref{fig:gitter01}). 
+Wir prüfen zunächst ob wir bei den aktuellen Koordinaten bereits den maximalen Schuss erreicht haben, das heißt den Schuss, der nur die maximal mögliche Koordinate verwendet. Sollte das der Fall sein, dann haben wir bereits zuvor alle anderen Kombinationsmöglichkeiten ausgenutzt und müssen nun die Menge an Koordinaten $K$ erweitern. Dabei sollen nun neue Koordinaten, die entweder genau zwischen zwei alten Koordinaten oder einem Rand und einer alten Koordinate liegen hinzugefügt werden (Vgl. Abbildung \ref{fig:gitter01}). 
 
-Da wir in unserer Herangehensweise diskret arbeiten kann es sein, dass das Halbieren nicht immer aufgeht daher muss hier gerundet werden. Es wird aufgerundet, da sonst der Fall eintreten kann, das Punkte nicht erreicht werden können. Zum Schluss wird die Menge der Koordinaten aktualisiert und das Level erhöht. $K$ kann maximal $\left\lceil\frac{N}{2}\right\rceil$ viele Koordinaten enthalten, der Zugriff auf den letzten Index von $S$ kann mit einer double-linked list auf $O(1)$ reduziert werden und der Vergleich benötigt $d$ Schritte. Daher ist die Komplexität $O\left(\left\lceil\frac{N}{2}\right\rceil+d\right)$.
+Da wir in unserer Herangehensweise diskret arbeiten kann es sein, dass das Halbieren nicht immer aufgeht daher muss hier gerundet werden. Es wird aufgerundet, da sonst der Fall eintreten kann, das Punkte nicht erreicht werden können. Zum Schluss wird die Menge der Koordinaten aktualisiert und das Level erhöht. $K$ kann maximal um $\left\lceil\frac{N}{2}\right\rceil$ viele neue Koordinaten erweitert werden. Das heißt der letzte und größte Aufruf bevor in $K$ alle Koordinaten enthält hat gerade 
+\begin{equation}
+\sum_{j=1}^{\left\lceil\frac{N}{4}\right\rceil}j=\frac{\left\lceil\frac{N}{4}\right\rceil\cdot(\left\lceil\frac{N}{4}\right\rceil+1)}{2}\in O(N^2)
+\end{equation}
+Schritte.
+
+Der Zugriff auf den letzten Index von $S$ kann mit einer double-linked list auf $O(1)$ reduziert werden und der Vergleich benötigt $d$ Schritte. Daher ist die Komplexität $O\left(N^2+d\right)$.
 
 \smallskip
 \hrule
@@ -722,7 +730,7 @@ Da wir in unserer Herangehensweise diskret arbeiten kann es sein, dass das Halbi
 
 \begin{tcolorbox}
 	\begin{algorithmic}
-		\If{$S=\emptyset$\textbf{ or } $!S[last\_index].contain(Any\_of(K))$}
+		\If{$S=\emptyset$}
 		\State \Return $(K[0],\dots,K[0])$
 		\Else
 		\State $\dots$
@@ -730,7 +738,7 @@ Da wir in unserer Herangehensweise diskret arbeiten kann es sein, dass das Halbi
 	\end{algorithmic}
 \end{tcolorbox}
 
-Das Prüfen ob der letzte in $S$ gespeicherte Schuss irgendeine Koordinate aus $K$ enthält benötigt $O\left(\left\lceil\frac{N}{2}\right\rceil\cdot d\right)$ Schritte. Das ist auch die gesamte Komplexität dieses Abschnitts. Hier wird geprüft ob wir uns am Anfang einer neuen Gitter Schicht befinden und der Schuss entsprechend ausgegeben.
+Hier wird geprüft ob wir uns am Anfang des ersten Gitters befinden und der Schuss wird entsprechend ausgegeben. Wir bewegen uns in $O(1)$.
 
 \smallskip
 \hrule
@@ -753,11 +761,12 @@ Das Prüfen ob der letzte in $S$ gespeicherte Schuss irgendeine Koordinate aus $
 	\end{algorithmic}
 \end{tcolorbox}
 
-Ab hier beginnt nun der Abschnitt, der wohl am häufigsten benutzt wird. Die Koordinaten die eine Zelle beschreiben sollen wie beim Zählen mit Zahlen zuerst an letzter Stelle Aufsteigen und dann langsam nach vorne kaskadieren. Das heißt es wird sehr häufig die letzte Stelle geändert und diese Häufigkeit nimmt bei fallendem Index ab. Nach den vorherigen Überprüfungen können wir nun sicher sein, dass wir uns mitten in der Bearbeitung einer Gitterschicht befinden und nicht an deren Start oder Ende.
+Ab hier beginnt nun der Abschnitt, der wohl am häufigsten benutzt wird. Die Koordinaten die eine Zelle beschreiben sollen wie beim Zählen mit Zahlen zuerst an letzter Stelle Aufsteigen und dann langsam nach vorne kaskadieren. Das heißt es wird sehr häufig die letzte Stelle geändert und diese Häufigkeit nimmt bei fallendem Index ab. Nach den vorherigen Überprüfungen können wir nun sicher sein, dass wir uns nicht ganz am Anfang der Schussfolge befinden.
 
-Zunächst initialisieren wir ein paar, die wir benötigen, wie den letzten Schuss, einen Zähler und den Ausgabewert, der als default bisher nur mit 0 gefüllt ist. Obgleich die while Schleife den Anschein macht ewig laufen zu können, wird sie nie öfter als $d$ mal laufen können. Es wurde bereits vorher ausgeschlossen, dass $s$ nur aus maximalen Koordinaten bestehen kann, also springen wir auf jeden Fall in den else Teil. 
+Zunächst initialisieren wir ein paar Variablen, die wir benötigen, wie den letzten Schuss, einen Zähler und den Ausgabewert, der als default bisher nur mit 0 gefüllt ist. Obgleich die while Schleife den Anschein macht ewig laufen zu können, wird sie nie öfter als $d$ mal laufen können. Es wurde bereits vorher ausgeschlossen, dass $s$ nur aus maximalen Koordinaten bestehen kann, also springen wir auf jeden Fall in den else Teil. 
 
-Die If Abfrage prüft wie oft von hinten gesehen die maximale Koordinate verwendet wird. Das heißt um es anhand von einem Zahlenbeispiel zu erklären wie oft die 9 hinten steht z.B. bei 999 um anschließend auf 1000 überspringen zu können. Der absolute worst case wäre wenn $d-1$ mal der if Teil und einmal der else Teil aufgerufen werden. Das heißt für den if Teil können wir uns $O(d-1)$ merken, da der Rest darin in $O(1)$ liegt.
+Die If Abfrage prüft wie oft von hinten gesehen die maximale Koordinate verwendet wird. Das heißt um es anhand von einem Zahlenbeispiel zu erklären wie oft die 9 hinten steht z.B. bei 999 um anschließend auf 1000 überspringen zu können. Der absolute worst case wäre wenn $d-1$ mal der if Teil und einmal der else Teil aufgerufen werden. Das heißt für den if Teil können wir uns $O(d-1)$ bzw. $O(d)$ merken, da der Rest darin in $O(1)$ liegt.
+
 
 
 \smallskip
@@ -780,10 +789,12 @@ Die If Abfrage prüft wie oft von hinten gesehen die maximale Koordinate verwend
 	\end{algorithmic}
 \end{tcolorbox}
 
-Dieser Abschnitt wird nur einmal aufgerufen. Zunächst wird der erste Index von hinten betrachtet, der nicht die maximale Koordinate enthält inkrementiert und die restlichen Werte von $s$ nach $out$ übernommen. Damit ist erreicht, dass wir die nächste Zelle in unserer Zählung anvisieren können. $index\_of$ ist das einzig neuartige hier, das ist in $O(1)$ realisierbar, wenn man bedenkt, dass in den Schleifen Durchläufen einfach bis zu $k$ hin mitgezählt werden kann. Also haben wir in der ersten Schleife $O(1)$ und für die gesamte Schleife $O\left(\left\lceil\frac{N}{2}\right\rceil\right)$, da es von $K$ abhängt. Die zweite Schleife hat maximal $d-1$ Durchläufe. Also $O(d-1)$. Damit für diesen Abschnitt gesamt Komplexität von $O\left(\left\lceil\frac{N}{2}\right\rceil+d\right)$.
+Dieser Abschnitt wird nur einmal aufgerufen. Zunächst wird der erste Index von hinten betrachtet, der nicht die maximale Koordinate enthält inkrementiert und die restlichen Werte von $s$ nach $out$ übernommen. Damit ist erreicht, dass wir die nächste Zelle in unserer Zählung anvisieren können. $index\_of$ ist das einzig neuartige hier, das ist in $O(1)$ realisierbar, wenn man bedenkt, dass in den Schleifen Durchläufen einfach bis zu $k$ hin mitgezählt werden kann. Also haben wir innerhalb der ersten Schleife $O(1)$ und für die gesamte Schleife wieder $O\left(N^2\right)$, da es von $K$ abhängt. Die zweite Schleife hat maximal $d-1$ Durchläufe. Also $O(d)$. Damit für diesen Abschnitt gesamt Komplexität von $O\left(N^2+d\right)$.
 
 
-Somit können wir also die Komplexitäten der Abschnitte zusammenfassen und erhalten eine gesamte Komplexität für den Algorithmus von $O\left(\left\lceil\frac{N}{2}\right\rceil\cdot(d+1)+d\right)$, da $\left\lceil\frac{N}{2}\right\rceil\cdot d$ schwerer wiegt als $\left\lceil\frac{N}{2}\right\rceil+ d$.
+Betrachten wir nun bevor zur gesamten Komplexität kommen noch eine Funktionsweise der letzten beiden Abschnitte in Kombination. Diese sind in fast allen Fällen für die Auswahl des nächsten Schusses zuständig. Es wird zunächst immer geprüft ob wir die maximale Koordinate als aktuellen Index haben beginnend beim Letzten. Sollte zuvor gerade eine neue Menge an Koordinaten in $K$ aufgenommen worden sein kann die letzte Koordinate nicht maximal sein, das heißt wir werden auf jeden Fall in den else Teil springen. Darin wird dann der letzte Index um eins nach oben gezählt. Das heißt von da an werden wir an mindestens einer Stelle eine der neuen Koordinaten verwenden. Damit ist gewährleistet, dass es keine Wiederholungen der Schüsse gibt und das der Übergang zwischen alten und neuem Koordinatensatz reibungslos abläuft.
+
+Somit können wir also die Komplexitäten der Abschnitte zusammenfassen und erhalten eine gesamte Komplexität für den Algorithmus von $O(1)+O(N^2+d)+O(d)+O(N^2+d)=O(N^2+d)$.
 
 
 \subsubsection{Dünne Gitter Strategie}
