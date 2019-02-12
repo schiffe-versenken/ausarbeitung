@@ -647,13 +647,14 @@ Wir können an Abbildung \ref{fig:gitter02} sehen, dass in den neu hinzugekommen
 		\State $L=0$
 		\EndIf
 		\If{$S[last\_index]=(max\_coord,\dots,max\_coord)$}
-		\State $min=\left\lceil\frac{K[0]}{2}\right\rceil$
-		\For{\textbf{each } $k\in K$}
+		\State $min=\left\lceil\frac{K[2^L-1]}{2}\right\rceil$
+		\State $K_{old}=K\left[2^L-1\dots 2^{L+1}-2\right]$
+		\For{\textbf{each } $k\in K_{old}$}
 		\State $K.add(k-min)$
 		\State $K.add(k+min)$
 		\EndFor
 		\State $L++$
-		\State $max\_coord=K\left[2^{L-1}-1\right]$
+		\State $max\_coord=K\left[2^{L+1}-2\right]$
 		\EndIf
 		\If{$S=\emptyset$}
 		\State \Return $(K[0],\dots,K[0])$
@@ -704,25 +705,23 @@ Damit wird die erste Koordinate initialisiert. Wenn $K$ leer ist befinden wir un
 \begin{tcolorbox}
 	\begin{algorithmic}
 		\If{$S[last\_index]=(max\_coord,\dots,max\_coord)$}
-		\State $min=\left\lceil\frac{K[0]}{2}\right\rceil$
-		\For{\textbf{each } $k\in K$}
+		\State $min=\left\lceil\frac{K[2^L-1]}{2}\right\rceil$
+		\State $K_{old}=K\left[2^L-1\dots 2^{L+1}-2\right]$
+		\For{\textbf{each } $k\in K_{old}$}
 		\State $K.add(k-min)$
 		\State $K.add(k+min)$
 		\EndFor
 		\State $L++$
-		\State $max\_coord=K\left[2^{L-1}-1\right]$
+		\State $max\_coord=K\left[2^{L+1}-2\right]$
 		\EndIf
 	\end{algorithmic}
 \end{tcolorbox}
 Wir prüfen zunächst ob wir bei den aktuellen Koordinaten bereits den maximalen Schuss erreicht haben, das heißt den Schuss, der nur die maximal mögliche Koordinate verwendet. Sollte das der Fall sein, dann haben wir bereits zuvor alle anderen Kombinationsmöglichkeiten ausgenutzt und müssen nun die Menge an Koordinaten $K$ erweitern. Dabei sollen nun neue Koordinaten, die entweder genau zwischen zwei alten Koordinaten oder einem Rand und einer alten Koordinate liegen hinzugefügt werden (Vgl. Abbildung \ref{fig:gitter01}). 
 
-Da wir in unserer Herangehensweise diskret arbeiten kann es sein, dass das Halbieren nicht immer aufgeht daher muss hier gerundet werden. Es wird aufgerundet, da sonst der Fall eintreten kann, das Punkte nicht erreicht werden können. Zum Schluss wird die Menge der Koordinaten aktualisiert und das Level erhöht. $K$ kann maximal um $\left\lceil\frac{N}{2}\right\rceil$ viele neue Koordinaten erweitert werden. Das heißt der letzte und größte Aufruf bevor in $K$ alle Koordinaten enthält hat gerade 
-\begin{equation}
-\sum_{j=1}^{\left\lceil\frac{N}{4}\right\rceil}j=\frac{\left\lceil\frac{N}{4}\right\rceil\cdot(\left\lceil\frac{N}{4}\right\rceil+1)}{2}\in O(N^2)
-\end{equation}
-Schritte.
+Da wir in unserer Herangehensweise diskret arbeiten kann es sein, dass das Halbieren nicht immer aufgeht daher muss hier gerundet werden. Es wird aufgerundet, da sonst der Fall eintreten kann, das Punkte nicht erreicht werden können. Zum Schluss wird die Menge der Koordinaten aktualisiert und das Level erhöht. $K$ kann maximal um $\left\lceil\frac{N}{2}\right\rceil$ viele neue Koordinaten erweitert werden. Das ist gleichzeitig auch die maximal mögliche Größe von $K_{old}$. Also haben wir für die Schleife $O(N)$. 
 
-Der Zugriff auf den letzten Index von $S$ kann mit einer double-linked list auf $O(1)$ reduziert werden und der Vergleich benötigt $d$ Schritte. Daher ist die Komplexität $O\left(N^2+d\right)$.
+
+Der Zugriff auf den letzten Index von $S$ kann mit einer double-linked list auf $O(1)$ reduziert werden und der Vergleich im If benötigt $d$ Schritte. Daher ist die Komplexität $O\left(N+d\right)$.
 
 \smallskip
 \hrule
@@ -789,12 +788,21 @@ Die If Abfrage prüft wie oft von hinten gesehen die maximale Koordinate verwend
 	\end{algorithmic}
 \end{tcolorbox}
 
-Dieser Abschnitt wird nur einmal aufgerufen. Zunächst wird der erste Index von hinten betrachtet, der nicht die maximale Koordinate enthält inkrementiert und die restlichen Werte von $s$ nach $out$ übernommen. Damit ist erreicht, dass wir die nächste Zelle in unserer Zählung anvisieren können. $index\_of$ ist das einzig neuartige hier, das ist in $O(1)$ realisierbar, wenn man bedenkt, dass in den Schleifen Durchläufen einfach bis zu $k$ hin mitgezählt werden kann. Also haben wir innerhalb der ersten Schleife $O(1)$ und für die gesamte Schleife wieder $O\left(N^2\right)$, da es von $K$ abhängt. Die zweite Schleife hat maximal $d-1$ Durchläufe. Also $O(d)$. Damit für diesen Abschnitt gesamt Komplexität von $O\left(N^2+d\right)$.
+Dieser Abschnitt wird nur einmal aufgerufen. Zunächst wird der erste Index von hinten betrachtet, der nicht die maximale Koordinate enthält inkrementiert und die restlichen Werte von $s$ nach $out$ übernommen. Damit ist erreicht, dass wir die nächste Zelle in unserer Zählung anvisieren können. $index\_of$ ist das einzig neuartige hier, das ist in $O(1)$ realisierbar, wenn man bedenkt, dass in den Schleifen Durchläufen einfach bis zu $k$ hin mitgezählt werden kann. Also haben wir innerhalb der ersten Schleife $O(1)$ und für die gesamte Schleife gilt $O\left(N^2\right)$, da für die Anzahl der Elemente in $K$ gilt:
+
+\begin{equation}
+\sum_{j=1}^{\left\lceil\frac{N}{2}\right\rceil}j=\frac{\left\lceil\frac{N}{2}\right\rceil\cdot\left(\left\lceil\frac{N}{2}\right\rceil+1\right)}{2}\in O\left(N^2\right)
+\end{equation}
+ 
+ Die zweite Schleife hat maximal $d-1$ Durchläufe. Also $O(d)$. Damit für diesen Abschnitt gesamt Komplexität von $O\left(N^2+d\right)$.
 
 
 Betrachten wir nun bevor zur gesamten Komplexität kommen noch eine Funktionsweise der letzten beiden Abschnitte in Kombination. Diese sind in fast allen Fällen für die Auswahl des nächsten Schusses zuständig. Es wird zunächst immer geprüft ob wir die maximale Koordinate als aktuellen Index haben beginnend beim Letzten. Sollte zuvor gerade eine neue Menge an Koordinaten in $K$ aufgenommen worden sein kann die letzte Koordinate nicht maximal sein, das heißt wir werden auf jeden Fall in den else Teil springen. Darin wird dann der letzte Index um eins nach oben gezählt. Das heißt von da an werden wir an mindestens einer Stelle eine der neuen Koordinaten verwenden. Damit ist gewährleistet, dass es keine Wiederholungen der Schüsse gibt und das der Übergang zwischen alten und neuem Koordinatensatz reibungslos abläuft.
 
-Somit können wir also die Komplexitäten der Abschnitte zusammenfassen und erhalten eine gesamte Komplexität für den Algorithmus von $O(1)+O(N^2+d)+O(d)+O(N^2+d)=O(N^2+d)$.
+Somit können wir also die Komplexitäten der Abschnitte zusammenfassen und erhalten eine gesamte Komplexität für den Algorithmus von $O(1)+O(N+d)+O(d)+O(N^2+d)=O(N^2+d)$.
+
+
+Bezüglich der Speicherplatz Komplexität haben wir für $K$ $O(N^2)$. Das wird auch konstant gespeichert bleiben, da es immer wieder genutzt wird. Für $S$ gilt $O(N^d)$ wenn man jeden Schuss speichert, allerdings benötigt die Strategie nur den letzten Schuss. Wenn man sich also entscheidet nur diesen zu speichern hat man $O(1)$. Damit also gesamt Speicherplatz Komplexität von $O(N^2)$.
 
 
 \subsubsection{Dünne Gitter Strategie}
@@ -828,6 +836,143 @@ Die Definition des dünnen Gitters kann anhand Abbildung \ref{fig:gitter03} verd
 	\label{fig:gitter03}
 \end{figure}
 
+In Abbildung \ref{fig:gitter03} ist zu sehen, dass sich im zweidimensionalen Fall bei steigendem Level der Gitter immer eine Diagonale dazukommt. Für den Algorithmus der dünne Gitter Strategie benötigen wir zusätzlich noch ein $S'$ und anstelle von $K$ ein $K'$. Dabei funktioniert $S'$ ganz analog zu $S$ wobei Tupel aus zwei $d$-dimensionalen Vektoren gespeichert werden. Der erste um die Zelle zu beschreiben und der zweite um das Level aus der die korrespondierende Koordinate stammt zu definieren. $K'$ speichert nun die Koordinaten nach Leveln getrennt in verschiedenen Listen oder Arrays und nicht wie $K$ noch alles in einer Liste/Array.
+
+Die Funktionsweise des folgenden Algorithmus leitet sich von mit dünne Gittern einhergehenden Bedingung an die Inkremente ab. Dabei ist zu beachten, dass $|\underline{m}|_1\leq n+d-1$ gilt. Bei konstanter Dimension erhöht sich pro dazukommende Diagonale um das nächste Gitter zu erzeugen jeweils nur $n$ um eins. Das heißt von den Indeces der Inkremente kann sich maximal eines auf ein neues Level erhöhen damit die Bedingung weiterhin erhalten bleibt. Also erarbeiten wir ausgehend von den alten Schüssen  die neuen, indem einzelne Koordinaten um ein Level erhöht werden. Dabei ist zu beachten, dass innerhalb eines neuen Levels es mehrere mögliche Koordinaten gibt. 
+
+
+\begin{tcolorbox}
+	\begin{algorithmic}
+		\Function{sparse\_grid\_strat}{$S',K',L$}{$:cell$}
+		\If{$K'=\emptyset$}
+		\State $K'[0]=\left[\left\lfloor\frac{N}{2}\right\rfloor\right]$
+		\State $max\_coord=K'\left[0\right][0]$
+		\State $L=0$
+		\State $countCoord = 0$
+		\State $position = 0$
+		\EndIf
+		\If{$S'[last\_index][0]=(K'[0][0],\dots,K'[0][0],max\_coord)$}
+		\State $min=\left\lceil\frac{K'[L][0]}{2}\right\rceil$
+		\State $K'.add([])$
+		\For{\textbf{each } $k\in K'[L]$}
+		\State $K'[L+1].add(k-min)$
+		\State $K'[L+1].add(k+min)$
+		\EndFor
+		\State $L++$
+		\State $max\_coord=K'\left[L\right][last\_index]$
+		\State $countCoord = 0$
+		\State $position = 0$
+		\EndIf
+		\If{$S=\emptyset$}
+		\State $S'.add((('K[0][0],\dots,K'[0][0]),(0,\dots,0)))$
+		\State \Return $(K'[0][0],\dots,K'[0][0])$
+		\Else
+		\State $out = S'[0]$
+		\If{$countCoord=0$}
+		\State $out[1][position]++$
+		\EndIf
+		\State $out[0][position]=K[out[1][position]][countCoord]$
+		\State $countCoord++$
+		\If{$countCoord=K[position].size()$}
+		\State $countCoord=0$
+		\State $position++$
+		\If{$position=d$}
+		\State $position=0$
+		\State $S'.delete(0)$
+		\EndIf
+		\EndIf
+		\State $S'.add(out)$
+		\State\Return $out[0]$
+		\EndIf
+		\EndFunction
+	\end{algorithmic}
+\end{tcolorbox}
+
+Wir werden jetzt nun wieder den Algorithmus in kleinen Teilen näher betrachten und dabei die Funktionsweise und Komplexität genauer beschreiben.
+
+\smallskip
+\hrule
+\smallskip
+
+\begin{tcolorbox}
+	\begin{algorithmic}
+		\If{$K'=\emptyset$}
+		\State $K'[0]=\left[\left\lfloor\frac{N}{2}\right\rfloor\right]$
+		\State $max\_coord=K'\left[0\right][0]$
+		\State $L=0$
+		\State $countCoord = 0$
+		\State $position = 0$
+		\EndIf
+	\end{algorithmic}
+\end{tcolorbox}
+
+Dies beschreibt den Fall der zu Beginn vorliegt. Hier werden die erste Koordinate und ein paar notwendige Variablen initialisiert. Auf die Funktion der Variablen $countCoord$ und $position$ kommen wir noch später genauer zu sprechen. Die Komplexität ist $O(1)$.
+
+\smallskip
+\hrule
+\smallskip
+
+\begin{tcolorbox}
+	\begin{algorithmic}
+		\If{$S'[last\_index][0]=(K'[0][0],\dots,K'[0][0],max\_coord)$}
+		\State $min=\left\lceil\frac{K'[L][0]}{2}\right\rceil$
+		\State $K'.add([])$
+		\For{\textbf{each } $k\in K'[L]$}
+		\State $K'[L+1].add(k-min)$
+		\State $K'[L+1].add(k+min)$
+		\EndFor
+		\State $L++$
+		\State $max\_coord=K'\left[L\right][last\_index]$
+		\State $countCoord = 0$
+		\State $position = 0$
+		\EndIf
+	\end{algorithmic}
+\end{tcolorbox}
+
+Dieser Abschnitt beschreibt den Fall, dass neue Koordinaten hinzugefügt werden müssen. Dabei ist die später folgende Iteration so aufgebaut, dass der letzte Schuss eines Koordinatensatzes gerade die Form $(K'[0][0],\dots,K'[0][0],max\_coord)$ hat. Da von vorne nach hinten durch die Dimensionen gezählt wird und $max\_coord$ ebenfalls die letzte Koordinate eines Levels ist. Es wird nun wie zuvor bereits erwähnt eine neue Liste/Array erzeugt, die die Koordinaten des neuen Levels enthalten soll. Die Berechnungen unterscheiden sich dabei nicht von denen bei vollen Gittern. Zum Schliss werden noch einmal $countCoord$ und $position$ gesetzt, da diese wie wir noch sehen werden, sich im Laufe verändert haben und nun zurückgesetzt werden müssen.
+
+Der Vergleich im If ist in $O(d)$. Die Schleife hat $\left\lceil\frac{N}{4}\right\rceil$ Durchläufe, da das gerade die Anzahl der Elemente im vorletzten Level ist. Das letzte Level taucht als Schleife nicht mehr auf, da bis dahin bereits alle Punkte des Spielfelds beschossen sind. Also ist die Schleife in $O(N)$. Davon ausgehend, dass $last\_index$ in $O(1)$ realisiert werden kann hat dieser Abschnitt eine gesamte Komplexität von $O(N+d)$.
+
+\smallskip
+\hrule
+\smallskip
+
+\begin{tcolorbox}
+	\begin{algorithmic}
+		\If{$S=\emptyset$}
+		\State $S'.add((('K[0][0],\dots,K'[0][0]),(0,\dots,0)))$
+		\State \Return $(K'[0][0],\dots,K'[0][0])$
+		\Else
+		\State $out = S'[0]$
+		\If{$countCoord=0$}
+		\State $out[1][position]++$
+		\EndIf
+		\State $out[0][position]=K[out[1][position]][countCoord]$
+		\State $countCoord++$
+		\If{$countCoord=K[position].size()$}
+		\State $countCoord=0$
+		\State $position++$
+		\If{$position=d$}
+		\State $position=0$
+		\State $S'.delete(0)$
+		\EndIf
+		\EndIf
+		\State $S'.add(out)$
+		\State\Return $out[0]$
+		\EndIf
+	\end{algorithmic}
+\end{tcolorbox}
+
+Der If Abschnitt liegt in $O(1)$ ist aber auch nicht weiter relevant, da er nur einmal aufgerufen wird. Der Else Abschnitt hat zunächst ein paar $O(1)$ Zeilen, da es sich nur um Zugriff oder arithmetische Operationen handelt. Die $size()$ Funktion liegt bei maximalem Level in $O(N)$. Die $delete()$ Funktion ist hier $O(1)$, da das erste Element entfernt wird, was in $O(1)$ geht. Somit hat der Else Teil und damit der gesamte Abschnitt eine Komplexität von $O(N)$.
+
+
+Daraus ergibt sich für den gesamte Algorithmus ein Zeitkomplexität von $O(N+d)$. Der Speicherbedarf ist für $K'$ analog zu $K$ von den vollen Gittern, also $O(N^2)$. Was $S'$ angeht werden hier mehrere Schüsse gespeichert und auch verwendet. Bildlich im Zweidimensionalen gesprochen wird zu jedem Zeitpunkt eine komplette Diagonale an Inkrementen und deren dazugehörige Schüsse gespeichert. Nach \cite{GG08} ist die Größenordnung der Anzahl an Punkten für dünne Gitter $O(2^nn^{d-1})$. Da wir nur eine Diagonale speichern ergibt sich für unsere Menge an Punkten dennoch:
+
+\begin{equation}
+2^nn^{d-1}-2^{n-1}(n-1)^{d-1}=2^n\left(n^{d-1}-\frac{(n-1)^{d-1}}{2}\right)\in O(2^nn^{d-1})
+\end{equation}
+
+Also haben wir einen Speicherbedarf von $O(N^2+2^nn^{d-1})$, damit $O(2^nn^{d-1})$.
 
 
 \subsection{Monte-Carlo Strategie}
@@ -870,6 +1015,13 @@ Die Definition des dünnen Gitters kann anhand Abbildung \ref{fig:gitter03} verd
 	\newblock Dissertation,,
 	\newblock Technische Universität München,
 	\newblock 2010
+	
+	\bibitem[GG08]{GG08}
+	\textsc{Gerstner}, T. ; \textsc{Griebel}, M.:
+	\newblock \textit{Sparse Grids},
+	\newblock From Encyclopedia of Quantitative Finance,
+	\newblock Universität Bonn,
+	\newblock 2008
 	
 \end{thebibliography}
 
