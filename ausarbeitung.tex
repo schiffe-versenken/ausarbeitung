@@ -651,7 +651,9 @@ Von diesen Koordinaten gibt es maximal $N$ viele. Diese werden im folgenden Algo
 		\State $min=\left\lceil\frac{K[2^L-1]}{2}\right\rceil$
 		\State $K_{old}=K\left[2^L-1\dots 2^{L+1}-2\right]$
 		\For{\textbf{each } $k\in K_{old}$}
+		\If{$K[last\_index]!=k-min$}
 		\State $K.add(k-min)$
+		\EndIf
 		\State $K.add(k+min)$
 		\EndFor
 		\State $L++$
@@ -703,7 +705,9 @@ Damit wird die erste Koordinate initialisiert. Wenn $K$ leer ist befinden wir un
 		\State $min=\left\lceil\frac{K[2^L-1]}{2}\right\rceil$
 		\State $K_{old}=K\left[2^L-1\dots 2^{L+1}-2\right]$
 		\For{\textbf{each } $k\in K_{old}$}
+		\If{$K[last\_index]!=k-min$}
 		\State $K.add(k-min)$
+		\EndIf
 		\State $K.add(k+min)$
 		\EndFor
 		\State $L++$
@@ -713,7 +717,7 @@ Damit wird die erste Koordinate initialisiert. Wenn $K$ leer ist befinden wir un
 \end{tcolorbox}
 Wir prüfen zunächst ob wir bei den aktuellen Koordinaten bereits den maximalen Schuss erreicht haben, das heißt den Schuss, der nur die maximal mögliche Koordinate verwendet. Sollte das der Fall sein, dann haben wir bereits zuvor alle anderen Kombinationsmöglichkeiten ausgenutzt und müssen nun die Menge an Koordinaten $K$ erweitern. Dabei sollen nun neue Koordinaten, die entweder genau zwischen zwei alten Koordinaten oder einem Rand und einer alten Koordinate liegen hinzugefügt werden (Vgl. Abbildung \ref{fig:gitter01}). 
 
-Da wir in unserer Herangehensweise diskret arbeiten kann es sein, dass das Halbieren nicht immer aufgeht daher muss hier gerundet werden. Es wird aufgerundet, da sonst der Fall eintreten kann, das Punkte nicht erreicht werden können. Zum Schluss wird die Menge der Koordinaten aktualisiert und das Level erhöht. $K$ kann maximal um $\left\lceil\frac{N}{2}\right\rceil$ viele neue Koordinaten erweitert werden. Das ist gleichzeitig auch die maximal mögliche Größe von $K_{old}$. Also haben wir für die Schleife $O(N)$. 
+Da wir in unserer Herangehensweise diskret arbeiten kann es sein, dass das Halbieren nicht immer aufgeht daher muss hier gerundet werden. Es wird aufgerundet, da sonst der Fall eintreten kann, das Punkte nicht erreicht werden können. Dabei wird durch eine Abfrage gewährleistet das keine gleichen Koordinaten aufgenommen werden. Zum Schluss wird die Menge der Koordinaten aktualisiert und das Level erhöht. $K$ kann maximal um $\left\lceil\frac{N}{2}\right\rceil$ viele neue Koordinaten erweitert werden. Das ist gleichzeitig auch die maximal mögliche Größe von $K_{old}$. Also haben wir für die Schleife $O(N)$. 
 
 
 Der Zugriff auf den letzten Index von $S$ kann mit einer double-linked list auf $O(1)$ reduziert werden und der Vergleich im If benötigt $d$ Schritte. Daher ist die Komplexität $O\left(N+d\right)$.
@@ -827,7 +831,9 @@ Die Funktionsweise des folgenden Algorithmus leitet sich von mit dünne Gittern 
 		\State $min=\left\lceil\frac{K'[L][0]}{2}\right\rceil$
 		\State $K'.add([])$
 		\For{\textbf{each } $k\in K'[L]$}
+		\If{$K'[L+1][last\_index]!=k-min$}
 		\State $K'[L+1].add(k-min)$
+		\EndIf
 		\State $K'[L+1].add(k+min)$
 		\EndFor
 		\State $L++$
@@ -890,7 +896,9 @@ Dies beschreibt den Fall der zu Beginn vorliegt. Hier werden die erste Koordinat
 		\State $min=\left\lceil\frac{K'[L][0]}{2}\right\rceil$
 		\State $K'.add([])$
 		\For{\textbf{each } $k\in K'[L]$}
+		\If{$K'[L+1][last\_index]!=k-min$}
 		\State $K'[L+1].add(k-min)$
+		\EndIf
 		\State $K'[L+1].add(k+min)$
 		\EndFor
 		\State $L++$
@@ -901,7 +909,7 @@ Dies beschreibt den Fall der zu Beginn vorliegt. Hier werden die erste Koordinat
 	\end{algorithmic}
 \end{tcolorbox}
 
-Dieser Abschnitt beschreibt den Fall, dass neue Koordinaten hinzugefügt werden müssen. Dabei ist die später folgende Iteration so aufgebaut, dass der letzte Schuss eines Koordinatensatzes gerade die Form $(K'[0][0],\dots,K'[0][0],max\_coord)$ hat. Da von vorne nach hinten durch die Dimensionen gezählt wird und $max\_coord$ ebenfalls die letzte Koordinate eines Levels ist. Es wird nun wie zuvor bereits erwähnt eine neue Liste/Array erzeugt, die die Koordinaten des neuen Levels enthalten soll. Die Berechnungen unterscheiden sich dabei nicht von denen bei vollen Gittern. Zum Schliss werden noch einmal $countCoord$ und $position$ gesetzt, da diese wie wir noch sehen werden, sich im Laufe verändert haben und nun zurückgesetzt werden müssen.
+Dieser Abschnitt beschreibt den Fall, dass neue Koordinaten hinzugefügt werden müssen. Dabei ist die später folgende Iteration so aufgebaut, dass der letzte Schuss eines Koordinatensatzes gerade die Form $(K'[0][0],\dots,K'[0][0],max\_coord)$ hat. Da von vorne nach hinten durch die Dimensionen gezählt wird und $max\_coord$ ebenfalls die letzte Koordinate eines Levels ist. Es wird nun wie zuvor bereits erwähnt eine neue Liste/Array erzeugt, die die Koordinaten des neuen Levels enthalten soll. Die Berechnungen unterscheiden sich dabei nicht von denen bei vollen Gittern. Zum Schluss werden noch einmal $countCoord$ und $position$ gesetzt, da diese wie wir noch sehen werden, sich im Laufe verändert haben und nun zurückgesetzt werden müssen.
 
 Der Vergleich im If ist in $O(d)$. Die Schleife hat $\left\lceil\frac{N}{4}\right\rceil$ Durchläufe, da das gerade die Anzahl der Elemente im vorletzten Level ist. Das letzte Level taucht als Schleife nicht mehr auf, da bis dahin bereits alle Punkte des Spielfelds beschossen sind. Also ist die Schleife in $O(N)$. Davon ausgehend, dass $last\_index$ in $O(1)$ realisiert werden kann hat dieser Abschnitt eine gesamte Komplexität von $O(N+d)$.
 
