@@ -1,0 +1,62 @@
+%% Creator: Inkscape 0.48.5, www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'Grids_06.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{180bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,0.97777778)%
+    \put(0,0){\includegraphics[width=\unitlength]{figures/Grids_06.pdf}}%
+    \put(0.86237379,0.89038642){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.11889791\unitlength}\raggedright $l_1$\end{minipage}}}%
+    \put(0.04015159,0.04594197){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.11889791\unitlength}\raggedright $l_2$\end{minipage}}}%
+    \put(0.19004974,0.8803822){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.1633704\unitlength}\raggedright $l_1=1$\end{minipage}}}%
+    \put(0.43449419,0.8803822){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.1633704\unitlength}\raggedright $l_1=2$\end{minipage}}}%
+    \put(0.67893862,0.8803822){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.1633704\unitlength}\raggedright $l_1=3$\end{minipage}}}%
+    \put(-0.00130442,0.61371553){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.1633704\unitlength}\raggedright $l_2=1$\end{minipage}}}%
+    \put(-0.00130442,0.36927108){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.1633704\unitlength}\raggedright $l_2=2$\end{minipage}}}%
+    \put(-0.00130442,0.11218775){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.1633704\unitlength}\raggedright $l_2=3$\end{minipage}}}%
+  \end{picture}%
+\endgroup%
