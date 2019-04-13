@@ -460,107 +460,88 @@ Um den Wert von $\shot_count(F, \strat)$ für eine gegebene Flotte $F$ zu berech
 	\end{algorithmic}
 \end{tcolorbox}
 
-Um damit dann einen kompletten Algorithmus implementieren zu können, muss jedoch erst eine Abbruchbedingung formuliert werden, die bestimmt, wann für eine Flottengröße $k \in K$ der approximierte Wert von $E_{F_{all,k}}(\mathbf{T}_{\strat})$ gut genug ist.
-
-Dafür ist es nützlich, die Erwartungswertänderung wie in dem folgenden Satz darzustellen:
-
-\begin{satz}
-Sei $G_k^{(n)} \subseteq F_{all,k}$ eine Teilmenge der Flotten mit Größe $k$ mit $|G_k^{(n)}|=n$.
-Sei außerdem $F_k^{(n+1)} \in (F_{all,k} \setminus G_k^{(n)})$ eine weitere, noch nicht ausgewertete Flotte.
-Dann ist $G_k^{(n+1)}=G_k^{(n)} \cup F_k^{(n+1)}$ und für den Erwartungswert gilt:
-\begin{align}
-E_{G_k^{(n+1)}}(\mathbf{T}_{\strat})=E_{G_k^{(n)}}(\mathbf{T}_{\strat}) + \delta\\
- \delta=\frac{\mathbf{T}_{\strat}(F_k^{(n+1)}) - E_{G_k^{(n)}}(\mathbf{T}_{\strat})}{n+1}
-\nonumber
-\end{align}
-\end{satz}
-
-\begin{proof}
-Sei
-\begin{align}
-\begin{split}
-s=\sum_{F \in G_k^{(n)}} \mathbf{T}_{\strat}(F),\;\; E_{G_k^{(n)}}(\mathbf{T}_{\strat}) =\frac{s}{n}
-\end{split}
-\end{align}
-Dann ist
-\begin{align}
-\begin{split}
-&E_{G_k^{(n+1)}}(\mathbf{T}_{\strat})\\
-=&\frac{s+ \mathbf{T}_{\strat}(F_k^{(n+1)}) }{n + 1}\\
-=&\frac{s}{n + 1} + \frac{\mathbf{T}_{\strat}(F_k^{(n+1)}) }{n + 1}\\
-=&\frac{s}{n} * \frac{n}{n + 1} + \frac{\mathbf{T}_{\strat}(F_k^{(n+1)}) }{n + 1}\\
-=&E_{G_k^{(n)}}(\mathbf{T}_{\strat}) * (1 - \frac{1}{n + 1}) + \frac{\mathbf{T}_{\strat}(F_k^{(n+1)}) }{n + 1}\\
-=&E_{G_k^{(n)}}(\mathbf{T}_{\strat}) - \frac{E_{G_k^{(n)}}(\mathbf{T}_{\strat})}{n + 1}) + \frac{\mathbf{T}_{\strat}(F_k^{(n+1)}) }{n + 1}\\
-=&E_{G_k^{(n)}}(\mathbf{T}_{\strat}) + \frac{E_{G_k^{(n)}}(\mathbf{T}_{\strat}) - \mathbf{T}_{\strat}(F_k^{(n+1)}) }{n + 1}\\
-\end{split}
-\end{align}
-\qed
-\end{proof}
-
-Damit kann dann eine Abbruchbedingung formuliert werden, die angibt, wie groß die Flottenanzahl $n$ sein muss, damit Veränderung des Erwartungswertes $\delta$ für eine zusätzlich ausgewertete Flotte $F_k^{(n+1)}$ einen Grenzwert $\delta_{min}$ immer unterschreitet:
-
-\begin{satz}
-Sei $\delta_{min} > 0$.
-Dann gilt:
-
-\begin{align}
-n = \left\lceil \frac{|C_{all}| - 1}{\delta_{min}} \right\rceil - 1 \Rightarrow |\delta| \leq \delta_{min}
-\nonumber
-\end{align}
-\end{satz}
-
-\begin{proof}
-\begin{align}
-|\delta|=\frac{|\mathbf{T}_{\strat}(F_k^{(n+1)}) - E_{G_k^{(n)}}(\mathbf{T}_{\strat})|}{n+1} \leq \delta_{min}\\
-\Leftrightarrow \frac{|\mathbf{T}_{\strat}(F_k^{(n+1)}) - E_{G_k^{(n)}}(\mathbf{T}_{\strat})|}{\delta_{min}} \leq (n+1)
-\nonumber
-\end{align}
-Da $\forall F \in F_{all} \colon \mathbf{T}_{\strat}(F) \leq |C_{all}|$ und $\forall G \subseteq F_{all} \colon E_{G}(\mathbf{T}_{\strat}) \geq 1$ gilt:
-\begin{align}
-\begin{split}
-\left( (n+1) \geq \frac{|C_{all}| - 1}{\delta_{min}} \Rightarrow |\delta| \leq \delta_{min} \right)\\
-\Rightarrow \left(n = \left\lceil \frac{|C_{all}| - 1}{\delta_{min}} \right\rceil - 1 \Rightarrow |\delta| \leq \delta_{min} \right)
-\end{split}
-\end{align}
-\qed
-\end{proof}
-
-Diese Abschätzung ist sehr großzugüg gewählt. Es wird sehr oft passieren, dass bereits für kleinere Werte von $n$ der Grenzwert $\delta_{min}$ unterschritten wird, jedoch kann mit dieser größeren Wahl von $n$ garantiert werden, dass der Grenzwert $\delta_{min}$ in jedem zusätzlichen Schritt unterschritten wird. Daher muss nicht nach jedem Schritt eine Abbruchbedingung überprüft werden, sondern nur zu Beginn die Anzahl der Schritte $n$ einmalig berechnet werden.
+Mithilfe dieser Funktion werden dann Werte für viele, zufällig gewählte Flotten zu einem Erwartungswert der Stichprobe kombiniert:
 
 \begin{tcolorbox}
 	\begin{algorithmic}[H]
-		\Function{simulate\_rounds}{$k, \strat, \delta_{min}$}{:}
-		\State $n =\left\lceil \frac{|C_{all}| - 1}{\delta_{min}} \right\rceil - 1$;
-		\State //Generiere $n$ verschiedene Flotten der Größe $k$;
-		\State $fleets = generate\_random\_fleets(k, n)$;
-		\State $sum=0$;
+		\Function{evaluate\_strategy}{$n, \strat$}{:}
+		\State //Generiere $n$ verschiedene Flotten;
+		\State $fleets = generate\_random\_fleets(n)$;
 		\For{$i=1,\dots,n$}
-		\State $sum += shot\_count(fleets[i], \strat)$;
+		\State $shots= shot\_count(fleets[i], \strat)$;
+		\State $P(\mathbf{X}^F_{\strat} = shots)+=\frac{1}{n}$;
 		\EndFor
-		\State\Return $\frac{sum}{n}$;
 		\EndFunction
 	\end{algorithmic}
 \end{tcolorbox}
 
+\subsection{Eine bessere Alternative}
 
-Abschliessend kann dann die Funktion implementiert werden, die den Wert von $E_{F_{all}}(\mathbf{T}_{\strat})$ für Flotten beliebiger Größe berechnet. Dafür müssen die berechneten Werte von $E_{F_{all,k}}(\mathbf{T}_{\strat})$ für jedes $k$ gewichtet aufsummiert werden. Nebenbei werden auch die Erwartungswerte für jedes $k$ gespeichert, damit diese später auch untersucht werden können.
+
+\begin{definition}
+Eine Funktion der Form
+\begin{align}
+&I_{\strat}:C_{all} \rightarrow \{1, \dots, |C_{all}|\} \nonumber
+\end{align}
+wird Indexfunktion einer Strategie genannt. Diese weißt jeder Zelle des Spielfeldes den Wert zu, zu welchem die Zelle getroffen wird. Der Vorteil ist, dass diese Werte einmalig für eine Strategie berechnet werden müssen und dann abgespeichert werden können.
+\end{definition}
+
+\begin{definition}
+Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
+Sei $\omega$ das ausgewählte Schiff aus $L_{all}$.
+Dann ist
+\begin{align}
+\mathbf{X}^L_{\strat}(\omega) = \min_{c \in cells(\omega)} I_{\strat}(c)
+\nonumber
+\end{align}
+eine Zufallsvariable, die die Anzahl an Schüssen zum versenken einer beliebig gewählten Schiffes $\omega$ aus $L_{all}$ bezeichnet.
+\end{definition}
+
+\begin{definition}
+Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
+Sei $\omega$ die ausgewählte Flotte aus $F_{all}$.
+Dann ist
+\begin{align}
+\mathbf{X}^F_{\strat}(\omega) = \max_{l \in \omega} \mathbf{X}^L_{\strat}(l)
+\nonumber
+\end{align}
+eine Zufallsvariable, die die Anzahl an Schüssen zum versenken einer beliebig gewählten Flotte $\omega$ aus $F_{all}$ bezeichnet.
+\end{definition}
 
 \begin{tcolorbox}
-\begin{algorithmic}[H]
-	\Function{calculate\_expected\_shot\_count}{strat, $\epsilon, \eta$}{:}
-	\State $expected\_shot\_count=[]$;
-	\State $total\_expected\_shot\_count=0$;
-	\For{$k=1$ to $|L_{all}|$}
-	\State $g_k=\frac{|F_{all,k}|}{|F_{all}|}$;
-	\State $\delta_k=g_k * \delta$;
-	\State $E=simulate\_rounds(k, strat, \delta_k)$;
-	\State $expected\_shot\_count[k] = E$;
-	\State $total\_expected\_shot\_count+=g_k * E$;
-	\EndFor
-	\EndFunction
-\end{algorithmic}
+	\begin{algorithmic}[H]
+		\Function{calculate\_turns}{$n, \strat$}{:}
+		\State //Generiere $n$ verschiedene Schiffe;
+		\State $ships = generate\_random\_ships(n)$;
+		\State $turns = [1, ..., |C_{all}|]$;
+		\State $sum=0$;
+		\For{$i=1,\dots,n$}
+		\State $min= \min_{c \in cells(ships[i])} I_{\strat}(c)$;
+		\State $turns[min]++$;
+		\EndFor
+		\State\Return $turns$;
+		\EndFunction
+	\end{algorithmic}
 \end{tcolorbox}
 
+\begin{tcolorbox}
+	\begin{algorithmic}[H]
+		\Function{evaluate\_strategy}{$n, \strat$}{:}
+		\State $turns = calculate\_turns(n, \strat)$;
+		\State $ship\_sum=0$;
+		\For{$i=1,\dots,|C_{all}|$}
+		\State $ships=turns[i]$;
+		\State $ship\_sum += ships$;;
+		\State $P(\mathbf{X}^L_{\strat} = i)=\frac{ships}{n}$;
+		\State $P(\mathbf{X}^L_{\strat} \leq i)=\frac{ship\_sum}{n}$;
+		\State $P(\mathbf{X}^F_{\strat} \leq i)=\frac{2^{ship\_sum}}{2^{n} - 1}$;
+		\State $P(\mathbf{X}^F_{\strat} = i)=(P(\mathbf{X}^F_{\strat} = i) - P(\mathbf{X}^F_{\strat} \leq i - 1))$;
+		\EndFor
+		\EndFunction
+	\end{algorithmic}
+\end{tcolorbox}
+
+Hier werden aus den Ergebnissen von einer Stichprobe mit $n$ Schiffen das Ergebnis für alle möglichen Flotten, die aus den Schiffen der Stichprobe erstellt werden können, berechnet. Die Anzahl dieser Flotten beträgt $2^n - 1$.
 
 \section{Strategien}
 
@@ -950,7 +931,9 @@ Die zufällige Auswahl von Zellen, die nicht bereits beschossen wurden lässt si
 
 \subsection{Halton Strategie}
 
+\section{Ergebnisse}
 
+Bestimmt man nun mithilfe der Implementation die Verteilungsfunktionen von $\mathbf{X}^L_{\strat}(\omega)$ und $\mathbf{X}^F_{\strat}(\omega)$, können unterschiedliche Strategien auch über verschiedene Spielfeldgrößen gut miteinander verglichen werden:
 
 % Literaturverzeichnis ------------------------------------------------
 \newpage
