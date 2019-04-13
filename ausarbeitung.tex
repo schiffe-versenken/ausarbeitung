@@ -273,6 +273,23 @@ Dann gilt:
 \qed
 \end{proof}
 
+\subsection{Strategien}
+
+\begin{definition}
+Eine Funktion der Form
+\begin{align}
+&\strat:\{1,\dots,|C_{all}|\} \rightarrow C_{all} \nonumber
+\end{align}
+wird Strategiefunktion genannt. Diese wählt die nächste Zelle aus, auf die geschossen werden soll, abhängig davon, auf wieviele Zellen bereits geschossen wurden.
+\end{definition}
+
+\begin{definition}
+Sei
+\[
+\strategies  \coloneqq \{ \strat:\{1,\dots,|C_{all}|\} \rightarrow C_{all} \}
+\]
+die Menge an allen Strategiefunktionen.
+\end{definition}
 
 \begin{definition}
 Sei $F \in F_{all}$ und $c \in C_{all}$.
@@ -281,177 +298,91 @@ Dann ist
 &\hit:F_{all} \times C_{all} \rightarrow \mathcal{P}(L_{all}) \quad mit \nonumber\\
 &\hit(F, c)\mapsto \{(c_{min}, c_{max}) \in F \mid c_{min} \leq c \leq c_{max}\} \nonumber
 \end{align}
-die Treffer-Funktion, welche angibt, welche Schiffe bei einem Schuss auf Zelle $c$ getroffen wurden, falls $F$ die vom Gegner platzierte Flotte ist. In anderen Worten, die Menge der Schiffe aus Flotte $F$, die die Zelle $c$ belegen.
-\end{definition}
-
-\subsection{Schuss-Strategien}
-
-\begin{definition}
-Eine Funktion der Form
-\begin{align}
-&\strat:\mathcal{P}(C_{all}) \rightarrow C_{all} \nonumber
-\end{align}
-wird Strategiefunktion genannt. Diese wählt die nächste Zelle aus, auf die geschossen werden soll, abhängig davon, auf welche Zellen bereits geschossen wurden.
+die Treffer-Funktion, welche angibt, welche Schiffe bei einem Schuss auf Zelle $c$ getroffen wurden, falls $F$ die platzierte Flotte ist. In anderen Worten, die Menge der Schiffe aus Flotte $F$, die die Zelle $c$ belegen.
 \end{definition}
 
 \begin{definition}
-Sei
-\[
-\strategies  \coloneqq \{ \strat:P(C_{all}) \rightarrow C_{all} \}
-\]
-die Menge an allen Strategiefunktionen.
-\end{definition}
-
-\begin{definition}
-Sei $F\in F_{all}$ die gewählte Flotte und $S \in P(C_{all})$ die Menge an bereits beschossenen Zellen.
-Dann ist:
-\[
-\sunk(F, S) \Leftrightarrow \bigcup_{c \in S} \hit(F, c) = F
-\]
-wahr, falls alle Schiffe aus der Flotte $F$ versenkt wurden.
-\end{definition}
-
-
-\begin{definition}
-Sei $F\in F_{all}$ die gewählte Flotte und $S$ die Menge an bereits beschossenen Zellen.
+Sei $F\in F_{all}$ die gewählte Flotte.
 Sei außerdem $\strat \in \strategies$ die verwendete Schuss-Strategie.
 Dann ist
 \begin{align}
-&\shot_count(F, S, \strat)=
-& \begin{cases} 
-  	0& ,\sunk(F, S) \\
-      \shot_count(F, S \cup \strat(S), \strat) + 1 & ,sonst
-   \end{cases}
-\nonumber
-\end{align}
-die Anzahl an Schüssen, die benötigt werden, um alle Schiffe der Flotte $F$ mit der Schuss-Strategiefunktion $\strat$ zu versenken, falls bereits auf die Zellen der Menge $S$ geschossen wurde.
-
-Außerdem ist dann
-\begin{align}
-&\shot_count(F, \strat)=\shot_count(F, \emptyset, \strat)
+&\shot_count(F, \strat)=\min_n \left( \bigcup_{i=1}^n \{hit(F, \strat(i))\} = F \right)
 \nonumber
 \end{align}
 die Anzahl an Schüssen, die benötigt werden, um alle Schiffe der Flotte $F$ mit der Schuss-Strategiefunktion $\strat$ zu versenken.
 \end{definition}
 
-\subsection{Zufallsvariablen}
+\subsection{Schiffe}
 
 \begin{definition}
-Sei $\Omega \subseteq F_{all}$ eine Menge an Flotten.
+Sei $\Omega_L = L_{all}$ die Menge aller Flotten.
 \end{definition}
 
 \begin{definition}
-Sei $A \subseteq \Omega$ das Ereignis, dass bei einem Auswählen einer Flotte aus $\Omega$, die Flotte ebenfalls in der Menge $A$ liegt.
+Sei $\omega \in \Omega_L $ das Ereignis, dass das Schiff $\omega$ aus $\Omega_L $ ausgewählt wird.
 Dann ist
 \[
-P(A) = \frac{|A|}{|\Omega|}
+P(\omega) = \frac{1}{|\Omega_L|}
 \]
-die Wahrscheinlichkeit, dass eine Flotte aus der Menge $A$ ausgewählt wird.
+die Wahrscheinlichkeit, dass das Schiff $\omega$ ausgewählt wird.
+\end{definition}
+
+Dann ist $(\Omega_L, P)$ ein endlicher Laplacescher W-Raum und P eine Gleichverteilung.
+
+\begin{definition}
+Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
+Sei $\omega$ das ausgewählte Schiff aus $L_{all}$.
+Dann ist
+\begin{align}
+\mathbf{X}^L_{\strat}(\omega) = \shot_count(\omega, \strat)
+\nonumber
+\end{align}
+eine Zufallsvariable, die die Anzahl an Schüssen zum versenken eines Schiffes $\omega$ aus $L_{all}$ bezeichnet.
+\end{definition}
+
+\subsection{Flotten}
+
+\begin{definition}
+Sei $\Omega = F_{all}$ die Menge aller Flotten.
+\end{definition}
+
+\begin{definition}
+Sei $\omega \in \Omega$ das Ereignis, dass die Flotte $\omega$ aus $\Omega$ ausgewählt wird.
+Dann ist
+\[
+P(\omega) = \frac{1}{|\Omega|}
+\]
+die Wahrscheinlichkeit, dass die Flotte $\omega$ ausgewählt wird.
 \end{definition}
 
 Dann ist $(\Omega, P)$ ein endlicher Laplacescher W-Raum und P eine Gleichverteilung.
 
 \begin{definition}
 Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
-Sei $\omega$ die ausgewählte Flotte aus $\Omega$.
+Sei $\omega$ die ausgewählte Flotte aus $F_{all}$.
 Dann ist
 \begin{align}
-\mathbf{T}_{\strat}(\omega) \coloneqq \shot_count(\omega, \strat)
+\mathbf{X}^F_{\strat}(\omega) = \max_{l \in \omega} \shot_count(l, \strat)
 \nonumber
 \end{align}
-eine Zufallsvariable, die die Anzahl an Schüssen zum versenken einer Flotte $\omega$ bezeichnet.
+eine Zufallsvariable, die die Anzahl an Schüssen zum versenken einer Flotte $\omega$ aus $F_{all}$ bezeichnet.
 \end{definition}
-
-\begin{satz}
-Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
-Dann ist
-\begin{align}
-E_\Omega(\mathbf{T}_{\strat})=\frac{1}{|\Omega|} \sum_{\omega \in \Omega} \shot_count(\omega, \strat)
-\nonumber
-\end{align}
-der Erwartungswert von $\mathbf{T}_{\strat}$ in der Menge $\Omega$.
-\end{satz}
-
-\begin{proof}
-\begin{align}
-\begin{split}
-E_\Omega(\mathbf{T}_{\strat})&=\sum_{\omega \in \Omega} P(\omega) \shot_count(\omega, \strat)\\
-&=\frac{1}{|\Omega|} \sum_{\omega \in \Omega} \shot_count(\omega, \strat)
-\nonumber
-\end{split}
-\end{align}
-\qed
-\end{proof}
-
-\begin{satz}
-Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
-Dann ist
-\begin{align}
-E_{F_{all}}(\mathbf{T}_{\strat})=\frac{1}{|F_{all}|} \sum_{k=1}^{|L_{all}|}\sum_{F\in F_{all,k}} \shot_count(F, \strat)
-\nonumber
-\end{align}
-der Erwartungswert von $\mathbf{T}_{\strat}$ in der Menge $F_{all}$.
-\end{satz}
-
-\begin{proof}
-\begin{align}
-\begin{split}
-&E_{F_{all}}(\mathbf{T}_{\strat})\\
-=&\frac{1}{|F_{all}|} \sum_{F\in F_{all}} \shot_count(F, \strat)\\
-=&\frac{1}{|F_{all}|} \sum_{k=1}^{|L_{all}|}\sum_{F\in F_{all,k}} \shot_count(F, \strat)
-\nonumber
-\end{split}
-\end{align}
-\qed
-\end{proof}
-
-\begin{definition}
-Sei $k \in K$ die Flottengröße.
-Dann ist
-\[
-g_k=\frac{|F_{all,k}|}{|F_{all}|}=\frac{\binom{|L_{all}|}{k}}{2^{|L_{all}|} - 1}
-\]
-der Anteil an Flotten der Größe $k$ an der Menge aller Flotten. Dieser Faktor wird später als Gewichtungsfaktor für den Erwartungswert der Flottengröße $k$ verwendet.
-\end{definition}
-
-\begin{satz}
-Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
-Dann ist
-\begin{align}
-E_{F_{all}}(\mathbf{T}_{\strat})=\sum_{k=1}^{|L_{all}|} g_k E_{F_{all,k}}(\mathbf{T}_{\strat})
-\nonumber
-\end{align}
-der Erwartungswert von $\mathbf{T}_{\strat}$ in der Menge $F_{all}$.
-\end{satz}
-
-\begin{proof}
-\begin{align}
-\begin{split}
-&E_{F_{all}}(\mathbf{T}_{\strat})\\
-=&\frac{1}{|F_{all}|} \sum_{k=1}^{|L_{all}|}\sum_{F\in F_{all,k}} \shot_count(F, \strat)\\
-=&\sum_{k=1}^{|L_{all}|} \frac{1}{|F_{all}|} \sum_{F\in F_{all,k}} \shot_count(F, \strat)\\
-=&\sum_{k=1}^{|L_{all}|} \frac{1}{|F_{all}|} |F_{all,k}| \sum_{F\in F_{all,k}} \frac{1}{|F_{all,k}|} \shot_count(F, \strat)\\
-=&\sum_{k=1}^{|L_{all}|} \frac{|F_{all,k}|}{|F_{all}|} E_{F_{all,k}}(\mathbf{T}_{\strat})\\
-=&\sum_{k=1}^{|L_{all}|} g_k E_{F_{all,k}}(\mathbf{T}_{\strat})
-\nonumber
-\end{split}
-\end{align}
-\qed
-\end{proof}
 
 \section{Berechnung des Erwartungswertes mithilfe eines MC-Algorithmus}
 
-Um zu bewerten, wie gut eine Strategiefunktion $\strat$ abschneidet, kann ein Monte-Carlo Algorithmus implementiert werden, der für jede Flottengröße $k \in K$ mit einer Stichprobe den Wert von $E_{F_{all,k}}(\mathbf{T}_{\strat})$ abschätzt und am Ende alle diese Werte zum gesamtem Erwartungswert $E_{F_{all}}(\mathbf{T}_{\strat})$ kombiniert.
+Um zu bewerten, wie gut eine Strategiefunktion $\strat$ abschneidet, kann ein Monte-Carlo Algorithmus implementiert werden. Dafür gibt es gute und schlechte Ansätze:
 
-Um den Wert von $\shot_count(F, \strat)$ für eine gegebene Flotte $F$ zu berechnen, kann folgende, (naive) Funktion verwendet werden:
+\subsection{Der naive Ansatz}
+
+Um zu berechnen, wann eine gegebene Flotte $F$ versenkt wird, kann folgende Funktion verwendet werden:
 
 \begin{tcolorbox}
 	\begin{algorithmic}[H]
 		\Function{shot\_count}{$F, \strat$}{:}
 		\State $S=\emptyset$;
 		\State $\shot_count=0$;
-		\While{$\neg \sunk(F, S)$}
-		\State $next\_target=\strat(S)$;
+		\While{$S \neq F$}
+		\State $next\_target=\strat(\shot_count)$;
 		\State $S=S \cup \hit(F, next\_target)$;
 		\State $\shot_count=\shot_count+1$;
 		\EndWhile
@@ -460,7 +391,7 @@ Um den Wert von $\shot_count(F, \strat)$ für eine gegebene Flotte $F$ zu berech
 	\end{algorithmic}
 \end{tcolorbox}
 
-Mithilfe dieser Funktion werden dann Werte für viele, zufällig gewählte Flotten zu einem Erwartungswert der Stichprobe kombiniert:
+Mithilfe dieser Funktion werden dann Werte für $n$ zufällig gewählte Flotten zu einem Erwartungswert der Stichprobe kombiniert:
 
 \begin{tcolorbox}
 	\begin{algorithmic}[H]
@@ -475,16 +406,20 @@ Mithilfe dieser Funktion werden dann Werte für viele, zufällig gewählte Flott
 	\end{algorithmic}
 \end{tcolorbox}
 
+Das Problem ist, dass jeder einzelne Schuss generiert werden muss und dann zusätzlich überprüft werden muss, ob Schiffe getroffen wurden. Für große Spielfelder und Flotten ...
+
 \subsection{Eine bessere Alternative}
 
 
 \begin{definition}
 Eine Funktion der Form
 \begin{align}
-&I_{\strat}:C_{all} \rightarrow \{1, \dots, |C_{all}|\} \nonumber
+&I_{\strat}:C_{all} \rightarrow \{1, \dots, |C_{all}|\} = \strat^{-1} \nonumber
 \end{align}
-wird Indexfunktion einer Strategie genannt. Diese weißt jeder Zelle des Spielfeldes den Wert zu, zu welchem die Zelle getroffen wird. Der Vorteil ist, dass diese Werte einmalig für eine Strategie berechnet werden müssen und dann abgespeichert werden können.
+wird Indexfunktion einer Strategie genannt. Diese weißt jeder Zelle des Spielfeldes den Wert zu, zu welchem die Zelle getroffen wird.
 \end{definition}
+
+Damit kann man eine Alternative Definition von $\mathbf{X}^L_{\strat}$ angeben:
 
 \begin{definition}
 Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
@@ -497,16 +432,9 @@ Dann ist
 eine Zufallsvariable, die die Anzahl an Schüssen zum versenken einer beliebig gewählten Schiffes $\omega$ aus $L_{all}$ bezeichnet.
 \end{definition}
 
-\begin{definition}
-Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
-Sei $\omega$ die ausgewählte Flotte aus $F_{all}$.
-Dann ist
-\begin{align}
-\mathbf{X}^F_{\strat}(\omega) = \max_{l \in \omega} \mathbf{X}^L_{\strat}(l)
-\nonumber
-\end{align}
-eine Zufallsvariable, die die Anzahl an Schüssen zum versenken einer beliebig gewählten Flotte $\omega$ aus $F_{all}$ bezeichnet.
-\end{definition}
+Der Vorteil der Indexfunktion ist, dass diese Werte einmalig für eine Strategie berechnet werden müssen und dann in einem Array abgespeichert werden können. Dafür müssen dann Zellen in einen Array-Index umgewandelt werden können.
+
+In folgendem effizienteren Algorithmus werden die gespeicherten Werte der Indexfunktion $I_{\strat}$ verwendet, um zu ermitteln, nach wie vielen Schüssen ein Schiff versenkt wird. 
 
 \begin{tcolorbox}
 	\begin{algorithmic}[H]
@@ -524,6 +452,8 @@ eine Zufallsvariable, die die Anzahl an Schüssen zum versenken einer beliebig g
 	\end{algorithmic}
 \end{tcolorbox}
 
+Es werden aus den Ergebnissen von einer Stichprobe mit $n$ Schiffen das Ergebnis für alle möglichen Flotten, die aus den Schiffen der Stichprobe erstellt werden können, berechnet. Die Anzahl dieser Flotten beträgt $2^n - 1$. Natürlich ist dieses Ergebnis sehr stark von der Stichprobe an Schiffen abhängig und kann nicht mit einer echten zufälligen Auswahl von $2^n - 1$ Flotten verglichen werden.
+
 \begin{tcolorbox}
 	\begin{algorithmic}[H]
 		\Function{evaluate\_strategy}{$n, \strat$}{:}
@@ -531,17 +461,13 @@ eine Zufallsvariable, die die Anzahl an Schüssen zum versenken einer beliebig g
 		\State $ship\_sum=0$;
 		\For{$i=1,\dots,|C_{all}|$}
 		\State $ships=turns[i]$;
-		\State $ship\_sum += ships$;;
-		\State $P(\mathbf{X}^L_{\strat} = i)=\frac{ships}{n}$;
+		\State $ship\_sum += ships$;
 		\State $P(\mathbf{X}^L_{\strat} \leq i)=\frac{ship\_sum}{n}$;
 		\State $P(\mathbf{X}^F_{\strat} \leq i)=\frac{2^{ship\_sum}}{2^{n} - 1}$;
-		\State $P(\mathbf{X}^F_{\strat} = i)=(P(\mathbf{X}^F_{\strat} = i) - P(\mathbf{X}^F_{\strat} \leq i - 1))$;
 		\EndFor
 		\EndFunction
 	\end{algorithmic}
 \end{tcolorbox}
-
-Hier werden aus den Ergebnissen von einer Stichprobe mit $n$ Schiffen das Ergebnis für alle möglichen Flotten, die aus den Schiffen der Stichprobe erstellt werden können, berechnet. Die Anzahl dieser Flotten beträgt $2^n - 1$.
 
 \section{Strategien}
 
