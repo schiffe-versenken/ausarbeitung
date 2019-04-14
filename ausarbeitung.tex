@@ -254,8 +254,34 @@ F_{all} \coloneqq \bigcup_{k=1}^{|L_{all}|} F_{all,k} = \mathcal{P}(L_{all}) \se
 \]
 \end{definition}
 
+\begin{definition}
+Sei $L \subseteq L_{all}$.
+Dann ist
+\[
+F(L) \coloneqq \mathcal{P}(L) \setminus \{\emptyset\}
+\]
+die Menge aller Flotten, die mit Schiffen aus $L$ gebildet werden können.
+\end{definition}
+
 \begin{satz}
+Sei $L \subseteq L_{all}$.
 Dann gilt:
+\[
+|F(L)|=2^{|L|} - 1
+\]
+\end{satz}
+
+\begin{proof}
+\begin{align}
+\begin{split}
+&|F(L)|=|\mathcal{P}(L) \setminus \{\emptyset\}|=|\mathcal{P}(L)|-1=2^{|L|} - 1
+\end{split}
+\end{align}
+\qed
+\end{proof}
+
+\begin{satz}
+Dann gilt außerdem:
 \[
 |F_{all}|=2^{|L_{all}|} - 1
 \]
@@ -315,7 +341,7 @@ die Anzahl an Schüssen, die benötigt werden, um alle Schiffe der Flotte $F$ mi
 \subsection{Schiffe}
 
 \begin{definition}
-Sei $\Omega_L = L_{all}$ die Menge aller Flotten.
+Sei $\Omega_L \subseteq L_{all}$ eine Menge an Flotten.
 \end{definition}
 
 \begin{definition}
@@ -331,41 +357,42 @@ Dann ist $(\Omega_L, P)$ ein endlicher Laplacescher W-Raum und P eine Gleichvert
 
 \begin{definition}
 Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
-Sei $\omega$ das ausgewählte Schiff aus $L_{all}$.
+Sei $\Omega_L \subseteq L_{all}$ eine Menge aller Flotten.
+Sei $\omega \in \Omega_L$.
 Dann ist
 \begin{align}
-\mathbf{X}^L_{\strat}(\omega) = \shot_count(\omega, \strat)
+\mathbf{T}^{\Omega_L}_{\strat}(\omega) = \shot_count(\omega, \strat)
 \nonumber
 \end{align}
-eine Zufallsvariable, die die Anzahl an Schüssen zum versenken eines Schiffes $\omega$ aus $L_{all}$ bezeichnet.
+eine Zufallsvariable, die die Anzahl an Schüssen zum versenken eines Schiffes $\omega$ aus $\Omega_L$ bezeichnet.
 \end{definition}
 
 \subsection{Flotten}
 
 \begin{definition}
-Sei $\Omega = F_{all}$ die Menge aller Flotten.
+Sei $\Omega_F \subseteq F_{all}$ die Menge aller Flotten.
 \end{definition}
 
 \begin{definition}
-Sei $\omega \in \Omega$ das Ereignis, dass die Flotte $\omega$ aus $\Omega$ ausgewählt wird.
+Sei $\omega \in \Omega_F$ das Ereignis, dass die Flotte $\omega$ aus $\Omega_F$ ausgewählt wird.
 Dann ist
 \[
-P(\omega) = \frac{1}{|\Omega|}
+P(\omega) = \frac{1}{|\Omega_F|}
 \]
 die Wahrscheinlichkeit, dass die Flotte $\omega$ ausgewählt wird.
 \end{definition}
 
-Dann ist $(\Omega, P)$ ein endlicher Laplacescher W-Raum und P eine Gleichverteilung.
+Dann ist $(\Omega_F, P)$ ein endlicher Laplacescher W-Raum und P eine Gleichverteilung.
 
 \begin{definition}
 Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
-Sei $\omega$ die ausgewählte Flotte aus $F_{all}$.
+Sei $\omega$ die ausgewählte Flotte aus $\Omega_F$.
 Dann ist
 \begin{align}
-\mathbf{X}^F_{\strat}(\omega) = \max_{l \in \omega} \shot_count(l, \strat)
+\mathbf{X}^{\Omega_F}_{\strat}(\omega) = \max_{l \in \omega} \shot_count(l, \strat)
 \nonumber
 \end{align}
-eine Zufallsvariable, die die Anzahl an Schüssen zum versenken einer Flotte $\omega$ aus $F_{all}$ bezeichnet.
+eine Zufallsvariable, die die Anzahl an Schüssen zum versenken einer Flotte $\omega$ aus $\Omega_F$ bezeichnet.
 \end{definition}
 
 \section{Berechnung des Erwartungswertes mithilfe eines MC-Algorithmus}
@@ -410,6 +437,27 @@ Das Problem ist, dass jeder einzelne Schuss generiert werden muss und dann zusä
 
 \subsection{Eine bessere Alternative}
 
+\begin{satz}
+Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
+
+Sei $\Omega_L \subseteq L_{all}$ eine Menge an Schiffen und $n=|\Omega_L|$.
+
+Sei $L=\{x \in \Omega_L \mid \shot_count(l, \strat) \leq v)\}$ die Menge an Schiffen aus $\Omega_L$, die nach maximal $v$ Schüssen versenkt werden und $l=|L|$.
+
+Dann ist
+\begin{align}
+P(\mathbf{T}^{\Omega_L}_{\strat} \leq v) = \frac{l}{n}
+\nonumber
+\end{align}
+die Wahrscheinlichkeit, dass ein Schiff, das zufällig aus $\Omega_L$ ausgewählt wurde, nach maximal $v$ Schüssen versenkt wird.
+\end{satz}
+
+\begin{proof}
+Es gibt $l$ Schiffe, die nach maximal $v$ Schüssen versenkt werden.
+
+Die Wahrscheinlichkeit, ein Schiff auszuwählen, dass in $L$ liegt, beträgt $\frac{l}{n}$, da es eine Gleichverteilung ist.
+\qed
+\end{proof}
 
 \begin{definition}
 Eine Funktion der Form
@@ -419,18 +467,41 @@ Eine Funktion der Form
 wird Indexfunktion einer Strategie genannt. Diese weißt jeder Zelle des Spielfeldes den Wert zu, zu welchem die Zelle getroffen wird.
 \end{definition}
 
-Damit kann man eine Alternative Definition von $\mathbf{X}^L_{\strat}$ angeben:
+Damit kann man eine Alternative Definition von $\mathbf{T}^{\Omega_L}_{\strat}$ angeben:
 
 \begin{definition}
 Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
-Sei $\omega$ das ausgewählte Schiff aus $L_{all}$.
+Sei $\Omega_L \subseteq L_{all}$ eine Menge an Schiffen.
+Sei $\omega \in \Omega_L$.
 Dann ist
 \begin{align}
-\mathbf{X}^L_{\strat}(\omega) = \min_{c \in cells(\omega)} I_{\strat}(c)
+\mathbf{T}^{\Omega_L}_{\strat}(\omega) = \min_{c \in cells(\omega)} I_{\strat}(c)
 \nonumber
 \end{align}
-eine Zufallsvariable, die die Anzahl an Schüssen zum versenken einer beliebig gewählten Schiffes $\omega$ aus $L_{all}$ bezeichnet.
+eine Zufallsvariable, die die Anzahl an Schüssen zum versenken eines Schiffes $\omega$ aus $\Omega_L$ bezeichnet.
 \end{definition}
+
+\begin{satz}
+Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
+
+Sei $\Omega_L \subseteq L_{all}$ eine Menge an Schiffen und $n=|\Omega_L|$.
+
+Sei $L=\{x \in \Omega_L \mid \shot_count(l, \strat) \leq v)\}$ die Menge an Schiffen aus $\Omega_L$, die nach maximal $v$ Schüssen versenkt werden und $l=|L|$.
+
+Dann ist
+\begin{align}
+P(\mathbf{X}^{F(\Omega_L)}_{\strat} \leq v) = \frac{2^l - 1}{2^n - 1}
+\nonumber
+\end{align}
+die Wahrscheinlichkeit, dass eine Flotte, die zufällig aus $F(\Omega_L)$ ausgewählt wurde, nach maximal $v$ Schüssen versenkt wird.
+\end{satz}
+
+\begin{proof}
+Es gibt $l$ Schiffe, die nach maximal $v$ Schüssen versenkt werden und daher gibt es $|F(L)|=2^l - 1$ Flotten in $F(\Omega_L)$, die nach maximal $v$ Schüssen versenkt werden.
+
+Die Wahrscheinlichkeit, eine Flotte auszuwählen, die in $F(L)$ liegt, beträgt $\frac{2^l - 1}{2^n - 1}$, da es eine Gleichverteilung ist.
+\qed
+\end{proof}
 
 Der Vorteil der Indexfunktion ist, dass diese Werte einmalig für eine Strategie berechnet werden müssen und dann in einem Array abgespeichert werden können. Dafür müssen dann Zellen in einen Array-Index umgewandelt werden können.
 
@@ -440,11 +511,11 @@ In folgendem effizienteren Algorithmus werden die gespeicherten Werte der Indexf
 	\begin{algorithmic}[H]
 		\Function{calculate\_turns}{$n, \strat$}{:}
 		\State //Generiere $n$ verschiedene Schiffe;
-		\State $ships = generate\_random\_ships(n)$;
+		\State $\Omega_L = generate\_random\_ships(n)$;
 		\State $turns = [1, ..., |C_{all}|]$;
 		\State $sum=0$;
 		\For{$i=1,\dots,n$}
-		\State $min= \min_{c \in cells(ships[i])} I_{\strat}(c)$;
+		\State $min= \min_{c \in cells(\Omega_L[i])} I_{\strat}(c)$;
 		\State $turns[min]++$;
 		\EndFor
 		\State\Return $turns$;
@@ -452,7 +523,7 @@ In folgendem effizienteren Algorithmus werden die gespeicherten Werte der Indexf
 	\end{algorithmic}
 \end{tcolorbox}
 
-Es werden aus den Ergebnissen von einer Stichprobe mit $n$ Schiffen das Ergebnis für alle möglichen Flotten, die aus den Schiffen der Stichprobe erstellt werden können, berechnet. Die Anzahl dieser Flotten beträgt $2^n - 1$. Natürlich ist dieses Ergebnis sehr stark von der Stichprobe an Schiffen abhängig und kann nicht mit einer echten zufälligen Auswahl von $2^n - 1$ Flotten verglichen werden.
+Es werden aus den Ergebnissen von einer Stichprobe mit $n$ Schiffen $\Omega_L$ das Ergebnis für alle möglichen Flotten, die aus den Schiffen der Stichprobe erstellt werden können $F(\Omega_L)$, berechnet. Die Anzahl dieser Flotten beträgt $|F(\Omega_L)|=2^n - 1$. Natürlich ist dieses Ergebnis sehr stark von der Stichprobe an Schiffen abhängig und kann nicht mit einer echten zufälligen Auswahl von $2^n - 1$ Flotten aus $F_{all}$ verglichen werden.
 
 \begin{tcolorbox}
 	\begin{algorithmic}[H]
@@ -462,8 +533,8 @@ Es werden aus den Ergebnissen von einer Stichprobe mit $n$ Schiffen das Ergebnis
 		\For{$i=1,\dots,|C_{all}|$}
 		\State $ships=turns[i]$;
 		\State $ship\_sum += ships$;
-		\State $P(\mathbf{X}^L_{\strat} \leq i)=\frac{ship\_sum}{n}$;
-		\State $P(\mathbf{X}^F_{\strat} \leq i)=\frac{2^{ship\_sum}}{2^{n} - 1}$;
+		\State $P(\mathbf{T}^{\Omega_L}_{\strat} \leq i)=\frac{ship\_sum}{n}$;
+		\State $P(\mathbf{X}^{F(\Omega_L)}_{\strat} \leq i)=\frac{2^{ship\_sum} - 1}{2^{n} - 1}$;
 		\EndFor
 		\EndFunction
 	\end{algorithmic}
