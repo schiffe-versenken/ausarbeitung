@@ -93,7 +93,6 @@
 \DeclareMathOperator{\shot_count}{shot\_count}
 \DeclareMathOperator{\strat}{strat}
 \DeclareMathOperator{\strategies}{strategies}
-\DeclareMathOperator{\sunk}{sunk}
 
 
 % ============================================================================
@@ -114,8 +113,6 @@
 
 \maketitle
 
-%\todo[inline]{Version \gitAbbrevHash, Branch \gitBranch, \gitCommitterIsoDate \gitDirty}
-
 \thispagestyle{empty}
 
 \begin{abstract}
@@ -126,29 +123,29 @@ Ein schöner Abstract. Das ist einfach die Kurzzusammenfassung.
 \section{Einleitung}
 
 \subsection{Spielbeschreibung}
-\nocite{WB95} % Mindestens eine Zitierung ist nötig, damit BibTex funktioniert
 Diese Ausarbeitung beschäftigt sich mit der Umsetzung von Schiffe-Versenken in beliebig viele Dimensionen.
 Die generelle Funktionsweise von dem normalen Schiffe-Versenken bleibt erhalten, muss jedoch um einige Dinge erweitert werden, um auch in höheren Dimensionen gut spielbar zu sein.
 
-Zu Beginn platziert der Gegner eine beliebige Anzahl an Schiffen auf seinem Spielfeld. Es wird davon ausgegangen, dass die Schiffspositionen rein zufällig ausgewählt wurden, d.h. dass zu Spielbeginn eine Flotte aus der Menge aller möglichen Flotten ausgewählt wird. Jede mögliche Flotte hat hierbei die gleiche Wahrscheinlichkeit, ausgewählt zu werden.
-Natürlich sind die Schiffspositionen dem Spieler nicht bekannt.
+Zu Beginn werden eine beliebige Anzahl an Schiffen auf dem Spielfeld platziert.
 Die Gesamtheit aller gewählten Schiffspositionen wird auch die Flotte genannt.
+Es wird davon ausgegangen, dass die Schiffspositionen rein zufällig ausgewählt wurden, d.h. dass zu Spielbeginn eine Flotte aus der Menge aller möglichen Flotten ausgewählt wird. Jede mögliche Flotte hat hierbei die gleiche Wahrscheinlichkeit, ausgewählt zu werden.
 Nun kann der Spieler anfangen, auf bestimmte Positionen auf dem Spielfeld, auch Zellen genannt, zu schießen.
 Da Schiffe überlappen können, können mit jedem Schuss mehrere Schiffe, also Teilmengen der Flotte getroffen werden.
-Nach jedem Schuss erfährt der Spieler von seinem Gegner, welche Teilmenge der Flotte er getroffenen hat.
-Falls keine Schiffe getroffen wurden ist diese Menge natürlich leer.
+Nach jedem Schuss erfährt der Spieler, welche Teilmenge der Flotte er getroffenen hat.
 Ein Schiff gilt als versenkt, sobald es getroffen wurde.
 Sobald alle Schiffe versenkt wurden, ist das Spiel beendet.
 Das Ziel des Spielers ist es, mit möglichst wenig Schüssen alle Schiffe zu versenken.
 
-\subsection{Inhalt der Ausarbeitung}
+\subsection{Inhalt}
 
-Der erste Teil dieser Ausarbeitung beschäftigt sich mit der Bewertung einer gegebenen Strategie, d.h. mit der Berechnung der erwarteten Anzahl an Schüssen, die mit einer Strategie zum versenken der platzierten Flotte gebraucht werden.
-Da diese Berechnung sehr aufwändig ist, wird ein Monte-Carlo Algorithmus zur näherungsweisen Berechnung beschrieben, implementiert und ausgewertet.
+Zum Anfang werden die in der Spielbeschreibung genannten Konzepte mit einigen Definitionen formalisiert, damit sie später angewendet werden können.
 
-Im zweiten Teil werden unter den zuvor etablierten Rahmenbedingungen verschiedene Strategien vorgestellt. Dabei können sich diese von denen in der Bachelorarbeit vorgestellten unterschieden, da es sich um andere Rahmenbedingungen handelt. Zu den Strategien zählen dünne und volle Gitter, klassisches und Quasi Monte Carlo und die optimale Maximum Strategie.
+Der zweite Teil dieser Ausarbeitung beschäftigt sich dann mit der Bewertung einer gegebenen Strategie, d.h. mit der Berechnung der Anzahl an Schüssen, die mit einer Strategie für verschiedene Flotten benötigt werden.
+Da diese Berechnung sehr aufwändig ist, wird ein Monte-Carlo Algorithmus zur Berechnung beschrieben und implementiert.
 
-Dritter Teil (Implementierung + Vergleich) TODO 
+Im dritten Teil werden unter den zuvor etablierten Rahmenbedingungen verschiedene Strategien vorgestellt und implementiert. Zu den Strategien zählen dünne und volle Gitter, klassisches und Quasi Monte Carlo.
+
+Im letzten Teil werden die Ergebnisse für die genannten Strategien präsentiert, ausgewertet und miteinander verglichen.
 
 \section{Formalisierung des Spielprinzips}
 
@@ -930,7 +927,7 @@ Die zufällige Auswahl von Zellen, die nicht bereits beschossen wurden lässt si
 
 \section{Ergebnisse}
 
-Bestimmt man nun mithilfe der Implementation die Verteilungsfunktionen von $\mathbf{X}^L_{\strat}(\omega)$ und $\mathbf{X}^F_{\strat}(\omega)$, können unterschiedliche Strategien auch über verschiedene Spielfeldgrößen gut miteinander verglichen werden:
+Bestimmt man nun mithilfe der Implementation die Verteilungsfunktionen einer Stichprobe $\Omega_L \subseteq L_{all}$ von $\mathbf{T}^{\Omega_L}_{\strat}(\omega)$ und $\mathbf{X}^{F(\Omega_L)}_{\strat}(\omega)$, können damit unterschiedliche Strategien auch über verschiedene Spielfeldgrößen gut miteinander verglichen werden:
 
 % Literaturverzeichnis ------------------------------------------------
 \newpage
