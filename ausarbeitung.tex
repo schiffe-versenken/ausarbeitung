@@ -469,7 +469,7 @@ Sei außerdem $l=P(\mathbf{T}^{L_{all}}_{\strat} \leq v) |L_{all}|$
 
 Dann ist
 \begin{align}
-P(\mathbf{X}^{F_{all}}_{\strat} \leq v) = \frac{2^{l} - 1}{2^{|F_{all}|} - 1}
+P(\mathbf{X}^{F_{all}}_{\strat} \leq v) = \frac{2^{l} - 1}{2^{|L_{all}|} - 1} \approx 2^{l - |L_{all}|}
 \nonumber
 \end{align}
 die Wahrscheinlichkeit, dass eine Flotte, die zufällig aus $F_{all}$ ausgewählt wurde, nach maximal $v$ Schüssen versenkt wird.
@@ -484,6 +484,8 @@ Außerdem gilt $|L|=l=l \frac{|L_{all}|}{|L_{all}|}=P(\mathbf{T}^{L_{all}}_{\str
 Die Wahrscheinlichkeit, eine Flotte aus $F_{all}$ auszuwählen, die in $F(L)$ liegt, beträgt $\frac{2^l - 1}{2^n - 1}$, da es eine Gleichverteilung ist.
 \qed
 \end{proof}
+
+Die Folge dieser Verteilungsfunktion für Flotten ist, dass die Werte sehr klein sind.
 
 \begin{definition}
 Eine Funktion der Form
