@@ -435,7 +435,7 @@ Das Problem ist, dass jeder einzelne Schuss generiert werden muss und dann zusä
 \subsection{Eine bessere Alternative}
 
 \begin{satz}
-Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
+Sei $\strat \in \strategies$ die verwendete Schuss-Strategie und $v \in \{1, \dots, |C_{all}|\}$.
 
 Sei $\Omega_L \subseteq L_{all}$ eine Menge an Schiffen und $n=|\Omega_L|$.
 
@@ -456,6 +456,35 @@ Die Wahrscheinlichkeit, ein Schiff auszuwählen, dass in $L$ liegt, beträgt $\f
 \qed
 \end{proof}
 
+Bestimmt man nun $P(\mathbf{T}^{\Omega_L}_{\strat} \leq v)$ mithilfe einer so groß wie möglichen Stichprobe $\Omega_L$, kann man annehmen, dass $P(\mathbf{T}^{\Omega_L}_{\strat} \leq v)$ eine Approximation von $P(\mathbf{T}^{L_{all}}_{\strat} \leq v)$ ist. Wie gut diese Approximation ist, hängt von der Stichprobengröße ab.
+
+Um nun die Verteilungsfunktion von Flotten zu bestimmen, wird im folgenden wird nun davon ausgegangen, dass gilt:
+\[
+P(\mathbf{T}^{\Omega_L}_{\strat} \leq v) = P(\mathbf{T}^{L_{all}}_{\strat} \leq v)
+\]
+
+\begin{satz}
+Sei $\strat \in \strategies$ die verwendete Schuss-Strategie und $v \in \{1, \dots, |C_{all}|\}$
+Sei außerdem $l=P(\mathbf{T}^{L_{all}}_{\strat} \leq v) |L_{all}|$
+
+Dann ist
+\begin{align}
+P(\mathbf{X}^{F_{all}}_{\strat} \leq v) = \frac{2^{l} - 1}{2^{|F_{all}|} - 1}
+\nonumber
+\end{align}
+die Wahrscheinlichkeit, dass eine Flotte, die zufällig aus $F_{all}$ ausgewählt wurde, nach maximal $v$ Schüssen versenkt wird.
+\end{satz}
+
+\begin{proof}
+Sei $L=\{x \in L_{all} \mid \shot_count(l, \strat) \leq v)\}$ die Menge an Schiffen aus $L_{all}$, die nach maximal $v$ Schüssen versenkt werden.
+Dann ist $F(L)$ die Menge an Flotten aus $F_{all}$, die nach maximal $v$ Schüssen versenkt werden.
+
+Außerdem gilt $|L|=l=l \frac{|L_{all}|}{|L_{all}|}=P(\mathbf{T}^{L_{all}}_{\strat} \leq v) |L_{all}|$ und daher gibt es $|F(L)|=2^l - 1$ Flotten in $F_{all}$, die nach maximal $v$ Schüssen versenkt werden.
+
+Die Wahrscheinlichkeit, eine Flotte aus $F_{all}$ auszuwählen, die in $F(L)$ liegt, beträgt $\frac{2^l - 1}{2^n - 1}$, da es eine Gleichverteilung ist.
+\qed
+\end{proof}
+
 \begin{definition}
 Eine Funktion der Form
 \begin{align}
@@ -463,6 +492,8 @@ Eine Funktion der Form
 \end{align}
 wird Indexfunktion einer Strategie genannt. Diese weißt jeder Zelle des Spielfeldes den Wert zu, zu welchem die Zelle getroffen wird.
 \end{definition}
+
+Der Vorteil der Indexfunktion ist, dass diese Werte einmalig für eine Strategie berechnet werden müssen und dann in einem Array abgespeichert werden können. Dafür müssen dann Zellen in einen Array-Index umgewandelt werden können.
 
 Damit kann man eine Alternative Definition von $\mathbf{T}^{\Omega_L}_{\strat}$ angeben:
 
@@ -478,29 +509,6 @@ Dann ist
 eine Zufallsvariable, die die Anzahl an Schüssen zum versenken eines Schiffes $\omega$ aus $\Omega_L$ bezeichnet.
 \end{definition}
 
-\begin{satz}
-Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
-
-Sei $\Omega_L \subseteq L_{all}$ eine Menge an Schiffen und $n=|\Omega_L|$.
-
-Sei $L=\{x \in \Omega_L \mid \shot_count(l, \strat) \leq v)\}$ die Menge an Schiffen aus $\Omega_L$, die nach maximal $v$ Schüssen versenkt werden und $l=|L|$.
-
-Dann ist
-\begin{align}
-P(\mathbf{X}^{F(\Omega_L)}_{\strat} \leq v) = \frac{2^l - 1}{2^n - 1}
-\nonumber
-\end{align}
-die Wahrscheinlichkeit, dass eine Flotte, die zufällig aus $F(\Omega_L)$ ausgewählt wurde, nach maximal $v$ Schüssen versenkt wird.
-\end{satz}
-
-\begin{proof}
-Es gibt $l$ Schiffe, die nach maximal $v$ Schüssen versenkt werden und daher gibt es $|F(L)|=2^l - 1$ Flotten in $F(\Omega_L)$, die nach maximal $v$ Schüssen versenkt werden.
-
-Die Wahrscheinlichkeit, eine Flotte auszuwählen, die in $F(L)$ liegt, beträgt $\frac{2^l - 1}{2^n - 1}$, da es eine Gleichverteilung ist.
-\qed
-\end{proof}
-
-Der Vorteil der Indexfunktion ist, dass diese Werte einmalig für eine Strategie berechnet werden müssen und dann in einem Array abgespeichert werden können. Dafür müssen dann Zellen in einen Array-Index umgewandelt werden können.
 
 In folgendem effizienteren Algorithmus werden die gespeicherten Werte der Indexfunktion $I_{\strat}$ verwendet, um zu ermitteln, nach wie vielen Schüssen ein Schiff versenkt wird. 
 
