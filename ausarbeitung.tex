@@ -40,6 +40,8 @@
 \usepackage{mathtools}
 \usepackage{todonotes}
 \usepackage{subfigure}
+\usepackage{pdflscape}
+\usepackage{pdfpages}
 
 % Seitenformat ===============================================================
 \hoffset=-1.25truecm
@@ -945,6 +947,12 @@ Die zufällige Auswahl von Zellen, die nicht bereits beschossen wurden lässt si
 \section{Ergebnisse}
 
 Bestimmt man nun mithilfe der Implementation die Verteilungsfunktionen einer Stichprobe $\Omega_L \subseteq L_{all}$ von $\mathbf{T}^{\Omega_L}_{\strat}(\omega)$ und $\mathbf{X}^{F(\Omega_L)}_{\strat}(\omega)$, können damit unterschiedliche Strategien auch über verschiedene Spielfeldgrößen gut miteinander verglichen werden:
+
+\begin{landscape}
+	\includepdf[landscape=true]{figures/random-dimension.png}
+    %\includegraphics[width=\paperwidth]{figures/random-dimension.png}
+\end{landscape}
+
 
 % Literaturverzeichnis ------------------------------------------------
 \newpage
