@@ -338,7 +338,7 @@ die Anzahl an Schüssen, die benötigt werden, um alle Schiffe der Flotte $F$ mi
 \subsection{Schiffe}
 
 \begin{definition}
-Sei $\Omega_L \subseteq L_{all}$ eine Menge an Flotten.
+Sei $\Omega_L \subseteq L_{all}$ eine Menge an Schiffen.
 \end{definition}
 
 \begin{definition}
@@ -354,7 +354,7 @@ Dann ist $(\Omega_L, P)$ ein endlicher Laplacescher W-Raum und P eine Gleichvert
 
 \begin{definition}
 Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
-Sei $\Omega_L \subseteq L_{all}$ eine Menge aller Flotten.
+Sei $\Omega_L \subseteq L_{all}$ eine Menge an Schiffen.
 Sei $\omega \in \Omega_L$.
 Dann ist
 \begin{align}
@@ -367,7 +367,7 @@ eine Zufallsvariable, die die Anzahl an Schüssen zum versenken eines Schiffes $
 \subsection{Flotten}
 
 \begin{definition}
-Sei $\Omega_F \subseteq F_{all}$ die Menge aller Flotten.
+Sei $\Omega_F \subseteq F_{all}$ eine Menge an Flotten.
 \end{definition}
 
 \begin{definition}
@@ -383,6 +383,7 @@ Dann ist $(\Omega_F, P)$ ein endlicher Laplacescher W-Raum und P eine Gleichvert
 
 \begin{definition}
 Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
+Sei $\Omega_F \subseteq F_{all}$ eine Menge an Flotten.
 Sei $\omega$ die ausgewählte Flotte aus $\Omega_F$.
 Dann ist
 \begin{align}
@@ -394,7 +395,7 @@ eine Zufallsvariable, die die Anzahl an Schüssen zum versenken einer Flotte $\o
 
 \section{Berechnung des Erwartungswertes mithilfe eines MC-Algorithmus}
 
-Um zu bewerten, wie gut eine Strategiefunktion $\strat$ abschneidet, kann ein Monte-Carlo Algorithmus implementiert werden. Dafür gibt es gute und schlechte Ansätze:
+Um zu bewerten, wie gut eine Strategiefunktion $\strat$ abschneidet, kann ein Monte-Carlo Algorithmus implementiert werden. Dafür gibt es gute und weniger gute Ansätze:
 
 \subsection{Der naive Ansatz}
 
@@ -430,7 +431,8 @@ Mithilfe dieser Funktion werden dann Werte für $n$ zufällig gewählte Flotten 
 	\end{algorithmic}
 \end{tcolorbox}
 
-Das Problem ist, dass jeder einzelne Schuss generiert werden muss und dann zusätzlich überprüft werden muss, ob Schiffe getroffen wurden. Für große Spielfelder und Flotten ...
+Das Problem dieses Ansatzes ist, dass eine zufällig ausgewählte Flotte ziemlich viel Schiffe enthält. Da für jedes Schiff in dieser Flotte irgendwie ermittelt werden muss, wann es versenkt wird, können nur sehr wenige Flotten als Stichprobe benutzt werden, da die Berechnungszeit für eine einzige Flotte schon sehr groß ist.
+
 
 \subsection{Eine bessere Alternative}
 
@@ -460,8 +462,11 @@ Bestimmt man nun $P(\mathbf{T}^{\Omega_L}_{\strat} \leq v)$ mithilfe einer so gr
 
 Um nun die Verteilungsfunktion von Flotten zu bestimmen, wird im folgenden wird nun davon ausgegangen, dass gilt:
 \[
-P(\mathbf{T}^{\Omega_L}_{\strat} \leq v) = P(\mathbf{T}^{L_{all}}_{\strat} \leq v)
+P(\mathbf{T}^{\Omega_L}_{\strat} \leq v) \approx P(\mathbf{T}^{L_{all}}_{\strat} \leq v)
 \]
+d.h. unsere aus der Stichprobe berechnete Verteilungsfunktion ist die beste Approximation von der echten Verteilungsfunktion.
+
+Ein Sampling error $e_v=P(\mathbf{T}^{\Omega_L}_{\strat} \leq v) - P(\mathbf{T}^{L_{all}}_{\strat} \leq v)$ verstärkt sich zwar bei der Berechnung von der Verteilungsfunktion der Flotten, wie aber gleich zu sehen ist, macht dies bei den sehr kleinen Werten von $P(\mathbf{X}^{F_{all}}_{\strat} \leq v)$ fast keinen Unterschied.
 
 \begin{satz}
 Sei $\strat \in \strategies$ die verwendete Schuss-Strategie und $v \in \{1, \dots, |C_{all}|\}$
@@ -530,7 +535,7 @@ In folgendem effizienteren Algorithmus werden die gespeicherten Werte der Indexf
 	\end{algorithmic}
 \end{tcolorbox}
 
-Es werden aus den Ergebnissen von einer Stichprobe mit $n$ Schiffen $\Omega_L$ das Ergebnis für alle möglichen Flotten, die aus den Schiffen der Stichprobe erstellt werden können $F(\Omega_L)$, berechnet. Die Anzahl dieser Flotten beträgt $|F(\Omega_L)|=2^n - 1$. Natürlich ist dieses Ergebnis sehr stark von der Stichprobe an Schiffen abhängig und kann nicht mit einer echten zufälligen Auswahl von $2^n - 1$ Flotten aus $F_{all}$ verglichen werden.
+Es wird aus den Ergebnissen von einer Stichprobe mit $n$ Schiffen $\Omega_L$ die Verteilungsfunktion $P(\mathbf{T}^{\Omega_L}_{\strat} \leq v)$ bestimmt. Unter der Annahme, dass $P(\mathbf{T}^{\Omega_L}_{\strat} \leq v) \approx P(\mathbf{T}^{L_{all}}_{\strat} \leq v)$ gilt, wird damit dann die Verteilungsfunktion für Flotten, $P(\mathbf{X}^{F_{all}}_{\strat} \leq v)$ bestimmt:
 
 \begin{tcolorbox}
 	\begin{algorithmic}[H]
@@ -541,13 +546,15 @@ Es werden aus den Ergebnissen von einer Stichprobe mit $n$ Schiffen $\Omega_L$ d
 		\State $ships=turns[i]$;
 		\State $ship\_sum += ships$;
 		\State $P(\mathbf{T}^{\Omega_L}_{\strat} \leq i)=\frac{ship\_sum}{n}$;
-		\State $P(\mathbf{X}^{F(\Omega_L)}_{\strat} \leq i)=\frac{2^{ship\_sum} - 1}{2^{n} - 1}$;
+		\State $P(\mathbf{X}^{F_{all}}_{\strat} \leq i)=\frac{2^{\left(P(\mathbf{T}^{\Omega_L}_{\strat} \leq i) * |L_{all}|\right)} - 1}{2^{|L_{all}|} - 1}$;
 		\EndFor
 		\EndFunction
 	\end{algorithmic}
 \end{tcolorbox}
 
 \section{Strategien}
+
+TODO: outdated
 
 Eine Strategie gibt eine Folge von Schüssen vor, die auf das Spielfeld abgegeben werden. Dabei unterscheiden sich die Strategien in der Auswahl ihrer Schüsse. Eine mögliche Vorgehensweise wäre die zufällige Wahl der nächsten zu beschießenden Zelle. Außerdem ist es interessant zu sehen wie diskrepanzminimierende Diskretisierungsverfahren als mögliche Schussstrategie abschneiden. Dies wurde erstmals in \cite{M13} näher betrachtet. Dabei werden die von diesen Verfahren genutzten Stützstellen als Schussfolgen interpretiert. Um Strategien bewerten zu können benötigt man den Vergleich zu einer optimalen Schussstrategie. Diese wurde ebenfalls in \cite{M13} vorgestellt allerdings für ineffizient erklärt. Es bleibt zu klären, ob die optimale Strategie mit der hier vorgestellten Monte-Carlo Herangehensweise effizienter umzusetzen ist und zu Vergleichen auch in höheren Dimensionen herangezogen werden kann.
 
