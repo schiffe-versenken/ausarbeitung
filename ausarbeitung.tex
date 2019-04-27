@@ -105,13 +105,13 @@
 % ============================================================================
 % =============  AB HIER DARF UND SOLL GETIPPT WERDEN ========================
 % ============================================================================
-\author{Viel Schreiber}
-\index{Viel Schreiber}
+\author{Joel Bienias, Samuel Bühner, Dennis Kreittner, Christopher Schnickr}
+%\index{Viel Schreiber}
 
 % Das Institut wird fuer den Betreuer missbraucht ...
 \institute{{\bf Betreuer:} Dirk Pflüger}
 %\institute{{\bf Prüfer:} Prof. Dirk Pflüger}
-\authorrunning{Joel Bienias, Samuel Bühner, Dennis Kreittner, Christopher Schnick}
+%\authorrunning{Joel Bienias, Samuel Bühner, Dennis Kreittner, Christopher Schnick}
 \title{Hochdimensionales Schiffe Versenken \\
 (High-Dimensional Battleship)}
 
@@ -593,7 +593,7 @@ In \cite{M13} wurde bereits angesprochen, dass dieser Algorithmus sehr hohe Kost
 
 \subsubsection{Allgemeines zu Gittern}
 
-In Abschnitt 2.2.1 von \cite{M13} werden die hierarchischen Stützstelleninkremente $H_{\underline{m}}$ für Gitter vorgestellt, welche sich von den in \cite{M13} Abbildung 2.2 dargestellten Hütchenfunktionen ableiten. Diese Inkremente bzw. ihre Kombinationen werden sowohl für dünne als auch volle Gitter genutzt. Dabei halbiert sich die Maschenweite mit steigendem Level in einer beliebigen Dimension. Dies ist schön zu sehen in Abbildung \ref{fig:gitter01} (ähnlich aufgebaut wie \cite{P10} Figure 2.5).
+In Abschnitt 2.2.1 von \cite{M13} werden die hierarchischen Stützstelleninkremente $H_{\underline{m}}$ für Gitter vorgestellt, welche sich von den in \cite{M13} Abbildung 2.2 dargestellten Hütchenfunktionen ableiten. Diese Inkremente bzw. ihre Kombinationen werden sowohl für dünne als auch volle Gitter genutzt. Dabei halbiert sich die Maschenweite mit steigendem Koordinatenlevel in einer beliebigen Dimension. Dies ist schön zu sehen in Abbildung \ref{fig:gitter01} (ähnlich aufgebaut wie \cite{P10} Figure 2.5).
 
 Es lassen sich durch Kombinationen von Inkrementen Gitter erzeugen. Unsere Schussfolge ergibt sich dann aus den abgearbeiteten Inkrementen bzw. den darin enthaltenen Stützstellen. 
 
@@ -605,38 +605,38 @@ Es lassen sich durch Kombinationen von Inkrementen Gitter erzeugen. Unsere Schus
 \end{figure}
 
 
-Noch zu beachten ist, dass Level bei Gittern die Maschenweite und damit die Genauigkeit angeben. Normalerweise legt man ein Level fest und erzeugt sich dann aus Inkrementen ein Gitter eben dieses Levels. In unseren Fall arbeiten wir uns durch die Inkremente bei steigendem Level aufsteigend durch um immer genauere Gitter zu erzeugen, bis wir alle Schiffe der Flotte getroffen haben.
+Noch zu beachten ist, dass Koordinatenlevel bei Gittern die Maschenweite und damit die Genauigkeit angeben. Normalerweise legt man ein Gitterlevel fest und erzeugt sich dann aus Inkrementen ein Gitter eben dieses Levels. In unseren Fall arbeiten wir uns durch die Inkremente bei steigendem Gitterlevel aufsteigend durch um immer genauere Gitter zu erzeugen, bis wir alle Schiffe der Flotte getroffen haben.
 
 \subsubsection{Mathematische Grundlagen der vollen Gitter}
 
-In \cite{M13} Definition 2.14 wird beschrieben, wie sich volle Gitter aus den Inkrementen zusammensetzen. Dabei ist lediglich zu beachten, dass die Indices eines Inkrements $H_{\underline{m}}$ nur kleiner dem Level $n$ sein müssen.  Zur Wiederholung:
+In \cite{M13} Definition 2.14 wird beschrieben, wie sich volle Gitter aus den Inkrementen zusammensetzen. Dabei ist lediglich zu beachten, dass die Indices eines Inkrements $H_{\underline{m}}$ nur kleiner dem Gitterlevel $n$ sein müssen.  Zur Wiederholung:
 
 \begin{definition}
-	Seien $d,n\in\mathbb{N}$ und $d,n>1$. Ein $d$-dimensionales volles Gitter $G$ mit Level $n$ wird durch Kombination der Inkremente $H_{\underline{m}}$ mit $\underline{m}<(n,\dots,n)$ erzeugt:
+	Seien $d,n\in\mathbb{N}$ und $d,n>1$. Ein $d$-dimensionales volles Gitter $G$ mit Gitterlevel $n$ wird durch Kombination der Inkremente $H_{\underline{m}}$ mit $\underline{m}<(n,\dots,n)$ erzeugt:
 	\begin{equation}
 		G=\biguplus_{m_1=1}^n\biguplus_{m_2=1}^n\dots \biguplus_{m_d=1}^n H_{\underline{m}}
 	\end{equation}
 \end{definition}
 
-Diese Definition kann anhand Abbildung \ref{fig:gitter02} verdeutlicht werden. Darin sind einige mögliche Kombinationen von Inkrementen markiert, die ein volles Gitter von Level 2 bis 4 bilden.
+Diese Definition kann anhand Abbildung \ref{fig:gitter02} verdeutlicht werden. Darin sind einige mögliche Kombinationen von Inkrementen markiert, die ein volles Gitter von Gitterlevel 2 bis 4 bilden.
 
 \begin{figure}
-	\subfigure[Volles Gitter Level 2]{\resizebox{50mm}{!}{\input{figures/Grids_02.pdf_tex}}}
-	\subfigure[Volles Gitter Level 3]{\resizebox{50mm}{!}{\input{figures/Grids_03.pdf_tex}}}
-	\subfigure[Volles Gitter Level 4]{\resizebox{50mm}{!}{\input{figures/Grids_04.pdf_tex}}}
+	\subfigure[Volles Gitter Gitterlevel 2]{\resizebox{50mm}{!}{\input{figures/Grids_02.pdf_tex}}}
+	\subfigure[Volles Gitter Gitterlevel 3]{\resizebox{50mm}{!}{\input{figures/Grids_03.pdf_tex}}}
+	\subfigure[Volles Gitter Gitterlevel 4]{\resizebox{50mm}{!}{\input{figures/Grids_04.pdf_tex}}}
 	\caption{Inkremente von zweidimensionalen vollen Gittern}
 	\label{fig:gitter02}
 \end{figure}
 
-Wie man gut an Abbildung \ref{fig:gitter02} sehen kann können volle Gitter kleineren Levels als Teilbausteine für Größere genutzt werden. Für eine Schussfolge heißt das man startet bei dem Gitter das nur aus einem Punkt besteht und arbeitet sich zu Gittern höheren Levels vor. Damit bei der Schussfolge keine Wiederholungen auftreten sollten nur neu hinzugekommene Punkte bei Erhöhen des Levels beachtet werden. Im zweidimensionalen entspricht dies gerade Quadraten die bei Erhöhen des Levels um eine Längeneinheit pro Kante wachsen. Dabei wird dann lediglich die hinzukommende Schicht an Punkten betrachtet. Damit lässt sich einer Schussfolge bereits eine grobe Struktur geben. 
+Wie man gut an Abbildung \ref{fig:gitter02} sehen kann können volle Gitter kleineren Gitterlevels als Teilbausteine für Größere genutzt werden. Für eine Schussfolge heißt das man startet bei dem Gitter das nur aus einem Punkt besteht und arbeitet sich zu Gittern höheren Gitterlevels vor. Damit bei der Schussfolge keine Wiederholungen auftreten sollten nur neu hinzugekommene Punkte bei Erhöhen des Gitterlevels beachtet werden. Im zweidimensionalen entspricht dies gerade Quadraten die bei Erhöhen des Gitterlevels um eine Längeneinheit pro Kante wachsen. Dabei wird dann lediglich die hinzukommende Schicht an Punkten betrachtet. Damit lässt sich einer Schussfolge bereits eine grobe Struktur geben. 
 
-Außerdem ist an Abbildung \ref{fig:gitter02} zu sehen, dass in den neu hinzukommenden Punkten mindestens eine neue Koordinaten verwendet wird. Das heißt wir können pro neuer Schicht zu Beginn einmalig die neuen Koordinaten berechnen und anschließend diese einfach aufsteigend miteinander zu Punkten kombinieren. Dabei können Schüsse wie Zahlen in einem Zahlensystem betrachtet werden. Wir denken uns die verwendeten Koordinaten aus denen Schüsse kombiniert werden können als Ziffern eines Zahlensystems. Dabei sind Koordinaten eines höheren Levels größer einzuordnen als die eines niedrigeren Levels. Außerdem werden die Koordinaten innerhalb eines Levels von klein nach groß sortiert. Damit ergibt sich eine absolute Ordnung der Punkte und Schüsse dieser Strategie lassen sich durch Hochzählen der Zahlen des Zahlensystems bestimmen.
+Außerdem ist an Abbildung \ref{fig:gitter02} zu sehen, dass in den neu hinzukommenden Punkten mindestens eine neue Koordinaten verwendet wird. Das heißt wir können pro neuer Schicht zu Beginn einmalig die neuen Koordinaten berechnen und anschließend diese einfach aufsteigend miteinander zu Punkten kombinieren. Dabei können Schüsse wie Zahlen in einem Zahlensystem betrachtet werden. Wir denken uns die verwendeten Koordinaten aus denen Schüsse kombiniert werden können als Ziffern eines Zahlensystems. Dabei sind Koordinaten eines höheren Koordinatenlevels größer einzuordnen als die eines niedrigeren. Außerdem werden die Koordinaten innerhalb eines Koordinatenlevels von klein nach groß sortiert. Damit ergibt sich eine absolute Ordnung der Punkte und Schüsse dieser Strategie lassen sich durch Hochzählen der Zahlen des Zahlensystems bestimmen.
 
 Von diesen Koordinaten gibt es maximal $N$ viele. Diese werden im nachfolgenden Algorithmus in $K$ gespeichert.
 
 \subsubsection{Erster naiver Algorithmus für volle Gitter Strategie}
 
-Der Algorithmus soll eine feste Menge an möglichen Koordinaten $K$ für ein Level $L$ verwenden, die globale Variablen sind. Davon werden alle Linearkombinationen durch inkrementieren der Koordinaten (vgl. absolute Ordnung) gebildet. Sobald alle Kombinationen erreicht wurden wird $K$ um die neuen Koordinaten des nächsten Levels erweitert. Außerdem muss der letzte abgegebene Schuss gespeichert werden um daraus den nächsten Schuss zu berechnen. Diese grobe Struktur lässt sich folgendermaßen darstellen:
+Der Algorithmus soll eine feste Menge an möglichen Koordinaten $K$ für ein Koordinatenlevel $L$ als globale Variablen verwenden. Davon werden alle Linearkombinationen durch inkrementieren der Koordinaten (vgl. absolute Ordnung) gebildet. Sobald alle Kombinationen erreicht wurden wird $K$ um die neuen Koordinaten des nächsten Koordinatenlevels erweitert. Außerdem muss der letzte abgegebene Schuss gespeichert werden um daraus den nächsten Schuss zu berechnen. Diese grobe Struktur lässt sich folgendermaßen darstellen:
 
 \begin{tcolorbox}
 	\begin{algorithmic}
@@ -678,7 +678,7 @@ Im folgenden werden die Abschnitte und Funktionen des Algorithmus genauer betrac
 	\end{algorithmic}
 \end{tcolorbox}
 
-Mit dieser Funktion wird die erste Koordinate initialisiert. Wenn $K$ leer haben wir noch keine Koordinate gespeichert und daher auch noch keinen Schuss abgegeben. Die erste Koordinate, die für das erste volle Gitter benutzt wird ist gerade die Größe des Spielfelds $N$ halbiert. Falls $N$ ungerade ist wird abgerundet. max\_coord enthält die maximal mögliche Koordinate. $L$ beschreibt das maximale Level von dem unsere Koordinaten in $K$ stammen. Gesamte Komplexität $O(1)$.
+Mit dieser Funktion wird die erste Koordinate initialisiert. Wenn $K$ leer haben wir noch keine Koordinate gespeichert und daher auch noch keinen Schuss abgegeben. Die erste Koordinate, die für das erste volle Gitter benutzt wird ist gerade die Größe des Spielfelds $N$ halbiert. Falls $N$ ungerade ist wird abgerundet. max\_coord enthält die maximal mögliche Koordinate. $L$ beschreibt das maximale Koordinatenlevel von dem unsere Koordinaten in $K$ stammen. Gesamte Komplexität $O(1)$.
 
 \smallskip
 \hrule
@@ -702,7 +702,7 @@ Mit dieser Funktion wird die erste Koordinate initialisiert. Wenn $K$ leer haben
 
 Wenn der letzte Schuss nur aus den größtmöglichen Koordinaten besteht haben wir bereits zuvor alle anderen Kombinationsmöglichkeiten ausgenutzt und müssen nun die Menge an Koordinaten $K$ erweitern. Dazu werden gerade die Werte als Koordinaten hinzugefügt, die in den Zwischenräumen zweier vorheriger Koordinaten liegen (Vgl. Abbildung \ref{fig:gitter01}). 
 
-Da wir in unserer Herangehensweise diskret arbeiten kann es sein, dass das Halbieren nicht immer aufgeht daher muss hier gerundet werden. Es wird aufgerundet, da sonst der Fall eintreten kann, das Punkte nicht erreicht werden können. Dabei wird durch eine Abfrage gewährleistet das keine gleichen Koordinaten aufgenommen werden. Zum Schluss wird die Menge der Koordinaten aktualisiert und das Level erhöht. $K$ kann maximal um $\left\lceil\frac{N}{2}\right\rceil$ viele neue Koordinaten erweitert werden. Das ist gleichzeitig auch die maximal mögliche Größe von $K_{old}$. Also haben wir für die Schleife $O(N)$. 
+Da wir in unserer Herangehensweise diskret arbeiten kann es sein, dass das Halbieren nicht immer aufgeht daher muss hier gerundet werden. Es wird aufgerundet, da sonst der Fall eintreten kann, das Punkte nicht erreicht werden können. Dabei wird durch eine Abfrage gewährleistet das keine gleichen Koordinaten aufgenommen werden. Zum Schluss wird die Menge der Koordinaten aktualisiert und das Koordinatenlevel erhöht. $K$ kann maximal um $\left\lceil\frac{N}{2}\right\rceil$ viele neue Koordinaten erweitert werden. Das ist gleichzeitig auch die maximal mögliche Größe von $K_{old}$. Also haben wir für die Schleife $O(N)$. 
 
 
 Der Vergleich im If benötigt $d$ Schritte daher ist die Komplexität $O\left(N+d\right)$.
@@ -758,7 +758,7 @@ Der absolute worst case wäre wenn $d-1$ mal der if Teil und einmal der else Tei
 
 \subsubsection{Komplexität erste volle Gitter Strategie}
 
-Wir können somit die Zeitkomplexitäten der Abschnitte zusammenfassen und erhalten eine gesamte Komplexität für einen Durchlauf des Algorithmus von $O(1)+O(N+d)+O(1)+O(d)=O(N+2d)$. Somit ergibt sich als Komplexität für den kompletten Algorithmus $O(C_{all}\cdot (N+2d))$.
+Wir können somit die Laufzeitkomplexitäten der Abschnitte zusammenfassen und erhalten eine gesamte Komplexität für einen Durchlauf des Algorithmus von $O(1)+O(N+d)+O(1)+O(d)=O(N+2d)$. Somit ergibt sich als Komplexität für den kompletten Algorithmus $O(C_{all}\cdot (N+2d))$.
 
 
 Bezüglich der Speicherplatz Komplexität haben wir für $K$ $O(N)$, da für die Anzahl der Elemente in $K$ gilt:
@@ -768,7 +768,9 @@ Bezüglich der Speicherplatz Komplexität haben wir für $K$ $O(N)$, da für die
 \end{equation}
 
 
-Zusätzlich speichern wir immer den letzten Schuss was in $O(1)$ liegt. Damit ist also die gesamte Speicherplatz Komplexität $O(N^2)$.
+Im Algorithmus werden alle abgegebenen Schüsse in shots gespeichert. Da dies nach diesem Ansatz $C_{all}$ viele sind ergibt das eine gesamte Speicherplatz Komplexität von $O(N+C_{all})$.
+
+Um die Abhängigkeit der Laufzeitkomplexität von $C_{all}$ kommen wir nicht herum, da jede Zelle mindestens einmal betrachtet werden muss. Allerdings ist die Speicherplatzkomplexität zu vermeidbar wie wir später noch sehen werden. 
 
 
 \subsection{Dünne Gitter Strategie}
@@ -778,7 +780,7 @@ Zusätzlich speichern wir immer den letzten Schuss was in $O(1)$ liegt. Damit is
 In \cite{M13} Definition 2.15 wird beschrieben, wie sich dünne Gitter aus den Inkrementen zusammensetzen. Zur Wiederholung:
 
 \begin{definition}
-	Seien $d,n\in\mathbb{N}$ und $d,n>1$. Ein $d$-dimensionales dünnes Gitter $G$ mit Level $n$ wird durch Kombination der Inkremente $H_{\underline{m}}$ mit $|\underline{m}|_1\leq n+d-1$ erzeugt:
+	Seien $d,n\in\mathbb{N}$ und $d,n>1$. Ein $d$-dimensionales dünnes Gitter $G$ mit Gitterlevel $n$ wird durch Kombination der Inkremente $H_{\underline{m}}$ mit $|\underline{m}|_1\leq n+d-1$ erzeugt:
 	\begin{equation}
 	G=\biguplus_{|\underline{m}|_1\leq n+d-1}^n H_{\underline{m}}
 	\end{equation}
@@ -794,21 +796,21 @@ Die  $|\cdot|_1$-Norm ist definiert als:
 \end{definition}
 
 
-Die Definition des dünnen Gitters kann anhand Abbildung \ref{fig:gitter03} verdeutlicht werden. Darin sind einige mögliche Kombinationen von Inkrementen markiert, die ein dünnes Gitter von Level 1 bis 3 bilden.
+Die Definition des dünnen Gitters kann anhand Abbildung \ref{fig:gitter03} verdeutlicht werden. Darin sind einige mögliche Kombinationen von Inkrementen markiert, die ein dünnes Gitter von Gitterlevel 1 bis 3 bilden.
 
 \begin{figure}
-	\subfigure[Dünnes Gitter Level 1]{\resizebox{50mm}{!}{\input{figures/Grids_02.pdf_tex}}}
-	\subfigure[Dünnes Gitter Level 2]{\resizebox{50mm}{!}{\input{figures/Grids_05.pdf_tex}}}
-	\subfigure[Dünnes Gitter Level 3]{\resizebox{50mm}{!}{\input{figures/Grids_06.pdf_tex}}}
+	\subfigure[Dünnes Gitter Gitterlevel 1]{\resizebox{50mm}{!}{\input{figures/Grids_02.pdf_tex}}}
+	\subfigure[Dünnes Gitter Gitterlevel 2]{\resizebox{50mm}{!}{\input{figures/Grids_05.pdf_tex}}}
+	\subfigure[Dünnes Gitter Gitterlevel 3]{\resizebox{50mm}{!}{\input{figures/Grids_06.pdf_tex}}}
 	\caption{Beispiele für zweidimensionale dünne Gitter}
 	\label{fig:gitter03}
 \end{figure}
 
 \subsubsection{Erster naiver Algorithmus für dünne Gitter}
 
-In Abbildung \ref{fig:gitter03} ist zu sehen, dass sich im zweidimensionalen Fall bei steigendem Level der Gitter immer eine Diagonale dazukommt. Für den ersten Algorithmus der dünne Gitter Strategie benötigen wir ein $S'$, das Tupel aus zwei $d$-dimensionalen Vektoren speichert. Der erste um die Zelle zu beschreiben und der zweite um das Level aus der die korrespondierende Koordinate stammt zu definieren. Das neue $K'$ speichert nun die Koordinaten nach Leveln getrennt in verschiedenen Listen oder Arrays und nicht wie $K$ noch alles in einer Liste/Array. $S'$ und $K'$ werden global initialisiert.
+In Abbildung \ref{fig:gitter03} ist zu sehen, dass sich im zweidimensionalen Fall bei steigendem Level der Gitter immer eine Diagonale dazukommt. Für den ersten Algorithmus der dünne Gitter Strategie benötigen wir ein $S'$, das Tupel aus zwei $d$-dimensionalen Vektoren speichert. Der erste um die Zelle zu beschreiben und der zweite um das Koordinatenlevel aus der die korrespondierende Koordinate stammt zu definieren. Das neue $K'$ speichert nun die Koordinaten nach Koordinatenlevels getrennt in verschiedenen Listen oder Arrays und nicht wie $K$ noch alles in einer Liste/Array. $S'$ und $K'$ werden global initialisiert.
 
-Die Funktionsweise des folgenden Algorithmus leitet sich von der mit dünne Gittern einhergehenden Bedingung $|\underline{m}|_1\leq n+d-1$ an die Inkremente ab. Bei konstanter Dimension erhöht sich pro dazukommende Diagonale um das nächste Gitter zu erzeugen jeweils nur $n$ um eins. Das heißt von den Indices der Inkremente kann sich maximal eines auf ein neues Level erhöhen damit die Bedingung weiterhin erhalten bleibt. Also erarbeiten wir ausgehend von den alten die neuen Schüsse, indem einzelne Koordinaten um ein Level erhöht werden. Dabei ist zu beachten, dass innerhalb eines neuen Levels es mehrere mögliche Koordinaten gibt. 
+Die Funktionsweise des folgenden Algorithmus leitet sich von der mit dünne Gittern einhergehenden Bedingung $|\underline{m}|_1\leq n+d-1$ an die Inkremente ab. Bei konstanter Dimension erhöht sich pro dazukommende Diagonale um das nächste Gitter zu erzeugen jeweils nur $n$ um eins. Das heißt von den Indices der Inkremente kann sich maximal eines auf ein neues Koordinatenlevel erhöhen damit die Bedingung weiterhin erhalten bleibt. Also erarbeiten wir ausgehend von den alten die neuen Schüsse, indem einzelne Koordinaten um ein Koordinatenlevel erhöht werden. Dabei ist zu beachten, dass innerhalb eines neuen Koordinatenlevels es mehrere mögliche Koordinaten gibt. 
 
 
 \begin{tcolorbox}
@@ -880,9 +882,9 @@ Sollte $K'$ leer sein werden die erste Koordinate hinzugefügt und ein paar notw
 	\end{algorithmic}
 \end{tcolorbox}
 
-Dieser Abschnitt beschreibt den Fall, dass neue Koordinaten hinzugefügt werden müssen. Dabei ist die Iteration so aufgebaut, dass der letzte Schuss eines Koordinatensatzes gerade die Form $(K'[0][0],\dots,K'[0][0],max\_coord)$ hat. Da von vorne nach hinten durch die Dimensionen gezählt wird und $max\_coord$ ebenfalls die letzte Koordinate eines Levels ist. Es wird nun wie zuvor bereits erwähnt eine neue Liste/Array erzeugt, die die Koordinaten des neuen Levels enthalten soll. Die Berechnungen unterscheiden sich dabei nicht von denen bei vollen Gittern. Zum Schluss werden noch einmal $countCoord$ und $position$ gesetzt, da diese wie wir noch sehen werden, sich im Laufe verändert haben und nun zurückgesetzt werden müssen.
+Dieser Abschnitt beschreibt den Fall, dass neue Koordinaten hinzugefügt werden müssen. Dabei ist die Iteration so aufgebaut, dass der letzte Schuss eines Koordinatensatzes gerade die Form $(K'[0][0],\dots,K'[0][0],max\_coord)$ hat. Da von vorne nach hinten durch die Dimensionen gezählt wird und $max\_coord$ ebenfalls die letzte Koordinate eines Koordinatenlevels ist. Es wird nun wie zuvor bereits erwähnt eine neue Liste/Array erzeugt, die die Koordinaten des neuen Koordinatenlevels enthalten soll. Die Berechnungen unterscheiden sich dabei nicht von denen bei vollen Gittern. Zum Schluss werden noch einmal $countCoord$ und $position$ gesetzt, da diese wie wir noch sehen werden, sich im Laufe verändert haben und nun zurückgesetzt werden müssen.
 
-Der Vergleich im If ist in $O(d)$. Die Schleife hat $\left\lceil\frac{N}{4}\right\rceil$ Durchläufe, da das gerade die Anzahl der Elemente im vorletzten Level ist. Das letzte Level taucht als Schleife nicht mehr auf, da bis dahin bereits alle Punkte des Spielfelds beschossen sind. Also ist die Schleife in $O(N)$. Davon ausgehend, dass $last\_index$ in $O(1)$ realisiert werden kann hat dieser Abschnitt eine gesamte Komplexität von $O(N+d)$.
+Der Vergleich im If ist in $O(d)$. Die Schleife hat $\left\lceil\frac{N}{4}\right\rceil$ Durchläufe, da das gerade die Anzahl der Elemente im vorletzten Koordinatenlevel ist. Das letzte Koordinatenlevel taucht als Schleife nicht mehr auf, da bis dahin bereits alle Punkte des Spielfelds beschossen sind. Also ist die Schleife in $O(N)$. Davon ausgehend, dass $last\_index$ in $O(1)$ realisiert werden kann hat dieser Abschnitt eine gesamte Komplexität von $O(N+d)$.
 
 \smallskip
 \hrule
@@ -928,17 +930,21 @@ Der If Abschnitt liegt in $O(1)$.
 	\end{algorithmic}
 \end{tcolorbox}
 
-Die Funktion aus dem Else Abschnitt hat zunächst ein paar $O(1)$ Zeilen, da es sich nur um Zugriff oder arithmetische Operationen handelt. Die $size()$ Funktion liegt bei maximalem Level in $O(N)$. Die $delete()$ Funktion ist hier $O(1)$, da das erste Element entfernt wird, was in $O(1)$ geht. Somit hat der Else Teil und damit der gesamte Abschnitt eine Komplexität von $O(N)$.
+Die Funktion aus dem Else Abschnitt hat zunächst ein paar $O(1)$ Zeilen, da es sich nur um Zugriff oder arithmetische Operationen handelt. Die $size()$ Funktion liegt bei maximalem Koordinatenlevel in $O(N)$. Die $delete()$ Funktion ist hier $O(1)$, da das erste Element entfernt wird, was in $O(1)$ geht. Somit hat der Else Teil und damit der gesamte Abschnitt eine Komplexität von $O(N)$.
 
 \subsubsection{Komplexität dünne Gitter Strategie}
 
-Daraus ergibt sich für den gesamte Algorithmus ein Zeitkomplexität von $O(N+d)$. Der Speicherbedarf ist für $K'$ analog zu $K$ von den vollen Gittern, also $O(N)$. Was $S'$ angeht werden hier mehrere Schüsse gespeichert und auch verwendet. Bildlich im Zweidimensionalen gesprochen wird zu jedem Zeitpunkt eine komplette Diagonale an Inkrementen und deren dazugehörige Schüsse gespeichert. Nach \cite{GG08} ist die die Anzahl an Punkten für dünne Gitter gegeben als:
+Für den gesamten Algorithmus ergibt sich also eine aus den Teilfunktionen berechnete Laufzeitkomplexität von $O((1+N+d+1+N)\cdot C_{all}) = O(C_{all}\cdot(2N+d))$.
+
+Der Speicherbedarf ist für $K'$ analog zu $K$ von den vollen Gittern, also $O(N)$. Was $S'$ anbelangt werden hier mehrere Schüsse gespeichert und auch verwendet. Bildlich im Zweidimensionalen gesprochen wird zu jedem Zeitpunkt eine komplette Diagonale an Inkrementen und deren dazugehörige Schüsse gespeichert. Nach \cite{GG08} ist die Anzahl an Punkten für dünne Gitter gegeben als:
 
 \begin{equation}
 \left|\hat{V}_n\right| = \sum_{i=0}^{n-1} 2^i \cdot \binom{d-1+i}{d-1}
 \end{equation}
 
-Also haben wir einen Speicherbedarf für eine ''Diagonale'' von $O\left(2^L \cdot \binom{d-1+L}{d-1}\right)$. Wir müssen im worst case mindestens auf ein Level von $L=\log_2(N)$, da nur so alle Punkte im Raum überhaupt erst getroffen werden können. Das heißt wir haben eine untere Schranke an den Speicherplatz von $O\left(N \cdot \binom{d-1+\log_2(N)}{d-1} + N\right)$.
+Also haben wir einen Speicherbedarf für eine ''Diagonale'' von $O\left(2^L \cdot \binom{d-1+L}{d-1}\right)$. Wir müssen im worst case mindestens auf ein Koordinatenlevel von $L=\log_2(N)$, da nur so alle Punkte im Raum überhaupt erst getroffen werden können. Das heißt wir haben eine untere Schranke an den Speicherplatz einer ''Diagonalen'' von $\Omega\left(N \cdot \binom{d-1+\log_2(N)}{d-1}\right)$. Wir können aber auch nicht mehr Punkte als im Raum vorhanden sind beschießen. Das heißt die untere Schranke bildet gleichzeitig eine obere Schranke. Zusätzlich wird jeder Schuss in shots gespeichert. Somit erhalten wir eine scharfe Schranke für die gesamte Speicherplatzkomplexität von $\Theta\left(N \cdot \binom{d-1+\log_2(N)}{d-1} + N + C_{all}\right)$.
+
+Wie bereits für die vollen Gitter ist solch eine Speicherplatzausnutzung nicht wünschenswert.
 
 
 \subsection{Monte-Carlo Strategie}
@@ -961,7 +967,20 @@ Die zufällige Auswahl von Zellen, die nicht bereits beschossen wurden lässt si
 \subsection{Sobol Strategie}
 
 \subsection{Halton Strategie}
-Die Halton Sequenz ist eine Zahlensequenz, die quasizufällig ist, also eine gute Gleichverteilung an Punkten besitzt. Die Bestimmung von Halton Punkten basiert auf Co-Primzahlen, also Primzahlen, die verschieden sind. Um einen $d$-dimensionalen Punkt zu erzeugen werden $d$ viele Primzahlen benötigt. Dazu werden für alle Primzahlen der $i$-te Punkt der eindimensionalen Sequenz die aus der jeweligen Primzahl generiert wurde zum $i$-ten Punkt der $d$-dimensionalen Sequenz kombiniert. Die eindimensionale Halton Sequenz lässt sich durch folgenden Pseudocode beschreiben:
+Die Halton Sequenz ist eine Zahlensequenz, die eine niedrige Diskrepanz besitzt und daher nahezu zufällig erscheint.
+
+\subsubsection{Konstruktion einer eindimensionalen Halton Sequenz}
+Die Bestimmung von Halton Punkten basiert auf Primzahlen, die als Basis dienen. Um die $i$-te Zahl der Sequenz zu bestimmen wird zuerst die Basisdarstellung von $i$ bestimmt. Sei für eine Primzahl $p$ $i$ in gegeben in Basisdarstellung mit Koeffizienten $a_j$ mit $j\in{0,\dots,k}$ so, dass gilt:
+\begin{equation}
+i = a_0p^0+\dots+a_kp^k
+\end{equation}
+Um die zum Index $i$ gehörige Zahl der Halton Sequenz$ i_{\text{Halton}}$ zu erhalten wird die Basisdarstellung folgendermaßen umgewandelt:
+\begin{equation}
+i_{\text{Halton}} = a_0p^{-1}+a_1p^{-2} + \dots+a_kp^{-(k+1)}
+\end{equation}
+
+\subsubsection{Algorithmus zur Halton Sequenz}
+Halton Sequenzen mit beliebiger Basis lassen sich mit folgenden Algorithmus erzeugen. Dabei gibt dieser jeweils nur eine Zahl der Sequenz mit dem Index, der dem Algorithmus übergeben wurde.
 
 \begin{tcolorbox}
 	\begin{algorithmic}
@@ -978,26 +997,88 @@ Die Halton Sequenz ist eine Zahlensequenz, die quasizufällig ist, also eine gut
 	\end{algorithmic}
 \end{tcolorbox}
 
-Diese Funktion gibt unter Angabe der Primzahl (base) die $i$-te (index) Zahl der eindimensionalen Halton Sequenz von base aus. Diese Sequenz gibt allerdings Kommazahlen aus, was in unserer Herangehensweise mit diskreten Zellen auf dem Spielfeld dazu führt, dass bereits getroffene Zellen wieder beschossen werden können. An obigem Algorithmus ändert sich für unseren konkreten Fall lediglich die Return Zeile. Hier wird nun $\lfloor result * N \rfloor$ ausgegeben.
+\subsubsection{Erzeugen einer Schussstrategie}
+Wir benötigen zuerst die Möglichkeit mehrdimensionale Punkte erzeugen zu können. Mehrdimensionale Halton Sequenzen werden durch das Kombinieren von eindimensionalen Sequenzen erreicht. Dazu werden als Basen teilerfremde Primzahlen gewählt und der jeweils $i$-te generierte Punkt der einzelnen Sequenzen bildet eine Koordinate des $i$-ten Punkts in mehreren Dimensionen. Das heißt aus Sequenzen $\left(\frac{1}{2},\frac{1}{4},\frac{3}{4},\dots\right)$ und $\left(\frac{1}{3},\frac{2}{3},\frac{1}{9},\dots\right)$ ergeben sich zweidimensionale Punkte $\left(\left(\frac{1}{2},\frac{1}{3}\right),\left(\frac{1}{4},\frac{2}{3}\right),\left(\frac{3}{4},\frac{1}{9}\right),\dots\right)$.
+
+Anhand dieses Beispiels haben wir bereits das zweite Problem gesehen. Die Zahlenwerte müssen noch auf die Spielfeldgröße erweitert werden. Dies lässt sich leicht durch einer Multiplikation mit $N$ und runden erledigen. Damit würde sich die Ausgabe des Algorithmus ändern zu $\lfloor result * N \rfloor$.
+
+Ein letztes Problem der Halton Sequenz ist, dass es aufgrund des Rundens zu häufigem Beschießen der gleichen Zellen kommt. Das heißt das ein Durchlauf unter gleichen Rahmenbedingungen, also gleiche Dimension, Spielfeldgröße etc., bei Halton länger dauert als andere Strategien, die jedes Feld definitiv nur einmal beschießen. 
+ 
 
 \section{Implementierung}
 
 \subsection{Allgemeines zur Implementierung}
-Aufgrund von begrenztem Arbeitsspeicher und der großen Anzahl an Zellen in höheren Dimensionen müssen Vorkehrungen getroffen werden um das Programm auch auf weniger leistungsstarken Systemen lauffähig zu machen. Dazu wird das Spielfeld in Blöcke aufgeteilt, die maximal so groß wie der verfügbare Arbeitsspeicher sind. Danach werden die Blöcke sequentiell abgearbeitet. 
+Aufgrund von begrenztem Arbeitsspeicher und der großen Anzahl an Zellen in höheren Dimensionen müssen Vorkehrungen getroffen werden um das Programm auch auf weniger leistungsstarken Systemen lauffähig zu machen. Dies konnten wir bereits bei der Analyse der Speicherplatzkomplexität der ersten naiven Algorithmen zu vollen und dünnen Gittern beobachten. 
 
-Dies bedeutet für die Strategien, dass diese ihre Angaben wann welche Zelle beschossen wird bezüglich eines Blockes machen muss. Allerdings ist zu beachten, dass die gesamte Strategie sich weiterhin auf das ganze Spielfeld bezieht. Also ist es nicht korrekt die Strategien unabhängig auf den einzelnen Blöcken laufen zu lassen. Man muss Angaben zu den Zellen einzelner Blöcke machen können ohne die gesamte Strategie für das Spielfeld zu speichern, da dies nicht immer möglich ist. Daraus entstanden die folgenden tatsächlichen Implementierungen der Strategien im Gegensatz zum naiven Ansatz zuvor.
+Die Lösung ist das Spielfeld in Blöcke aufzuteilen, die maximal so groß wie der verfügbare Arbeitsspeicher sind. Danach werden die Blöcke sequentiell abgearbeitet. Ein Aufruf einer Strategie bearbeitet also nur einen Block.
 
+Dies bedeutet für die Strategien, dass diese ihre Angaben wann welche Zelle beschossen wird bezüglich eines Blockes machen müssen. Allerdings ist zu beachten, dass die gesamte Strategie sich weiterhin auf das ganze Spielfeld bezieht. Also wäre es nicht korrekt wenn die Strategien unabhängig auf den einzelnen Blöcken ausgeführt werden. Man muss Angaben zu den Zellen einzelner Blöcke machen können ohne die gesamte Schussfolge der Strategie für das Spielfeld zu speichern, da dies mit begrenztem Speicher nicht immer möglich ist. Daraus entstanden die tatsächlichen Implementierungen der Strategien im Gegensatz zum naiven Ansatz zuvor.
 
-Für die Gitterstrategien wollen wir unter allen Umständen die grobe Struktur der Schussfolge erhalten (vgl. volle Gitter Abbildung \ref{fig:fullGrid01} und dünne Gitter Abbildung \ref{fig:sparseGrid01}), da diese sonst grundlegend falsch wird. Es müssen weiterhin bei vollen Gittern die Schichten und bei dünnen Gittern die Diagonalen abgearbeitet werden (Terminologie bezieht sich auf 2-dimensionalen Fall zur einfacheren bildlichen Vorstellung).
+\subsection{Allgemeines zu Gittern}
+
+Unser Ansatz arbeitet mit diskreten Zellen und Spielfeldern. Das bedeutet, dass wir an manchen Stellen besonders vorsichtig sein müssen. Wie zum Beispiel bei Redundanzen in den Koordinatenpunkten. Diese können entstehen wenn die Halbierung der Koordinaten der letzten ($\lceil\log_2(N)\rceil$) Koordinatenlevels nicht aufgeht. Durch anschließendes Runden kann es zu doppelt auftretenden Koordinaten kommen. Diese können sich sowohl in anderen Koordinatenlevels als auch im selben Koordinatenlevel wiederholen. Allerdings treten ''Wiederholer'' nur im letzten ($\lceil\log_2(N)\rceil$) Koordinatenlevels auf. Da vorher die Maschenweite noch nicht eng genug war um Kollisionen hervorzurufen. Das bedeutet es muss beachtet werden, dass die tatsächliche Anzahl an neuen Koordinaten, die im letzten Koordinatenlevels dazukommen, kleiner ist als einfach nur das Doppelte des vorherigen Koordinatenlevels. Dies wiederum beeinflusst die Anzahl der Punkte aller Inkremente in deren Index sich mindestens einmal das maximale Koordinatenlevel befindet. Das Auftreten der Redundanzen hängt einzig von der Spielfeldgröße $N$ ab. Nur wenn $N = 2^k-1$ mit $k\in\mathbb{N}$ treten keine Redundanzen auf.
 
 \begin{figure}
-	\subfigure[Schicht Level 0]{\resizebox{36mm}{!}{\includegraphics{figures/FullGridGeneral1}}}
-	\subfigure[Schicht Level 1]{\resizebox{36mm}{!}{\includegraphics{figures/FullGridGeneral2}}}
-	\subfigure[Schicht Level 2]{\resizebox{36mm}{!}{\includegraphics{figures/FullGridGeneral3}}}
-	\subfigure[Schicht Level 3]{\resizebox{36mm}{!}{\includegraphics{figures/FullGridGeneral4}}}
+	\centering
+	\resizebox{.90\linewidth}{!}{\input{figures/redundancy1.pdf_tex}}
+	\caption{Beispiel für Redundanz}
+	\label{fig:redundancy}
+\end{figure}
+
+In der Implementierung spielt die Redundanz nur in den dünnen Gittern eine Rolle.
+
+
+\subsection{Volle Gitter Strategie}
+
+Die tatsächliche Implementierung muss weiterhin die grobe Struktur des naiven Algorithmus verfolgen, da alles andere schlichtweg falsch wäre. Um es mit der Terminologie des zweidimensionalen Falles auszudrücken, es müssen weiterhin die Schichten nacheinander abgearbeitet werden (vgl. Abbildung \ref{fig:fullGrid01}).
+
+\begin{figure}
+	\subfigure[Schicht Giiterlevel 0]{\resizebox{36mm}{!}{\includegraphics{figures/FullGridGeneral1}}}
+	\subfigure[Schicht Giiterlevel 1]{\resizebox{36mm}{!}{\includegraphics{figures/FullGridGeneral2}}}
+	\subfigure[Schicht Giiterlevel 2]{\resizebox{36mm}{!}{\includegraphics{figures/FullGridGeneral3}}}
+	\subfigure[Schicht Giiterlevel 3]{\resizebox{36mm}{!}{\includegraphics{figures/FullGridGeneral4}}}
 	\caption{Grobe Struktur bzgl. Inkremente volle Gitter Strategie 2 Dimensionen}
 	\label{fig:fullGrid01}
 \end{figure}
+
+\subsubsection{Vorgehen}
+
+Die auf Blöcke abgestimmte volle Gitter Strategie arbeitet relativ simpel. Zunächst wird in MAX\_LEVEL\_FULL[] die maximale Anzahl der pro Gitterlevel neu hinzugekommen Punkte (in 2 Dimensionen also alle Punkte einer Schicht) berechnet und gespeichert . Anschließend wird ein Zähler LEVEL\_FULL[] für jedes Gitterlevel eingerichtet der anfänglich auf 1 steht. Die Strategie iteriert dann über den Block und bestimmt für jeden Punkt in welchem Gitterlevel er liegt. Für dieses Gitterlevel wird dem Punkt dann nur noch der passende Zähler zugewiesen und danach inkrementiert.
+
+\subsubsection{Algorithmus in Pseudocode}
+
+Dem Algorithmus wird eine Referenzkoordinate zum Block und ein Array, das jeder Zelle im Block die Nummer wann sie von der Strategie beschossen wird zuweist, übergeben.
+
+\begin{tcolorbox}
+	\begin{algorithmic}
+		\Function{fullGridStrat}{int[] blockShots, cell blockCoordinate}{:void}
+		\State cell currentCell
+		\State int shotNumber
+		\For{int $i=0$; $i<$BlockSize; $i++$}
+		\State \textsc{getCoordinateFromNumber}()
+		\State int max $=0$
+		\State max = \textsc{getMaxLevel}()
+		\State shotNumber = \textsc{calculateShotnumber}()
+		\State blockShot[currentCell] = shotNumber
+		\EndFor
+		\EndFunction
+	\end{algorithmic}
+\end{tcolorbox}
+
+\subsubsection{Erläuterung der Funktionen}
+Die Funktion \textsc{getCoordinateFromNumber}() berechnet in $O(d)$ Schritten aus $i$ eine Koordinate durch Bestimmung der Koeffizienten der Zahlendarstellung zur Basis $N$. Die ersten Koordinaten werden durch die Blockkoordinaten ergänzt.
+
+Die Funktion \textsc{getMaxLevel}() bestimmt in $O\left(d\cdot 2^{\lceil\log_2(N)\rceil}\right)$ das maximale Gitterlevel von currentCell. Dabei werden alle $d$ Koordinaten der Zelle jeweils mit den $2^{\lceil\log_2(N)\rceil}$ Levelkoordinaten (vgl. Abbildung \ref{fig:redundancy}) verglichen und das maximale Gitterlevel in max gespeichert.
+
+Die Funktion \textsc{calculateShotnumber}() errechnet in $O(max) = O\left(\lceil\log_2(N)\rceil\right)$ Schritten die Schussnummer von currentCell in dieser Strategie. Diese wird bestimmt durch Addition der MAX\_LEVEL\_FULL aller Gitterlevel bis max und LEVEL\_FULL[max]. Schließlich wird noch LEVEL\_FULL[max] inkrementiert.
+
+\subsubsection{Komplexität}
+Somit erhalten wir eine Laufzeitkomplexität von \\ $O\left(BlockSize\cdot\left(d\left( 2^{\lceil\log_2(N)\rceil}+1\right)+\lceil\log_2(N)\rceil\right)\right)$ für den vollen Gitter Algorithmus. Die Speicherkomplexität beläuft sich dann auf $O(BlockSize)$. Bei $d$ Dimensionen kann BlockSize variiert werden zwischen $N^1$ und $N^d$. Wobei $N^d$ nur zu empfehlen ist wenn ausreichend Speicher zur Verfügung steht. 
+
+\newpage
+\subsection{Dünne Gitter Strategie}
+
+Für die dünnen Gitter gilt das gleiche wie für die vollen, es muss weiterhin die Struktur eingehalten werden. Das heißt in diesem Fall mit der Terminologie für zwei Dimensionen, dass die Diagonalen nacheinander abgearbeitet werden (vgl. Abbildung \ref{fig:sparseGrid01}).
 
 \begin{figure}
 	\subfigure[Schicht Level 0]{\resizebox{36mm}{!}{\includegraphics{figures/FullGridGeneral1}}}
@@ -1011,14 +1092,41 @@ Für die Gitterstrategien wollen wir unter allen Umständen die grobe Struktur d
 	\label{fig:sparseGrid01}
 \end{figure}
 
-\subsection{Volle Gitter Strategie}
-\textbf{TODO Dennis}
-%Ein Vorgehen, dass für beide Gitter Strategien sich als passend herausgestellt hat, ist die einmalige Berechnung der Gitterpunkte pro neu hinzukommender Schicht bzw. Diagonale (vgl. 2D Fall). Dann wird lediglich die Zugehörigkeit eines Punktes zu einer Schicht / Diagonalen berechnet. Alle Schichten / Diagonalen kleineren Levels werden natürlich vorher beschossen. Also kann deren Gesamtmenge an Zellen auf den Schussindex dieses Punktes hinzuaddiert werden. Es muss dann lediglich vermerkt werden, die wie vielte beschossene Zelle dieser Schicht / Diagonalen wir gerade beschießen. 
-%Dabei bleibt uns die zuvor als notwendig erkannte Grundstruktur der Gitterschussstrategien erhalten. Also die Schicht- / Diagonalenweise Abarbeitung (vgl Abbildung ).
+\subsubsection{Vorgehen}
 
-\subsection{Dünne Gitter Strategie}
+Die auf Blöcke abgestimmte dünne Gitter Strategie arbeitet ebenfalls sehr einfach. Zunächst wird in MAX\_LEVEL\_SPARSE[] die maximale Anzahl der pro Gitterlevel neu hinzugekommen Punkte (in 2 Dimensionen also alle Punkte einer \underline{Diagonale!}) berechnet und gespeichert. Anschließend wird ein Zähler LEVEL\_SPARSE[] für jedes Gitterlevel eingerichtet der anfänglich auf 1 steht. Die Strategie iteriert dann über den Block und bestimmt für jeden Punkt die Gesamtsumme der Koordinatenlevel der Koordinaten. Daraus kann mit der Bedingung für dünne Gitter bestimmt werden zu welchem Gitterlevel der Punkt gehört. Für dieses Gitterlevel wird dem Punkt dann nur noch der passende Zähler zugewiesen und danach inkrementiert.
 
-\subsection{Sobol Strategie}
+\subsubsection{Algorithmus in Pseudocode}
+
+Dem Algorithmus wird eine Referenzkoordinate zum Block und ein Array, das jeder Zelle im Block die Nummer wann sie von der Strategie beschossen wird zuweist, übergeben.
+
+\begin{tcolorbox}
+	\begin{algorithmic}
+		\Function{sparseGridStrat}{int[] blockShots, cell blockCoordinate}{:void}
+		\State cell currentCell
+		\State int shotNumber
+		\For{int $i=0$; $i<$BlockSize; $i++$}
+		\State \textsc{getCoordinateFromNumber}()
+		\State int sumLevel $=0$
+		\State sumLevel = \textsc{getSumLevel}()
+		\State shotNumber = \textsc{calculateShotnumber}()
+		\State blockShot[currentCell] = shotNumber
+		\EndFor
+		\EndFunction
+	\end{algorithmic}
+\end{tcolorbox}
+
+\subsubsection{Erläuterung der Funktionen}
+Die Funktion \textsc{getCoordinateFromNumber}() ist analog wie bei vollen Gittern.
+
+Die Funktion \textsc{getSumLevel}() bestimmt in $O\left(d\cdot 2^{\lceil\log_2(N)\rceil}\right)$ die Summe der Koordinatenlevel von currentCell. Dabei werden alle $d$ Koordinaten der Zelle jeweils mit den $2^{\lceil\log_2(N)\rceil}$ Levelkoordinaten (vgl. Abbildung \ref{fig:redundancy}) verglichen, das Koordinatenlevel bestimmt und zur Summe sumLevel addiert.
+
+Die Funktion \textsc{calculateShotnumber}() errechnet in $O(sumLevel) = O\left(d\cdot \lceil\log_2(N)\rceil\right)$ Schritten die Schussnummer von currentCell in dieser Strategie. Diese wird bestimmt durch Addition der MAX\_LEVEL\_SPARSE aller Gitterlevel bis sumLevel und LEVEL\_FULL[sumLevel]. Schließlich wird noch LEVEL\_FULL[sumLevel] inkrementiert.
+
+\subsubsection{Komplexität}
+Somit erhalten wir eine Laufzeitkomplexität von \\ $O\left(BlockSize\cdot d\left( 2^{\lceil\log_2(N)\rceil}+1+\lceil\log_2(N)\rceil\right)\right)$ für den dünnen Gitter Algorithmus. Die Speicherkomplexität beläuft sich dann auf $O(BlockSize)$. Bei $d$ Dimensionen kann BlockSize variiert werden zwischen $N^1$ und $N^d$. Wobei $N^d$ nur zu empfehlen ist wenn ausreichend Speicher zur Verfügung steht. 
+
+%\subsection{Sobol Strategie}
 
 
 \section{Ergebnisse}
