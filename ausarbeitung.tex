@@ -1149,8 +1149,22 @@ TODO Ergebnisse kommentieren.
 \end{landscape}
 
 \begin{landscape}
+	\includepdf[landscape=true]{figures/random_dimension_ship.pdf}
+\end{landscape}
+
+\begin{landscape}
 	\includepdf[landscape=true]{figures/fullGrid_dimension.pdf}
 \end{landscape}
+
+\begin{landscape}
+	\includepdf[landscape=true]{figures/fullGrid_dimension_ship.pdf}
+\end{landscape}
+
+
+\begin{landscape}
+	\includepdf[landscape=true]{figures/fullGrid_dimension_fleet.pdf}
+\end{landscape}
+
 
 \begin{landscape}
 	\includepdf[landscape=true]{figures/fullGrid_size.pdf}
@@ -1158,6 +1172,14 @@ TODO Ergebnisse kommentieren.
 
 \begin{landscape}
 	\includepdf[landscape=true]{figures/sparseGrid_dimension.pdf}
+\end{landscape}
+
+\begin{landscape}
+	\includepdf[landscape=true]{figures/sparseGrid_dimension_ship.pdf}
+\end{landscape}
+
+\begin{landscape}
+	\includepdf[landscape=true]{figures/sparseGrid_dimension_fleet.pdf}
 \end{landscape}
 
 \begin{landscape}
@@ -1169,15 +1191,31 @@ TODO Ergebnisse kommentieren.
 \end{landscape}
 
 \begin{landscape}
+	\includepdf[landscape=true]{figures/halton_dimension_ship.pdf}
+\end{landscape}
+
+\begin{landscape}
+	\includepdf[landscape=true]{figures/halton_dimension_ship.pdf}
+\end{landscape}
+
+\begin{landscape}
 	\includepdf[landscape=true]{figures/halton_size.pdf}
 \end{landscape}
 
-%\begin{landscape}
-%	\includepdf[landscape=true]{figures/comparision.png}
-%\end{landscape}
+%DISCLAIMER: noch ohne SOBOL
+\begin{landscape}
+	\includepdf[landscape=true]{figures/comparsion.pdf}
+\end{landscape}
 
+\begin{landscape}
+	\includepdf[landscape=true]{figures/comparsion_dimension_ship.pdf}
+\end{landscape}
 
-Wie bei dem betrachten des jeweils zweiten Plots, also den Ergebnissen für die Verteilungsfunktion von $\mathbf{X}^{F_{all}}_{\strat}$ auffällt, sind die Werte von $P(\mathbf{X}^{F_{all}}_{\strat} \leq v)$ sehr klein und streben erst sehr spät und ziemlich schnell gegen 1. Die Folge davon ist, dass der Erwartungswert $E(\mathbf{X}^{F_{all}}_{\strat})$ sehr groß ist. Genauer gesagt gilt $E(\mathbf{X}^{F_{all}}_{\strat}) \approx |C_{all}|$ selbst für kleine Spielfeldgrößen, wie z.B. $10^3$.
+\begin{landscape}
+	\includepdf[landscape=true]{figures/comparsion_dimension_fleet.pdf}
+\end{landscape}
+
+Wie bei dem betrachten des jeweils zweiten Plots (Fleet distribution), also den Ergebnissen für die Verteilungsfunktion von $\mathbf{X}^{F_{all}}_{\strat}$ auffällt, sind die Werte von $P(\mathbf{X}^{F_{all}}_{\strat} \leq v)$ sehr klein und streben erst sehr spät und ziemlich schnell gegen 1. Die Folge davon ist, dass der Erwartungswert $E(\mathbf{X}^{F_{all}}_{\strat})$ sehr groß ist. Genauer gesagt gilt $E(\mathbf{X}^{F_{all}}_{\strat}) \approx |C_{all}|$ selbst für kleine Spielfeldgrößen, wie z.B. $10^3$.
 
 Dieses Phänomen ist Strategieunabhängig, d.h. die gewählte Strategie macht im Endeffekt keinen messbaren Unterschied darin, wie schnell eine zufällig gewählte Flotte versenkt werden kann. Selbst die bestmögliche Strategie würde im Vergleich zu einer sehr schlechten Strategie keinen messbaren Unterschied im Erwartungswert $E(\mathbf{X}^{F_{all}}_{\strat})$ zeigen.
 
