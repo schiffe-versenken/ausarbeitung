@@ -1146,76 +1146,107 @@ TODO Ergebnisse kommentieren.
 
 \begin{landscape}
 	\includepdf[landscape=true]{figures/random_dimension.pdf}
+	\label{fig:random1}
 \end{landscape}
 
 \begin{landscape}
 	\includepdf[landscape=true]{figures/random_dimension_ship.pdf}
+	\label{fig:random2}
 \end{landscape}
 
 \begin{landscape}
 	\includepdf[landscape=true]{figures/fullGrid_dimension.pdf}
+	\label{fig:fullGrid1}
 \end{landscape}
 
 \begin{landscape}
 	\includepdf[landscape=true]{figures/fullGrid_dimension_ship.pdf}
+	\label{fig:fullGrid2}
 \end{landscape}
 
 
 \begin{landscape}
 	\includepdf[landscape=true]{figures/fullGrid_dimension_fleet.pdf}
+	\label{fig:fullGrid3}
 \end{landscape}
 
 
 \begin{landscape}
 	\includepdf[landscape=true]{figures/fullGrid_size.pdf}
+	\label{fig:fullGrid4}
 \end{landscape}
 
 \begin{landscape}
 	\includepdf[landscape=true]{figures/sparseGrid_dimension.pdf}
+	\label{fig:sparseGrid1}
 \end{landscape}
 
 \begin{landscape}
 	\includepdf[landscape=true]{figures/sparseGrid_dimension_ship.pdf}
+	\label{fig:sparseGrid2}
 \end{landscape}
 
 \begin{landscape}
 	\includepdf[landscape=true]{figures/sparseGrid_dimension_fleet.pdf}
+	\label{fig:sparseGrid3}
 \end{landscape}
 
 \begin{landscape}
 	\includepdf[landscape=true]{figures/sparseGrid_size.pdf}
+	\label{fig:sparseGrid4}
 \end{landscape}
 
 \begin{landscape}
 	\includepdf[landscape=true]{figures/halton_dimension.pdf}
+	\label{fig:halton1}
 \end{landscape}
 
 \begin{landscape}
 	\includepdf[landscape=true]{figures/halton_dimension_ship.pdf}
+	\label{fig:halton2}
 \end{landscape}
 
 \begin{landscape}
 	\includepdf[landscape=true]{figures/halton_dimension_ship.pdf}
+	\label{fig:halton3}
 \end{landscape}
 
 \begin{landscape}
 	\includepdf[landscape=true]{figures/halton_size.pdf}
+	\label{fig:halton4}
 \end{landscape}
 
-%DISCLAIMER: noch ohne SOBOL
+\begin{landscape}
+	\includepdf[landscape=true]{figures/sobol_dimension.pdf}
+	\label{fig:sobol1}
+\end{landscape}
+
+\begin{landscape}
+	\includepdf[landscape=true]{figures/sobol_dimension_ship.pdf}
+	\label{fig:sobol2}
+\end{landscape}
+
+\begin{landscape}
+	\includepdf[landscape=true]{figures/sobol_dimension_ship.pdf}
+	\label{fig:sobol3}
+\end{landscape}
+
 \begin{landscape}
 	\includepdf[landscape=true]{figures/comparsion.pdf}
+	\label{fig:compare1}
 \end{landscape}
 
 \begin{landscape}
 	\includepdf[landscape=true]{figures/comparsion_dimension_ship.pdf}
+	\label{fig:compare2}
 \end{landscape}
 
 \begin{landscape}
 	\includepdf[landscape=true]{figures/comparsion_dimension_fleet.pdf}
+	\label{fig:compare3}
 \end{landscape}
 
-Wie bei dem betrachten des jeweils zweiten Plots (Fleet distribution), also den Ergebnissen für die Verteilungsfunktion von $\mathbf{X}^{F_{all}}_{\strat}$ auffällt, sind die Werte von $P(\mathbf{X}^{F_{all}}_{\strat} \leq v)$ sehr klein und streben erst sehr spät und ziemlich schnell gegen 1. Die Folge davon ist, dass der Erwartungswert $E(\mathbf{X}^{F_{all}}_{\strat})$ sehr groß ist. Genauer gesagt gilt $E(\mathbf{X}^{F_{all}}_{\strat}) \approx |C_{all}|$ selbst für kleine Spielfeldgrößen, wie z.B. $10^3$.
+Wie bei dem Betrachten des jeweils zweiten Plots (Fleet distribution auf den Seiten \pageref{fig:random1},\pageref{fig:fullGrid1},\pageref{fig:sparseGrid1},\pageref{fig:halton1},\pageref{fig:sobol1},\pageref{fig:compare1}), also den Ergebnissen für die Verteilungsfunktion von $\mathbf{X}^{F_{all}}_{\strat}$ auffällt, sind die Werte von $P(\mathbf{X}^{F_{all}}_{\strat} \leq v)$ sehr klein und streben erst sehr spät und ziemlich schnell gegen 1. Die Folge davon ist, dass der Erwartungswert $E(\mathbf{X}^{F_{all}}_{\strat})$ sehr groß ist. Genauer gesagt gilt $E(\mathbf{X}^{F_{all}}_{\strat}) \approx |C_{all}|$ selbst für kleine Spielfeldgrößen, wie z.B. $10^3$.
 
 Dieses Phänomen ist Strategieunabhängig, d.h. die gewählte Strategie macht im Endeffekt keinen messbaren Unterschied darin, wie schnell eine zufällig gewählte Flotte versenkt werden kann. Selbst die bestmögliche Strategie würde im Vergleich zu einer sehr schlechten Strategie keinen messbaren Unterschied im Erwartungswert $E(\mathbf{X}^{F_{all}}_{\strat})$ zeigen.
 
