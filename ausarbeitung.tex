@@ -105,7 +105,7 @@
 % ============================================================================
 % =============  AB HIER DARF UND SOLL GETIPPT WERDEN ========================
 % ============================================================================
-\author{Joel Bienias, Samuel Bühner, Dennis Kreittner, Christopher Schnickr}
+\author{Christopher Schnick, Dennis Kreittner}
 %\index{Viel Schreiber}
 
 % Das Institut wird fuer den Betreuer missbraucht ...
@@ -120,7 +120,7 @@
 \thispagestyle{empty}
 
 \begin{abstract}
-Ein schöner Abstract. Das ist einfach die Kurzzusammenfassung.
+In dieser Ausarbeitung werden zunächst formal das Spielprinzip, Strategien und eine Einbettung für diese in ein Monte-Carlo-Verfahren vorgestellt. Anschließend werden Algorithmen für volle und dünne Gitter, Halton- und Sobol-Sequenzen vorgestellt und teilweise auf ihre Komplexität analysiert. Danach wird deren Implementierung thematisiert. Schließlich werden die Ergebnisse ausgewertet, graphisch dargestellt und die Strategien damit verglichen um herauszufinden welche Strategie sich am besten zum Versenken einer Flotte eignet.
 \end{abstract}
 
 % Einleitung -----------------------------------------------------------------
@@ -969,6 +969,29 @@ Die zufällige Auswahl von Zellen, die nicht bereits beschossen wurden lässt si
 
 
 \subsection{Sobol Strategie}
+Die Sobol-Sequenz ist eine Zahlensequenz, die ursprünglich bei der Suche nach einer schnell konvergierenden Zahlenfolge bei der Approximation von Integralen entwickelt wurde.
+Sie basiert auf Polynomen auf $\mathbb{Z}_2$, also Polynomen, deren Koeffizienten aus diesem Feld stammen un daher nur die Werte 0 oder 1 annehmen können.
+
+\subsubsection{Definition von Sobol-Punkten}
+Die Definition verläuft ganz analog zu \cite{JK03}. Zunächst wird für $j$-te Komponente des zu generierenden Punkts ein Polynom aus $\mathbb{Z}_2$ der Form
+\begin{equation}
+x^{s_j}+a_{1,j}x^{s_j-1}+\dots +a_{s_j-1,j}x+1
+\end{equation}
+gewählt. Dann werden damit Koeffizienten der Form
+\begin{equation}
+m_{k,j}=2a_{1,j}m_{k-1,j}\oplus\dots\oplus 2^{s_j-1}a_{s_j-1,j}m_{k-s_j+1,j}\oplus2^{s_j}m_{k-s_j,j}\oplus m_{k-s_j,j}
+\end{equation}
+bestimmt. Die Startwerte der $m_{1,j}$ bis $m_{s_j,j}$ können frei gewählt werden, solange sie $\leq 2^k$ sind. Diese Startwerte wurden von \cite{JK10} aus der Datei new-joe-kuo-7.21201 für die ersten 15 Dimensionen entnommen. Daraus können dann die directions numbers $v_{k,j}$ berechnet werden mit:
+\begin{equation}
+v_{k,j} = \frac{m_{k,j}}{2^k}
+\end{equation}
+
+Damit kann nun der $i$-te Punkt der Sobol Sequenz berechnet werden mit $i=(\dots b_2 b_1)_2$ also der Binärdarstellung von $i$:
+\begin{equation}
+x_{i,j}=b_1v_{1,j}\oplus b_2v_{2,j}\oplus\dots
+\end{equation}
+
+Der Algorithmus folgt dem in \cite{JK10} gezeigten mit kleineren Änderungen um ihn mit unserer Herangehensweise kompatibel zu machen. Dieser und dessen mitgelieferte Koeffizienten sind allerdings nur für $2^{32}$ Punkte maximal ausgelegt.
 
 \subsection{Halton Strategie}
 Die Halton Sequenz ist eine Zahlensequenz, die eine niedrige Diskrepanz besitzt und daher nahezu zufällig erscheint.
@@ -1079,7 +1102,6 @@ Die Funktion \textsc{calculateShotnumber}() errechnet in $O(max) = O\left(\lceil
 \subsubsection{Komplexität}
 Somit erhalten wir eine Laufzeitkomplexität von \\ $O\left(BlockSize\cdot\left(d\left( 2^{\lceil\log_2(N)\rceil}+1\right)+\lceil\log_2(N)\rceil\right)\right)$ für den vollen Gitter Algorithmus. Die Speicherkomplexität beläuft sich dann auf $O(BlockSize)$. Bei $d$ Dimensionen kann BlockSize variiert werden zwischen $N^1$ und $N^d$. Wobei $N^d$ nur zu empfehlen ist wenn ausreichend Speicher zur Verfügung steht. 
 
-\newpage
 \subsection{Dünne Gitter Strategie}
 
 Für die dünnen Gitter gilt das gleiche wie für die vollen, es muss weiterhin die Struktur eingehalten werden. Das heißt in diesem Fall mit der Terminologie für zwei Dimensionen, dass die Diagonalen nacheinander abgearbeitet werden (vgl. Abbildung \ref{fig:sparseGrid01}).
@@ -1138,113 +1160,137 @@ Somit erhalten wir eine Laufzeitkomplexität von \\ $O\left(BlockSize\cdot d\lef
 
 Bestimmt man nun mithilfe der Implementation die Verteilungsfunktionen einer Stichprobe $\Omega_L \subseteq L_{all}$ von $\mathbf{T}^{\Omega_L}_{\strat}(\omega)$ und daraus dann $\mathbf{X}^{F_{all}}_{\strat}(\omega)$, können damit unterschiedliche Strategien auch über verschiedene Spielfeldgrößen gut miteinander verglichen werden.
 
-\subsubsection{Random-Strategie}
+\subsection{Ergebnisplots Random-Strategie}
+
+\begin{landscape}
+	\label{fig:random1}
+	\includepdf[landscape=true]{figures/random_dimension.pdf}
+\end{landscape}
+
+\begin{landscape}
+	\label{fig:random2}
+	\includepdf[landscape=true]{figures/random_dimension_ship.pdf}
+\end{landscape}
 
 Um bei der Random-Strategie brauchbare Ergebnisse zu erhalten werden mehrere Durchläufe (runs) ausgeführt und die Ergebnisse aller Durchläufe gemittelt.
 
-TODO Ergebnisse kommentieren.
+Die Abbildung auf Seite \pageref{fig:random1} zeigt einmal die Verteilungsfunktion für Schiffe oben und für Flotten unten für die Random-Strategie bei steigender Dimension. Dabei ist zu sehen, dass sich die Kurven bei steigender Dimension sehr schnell der 1 annähern. Dies liegt allerdings an der Skalierung der x-Achse, die es erst möglich macht Kurven verschiedener Dimension in einem Plot betrachten zu können. Die Skalierung teilt die Anzahl der Schüsse $v$ durch die gesamte Anzahl an Spielfeldzellen $C_{all}$ um einen prozentualen Anteil des Spielfelds wiederzugeben. Damit lässt sich dann auch das starke Wachstum der Kurven erklären, da 10\% des Spielfelds in 2 Dimensionen viel weniger Schüsse enthält als 10\% in 10 Dimensionen.
+
+Zu Verdeutlichung ist auch die Abbildung auf Seite \pageref{fig:random2} angeführt. Insbesondere die vergrößerten Kurven zeigen nochmal die Stärke des Wachstum in dieser Skala. In der oberen Abbildung auf Seite \pageref{fig:random1} ist auch der Erwartungswert eingezeichnet (vgl. gestrichelte Linien). Dieser beschreibt die Anzahl an Schüssen, die notwendig ist bis das erste zufällig gewählte Schiff aus der Stichprobe versenkt ist. Diese sind ebenfalls in der Abbildung unten rechts auf Seite \pageref{fig:random2} dargestellt. Dabei ist der Trend der Kurve wieder auf die Skalierung zurückzuführen. Die absoluten Werte würden zu einer stark exponentiell ansteigenden Kurve führen, denn auch $<1\%$ an Schüssen bei hohen Dimensionen sind immer noch sehr viele Schüsse.
+
+Die Kurven in der unteren Abbildung auf Seite \pageref{fig:random1} zeigt, dass erst wenn nahezu das ganze Spielfeld beschossen wurde davon ausgegangen werden kann, das eine zufällige Flotte versenkt ist. Dies wird durch den gegen 1 gehenden Erwartungswert, der sich fast ausschließlich am rechten Rand befindet, beschrieben. Darauf wird in einem späteren Abschnitt noch genauer angegangen. Frühzeitiges Ansteigen der Kurven auf 1 oder vereinzelte Peaks um Kurvenverlauf sind auf Messfehler zurückzuführen.
+
+\subsection{Ergebnisplots full Grid Strategie}
 
 \begin{landscape}
-	\includepdf[landscape=true]{figures/random_dimension.pdf}
-	\label{fig:random1}
-\end{landscape}
-
-\begin{landscape}
-	\includepdf[landscape=true]{figures/random_dimension_ship.pdf}
-	\label{fig:random2}
-\end{landscape}
-
-\begin{landscape}
-	\includepdf[landscape=true]{figures/fullGrid_dimension.pdf}
 	\label{fig:fullGrid1}
+	\includepdf[landscape=true]{figures/fullGrid_dimension.pdf}
 \end{landscape}
 
 \begin{landscape}
-	\includepdf[landscape=true]{figures/fullGrid_dimension_ship.pdf}
 	\label{fig:fullGrid2}
+	\includepdf[landscape=true]{figures/fullGrid_dimension_ship.pdf}
 \end{landscape}
 
 
 \begin{landscape}
-	\includepdf[landscape=true]{figures/fullGrid_dimension_fleet.pdf}
 	\label{fig:fullGrid3}
+	\includepdf[landscape=true]{figures/fullGrid_dimension_fleet.pdf}
 \end{landscape}
 
 
 \begin{landscape}
-	\includepdf[landscape=true]{figures/fullGrid_size.pdf}
 	\label{fig:fullGrid4}
+	\includepdf[landscape=true]{figures/fullGrid_size.pdf}
 \end{landscape}
 
+Die Abbildungen auf Seite \pageref{fig:fullGrid1} und \pageref{fig:fullGrid2} haben den gleichen Aufbau wie bei der Random-Strategie. Zunächst ist aus Seite \pageref{fig:fullGrid1} wieder die Schiffs- und Flottenverteilungsfunktion zu sehen. Dabei ist ein flacherer Anstieg bei der oberen Abbildung als noch bei der Random- Strategie zu sehen. Dies wird vor allem im Vergleichsplot deutlich, der später folgt. 
+
+Die Erwartungswerte auf Seite \pageref{fig:fullGrid2} verhalten sich nun deutlich anders als noch bei der Random-Strategie. Hier haben wir bereits mit Skalierung ein Wachstum in den mittleren Dimensionen. Das heißt die absoluten Zahlen müssen noch viel stärker exponentiell wachsen als bei der Random-Strategie. Dies verdeutlicht wie weit wir noch von der Random-Strategie weg sind. Später gut zu sehen in den Vergleichsplots.
+
+Auf Seite \pageref{fig:fullGrid3} ist eine genauere Betrachtung der Erwartungswerte für Flotten zu sehen. Hier wird durch die Vergrößerungen die starke Annäherung an 1 noch einmal hervorgehoben. Die Tendenz zeigt, dass wir pro Dimension um ca. $+9\cdot10^{-D}$ näher an die 1 kommen.  
+
+Schließlich sind auf Seite \pageref{fig:fullGrid4} eine Schiffs- und Flottenverteilungsfunktion mit variierender Größe aufgetragen. Dabei erreicht man hierbei im Gegensatz zur Variation der Dimensionen viel schneller eine Schranke für die noch vertretbare Laufzeit des Codes. Hier ist wieder eine schneller Anstieg auf 1 zu beobachten, da bei großen Spielfeldgrößen auch wenige Prozent der Zellen bereits eine große absolute Anzahl haben. Die Verläufe sind sehr ähnlich zur Variation der Dimension.
+
+\subsection{Ergebnisplots sparse Grid Strategie}
+
 \begin{landscape}
-	\includepdf[landscape=true]{figures/sparseGrid_dimension.pdf}
 	\label{fig:sparseGrid1}
+	\includepdf[landscape=true]{figures/sparseGrid_dimension.pdf}
 \end{landscape}
 
 \begin{landscape}
-	\includepdf[landscape=true]{figures/sparseGrid_dimension_ship.pdf}
 	\label{fig:sparseGrid2}
+	\includepdf[landscape=true]{figures/sparseGrid_dimension_ship.pdf}
 \end{landscape}
 
 \begin{landscape}
-	\includepdf[landscape=true]{figures/sparseGrid_dimension_fleet.pdf}
 	\label{fig:sparseGrid3}
+	\includepdf[landscape=true]{figures/sparseGrid_dimension_fleet.pdf}
 \end{landscape}
 
 \begin{landscape}
-	\includepdf[landscape=true]{figures/sparseGrid_size.pdf}
 	\label{fig:sparseGrid4}
+	\includepdf[landscape=true]{figures/sparseGrid_size.pdf}
 \end{landscape}
 
+Die Abbildungen auf den Seiten \pageref{fig:sparseGrid1} bis \pageref{fig:sparseGrid4} haben den gleichen Aufbau wie bei anderen Strategien.
+
+Bei der Schiffsverteilungsfunktion auf Seite \pageref{fig:sparseGrid1} haben wir einen ähnlichen Verlauf wie bisher, allerdings bereits einen etwas steileren Anstieg als noch bei full Grids. Die Flottenverteilungsfunktion verläuft analog zu anderen Strategien mit den typischen Erwartungswerten nahe 1.
+
+Die auf Seite \pageref{fig:sparseGrid2} dargestellten Erwartungswerte unterscheiden sich in ihrer Tendenz zu denen bei full Grids. Diese haben schon eher einen Verlauf wie bei der Random-Strategie.
+
+Auf Seite \pageref{fig:sparseGrid3} ist die schnelle Annäherung an 1 der Erwartungswerte bei Flotten dargestellt und schließlich auf Seite \pageref{fig:sparseGrid4} die Kurven der spare Grids-Strategie für verschieden Spielfeldgrößen.
+
+
+\subsection{Ergebnisplots Halton Strategie}
+
 \begin{landscape}
-	\includepdf[landscape=true]{figures/halton_dimension.pdf}
 	\label{fig:halton1}
+	\includepdf[landscape=true]{figures/halton_dimension.pdf}
 \end{landscape}
 
 \begin{landscape}
-	\includepdf[landscape=true]{figures/halton_dimension_ship.pdf}
 	\label{fig:halton2}
-\end{landscape}
-
-\begin{landscape}
 	\includepdf[landscape=true]{figures/halton_dimension_ship.pdf}
+\end{landscape}
+
+\begin{landscape}
 	\label{fig:halton3}
+	\includepdf[landscape=true]{figures/halton_dimension_fleet.pdf}
 \end{landscape}
 
 \begin{landscape}
-	\includepdf[landscape=true]{figures/halton_size.pdf}
 	\label{fig:halton4}
+	\includepdf[landscape=true]{figures/halton_size.pdf}
 \end{landscape}
 
+Die Schiffsverteilung bei der Halton-Strategie auf Seite \pageref{fig:halton1} ist viel stärker abgerundet und ähnelt bereits der Random-Strategie. Dies ist auf die quasi-zufällig Eingenschaft der Halton-Sequenz zurückzuführen, da diese bereits einer echt-zufälligen Sequenz stark ähnelt. 
+
+Die Abbildungen auf Seite \pageref{fig:halton2} haben ebenfalls starke Ähnlichkeit zur Random-Strategie. Die auf Seite \pageref{fig:halton3} aufgetragenen Erwartungswerte in höheren Dimensionen sinken aufgrund von Messfehlern wieder ab. Dies ist auch gut an dem frühzeitigen Anstieg der Flottenverteilungsfunktion (vgl. links oben) für höhere Dimensionen zu sehen.
+
+Letztlich ist auf Seite \pageref{fig:halton4} die Schiffs- und Flottenverteilungsfunktion bei verschiedenen Spielfeldgrößen aufgetragen. Dabei ist zu beachten, dass die rote Kurve in der unteren Abbildung zu früh ansteigt, was vermutlich wegen einem Messfehler geschieht.
+
+\subsection{Ergebnisplots Sobol Strategie}
+
 \begin{landscape}
-	\includepdf[landscape=true]{figures/sobol_dimension.pdf}
 	\label{fig:sobol1}
+	\includepdf[landscape=true]{figures/sobol_dimension.pdf}
 \end{landscape}
 
 \begin{landscape}
-	\includepdf[landscape=true]{figures/sobol_dimension_ship.pdf}
 	\label{fig:sobol2}
-\end{landscape}
-
-\begin{landscape}
 	\includepdf[landscape=true]{figures/sobol_dimension_ship.pdf}
+\end{landscape}
+
+\begin{landscape}
 	\label{fig:sobol3}
+	\includepdf[landscape=true]{figures/sobol_dimension_fleet.pdf}
 \end{landscape}
 
-\begin{landscape}
-	\includepdf[landscape=true]{figures/comparsion.pdf}
-	\label{fig:compare1}
-\end{landscape}
+Auf Seite \pageref{fig:sobol1} sind Schiffs- und Flottenverteilungsfunktion dargestellt. Dabei zeigt sich eine Ähnliche Krümmung der Kurven wie bei Halton und damit eine Annäherung zur Random-Strategie. Diese Ähnlichkeiten setzen sich auf Seite \pageref{fig:sobol2} fort mit analogen Verläufen wie Halton beim Erwartungswert. Ebenfalls die gleiche Tendenz wie bei Halton liegt dann auf Seite \pageref{fig:sobol3} vor beim Erwartungswert vor.
 
-\begin{landscape}
-	\includepdf[landscape=true]{figures/comparsion_dimension_ship.pdf}
-	\label{fig:compare2}
-\end{landscape}
-
-\begin{landscape}
-	\includepdf[landscape=true]{figures/comparsion_dimension_fleet.pdf}
-	\label{fig:compare3}
-\end{landscape}
+\subsection{Betrachtung des Erwartungswerts}
 
 Wie bei dem Betrachten des jeweils zweiten Plots (Fleet distribution auf den Seiten \pageref{fig:random1},\pageref{fig:fullGrid1},\pageref{fig:sparseGrid1},\pageref{fig:halton1},\pageref{fig:sobol1},\pageref{fig:compare1}), also den Ergebnissen für die Verteilungsfunktion von $\mathbf{X}^{F_{all}}_{\strat}$ auffällt, sind die Werte von $P(\mathbf{X}^{F_{all}}_{\strat} \leq v)$ sehr klein und streben erst sehr spät und ziemlich schnell gegen 1. Die Folge davon ist, dass der Erwartungswert $E(\mathbf{X}^{F_{all}}_{\strat})$ sehr groß ist. Genauer gesagt gilt $E(\mathbf{X}^{F_{all}}_{\strat}) \approx |C_{all}|$ selbst für kleine Spielfeldgrößen, wie z.B. $10^3$.
 
@@ -1281,6 +1327,52 @@ Wie in einigen Graphen von $P(\mathbf{X}^{F_{all}}_{\strat} \leq v)$ vorallem f�
 
 Um Strategien dennoch zu vergleichen und zu bewerten, kann $E(\mathbf{T}^{\Omega_L}_{\strat})$, d.h. der Erwartungswert für Schiffe herangezogen werden.
 
+\subsection{Fehlerbetrachtung}
+Bevor zum Vergleich der Strategien kommen noch ein paar Worte zu auftretenden Fehlern und Einschränkungen, die gemacht werden müssen. 
+
+Die Halton-Strategie lässt sich nur bis in Größenordnungen von $O(10^8)$ vielleicht noch $O(10^9)$ durchführen. Alles was darüber liegt würde einfach zu lange brauchen. Die Halton-Strategie wie auch die Sobol-Strategie hat die Eigenheit, dass nicht alle Zellen des Spielfelds einmalig und nach bestimmter Reihenfolge beschossen wird. Zugegebenermaßen die Reihenfolge bleibt gleich, das Problem liegt viel mehr beim einmaligen bzw. nicht einmaligen Beschießen von Zellen. Da die Zahlen der Sequenz normalerweise als Kommazahlen zwischen 0 und 1 generiert werden wurden diese mit der Spielfeldgröße multipliziert und anschließend gerundet. Daher entstanden viele gleiche Punkte in der Sequenz. Die Strategie sucht dann, wenn bereits ein großer Anteil des Felds beschossen wurde, in den vielen Doppeltreffern die Zellen heraus, die zum ersten Mal beschossen werden. Daher wird bei so einer Strategie für eine Spielfeldgröße von z.B. $10^8$ ein Vielfaches von $10^8$ an Punkten generiert bis alle Zellen getroffen wurden.
+
+Die Sobol-Strategie ist nach Konstruktion bereits nur für Zahlen bis $2^{32}$ ausgelegt. Das heißt der Algorithmus kann nur die ersten $2^{32}$ Zahlen der Sequenz erzeugen. Da hier das gleiche Problem des Doppelbeschuss wie schon bei Halton auftritt, landet man in hohen Dimensionen schnell über dieser Grenze. Daher konnte Sobol nur bis $10^7$ untersucht werden. Dies spielt dann auch im nachfolgenden Vergleich der Strategien eine Rolle.
+
+\subsection{Ergebnisplots Vergleich der Strategien}
+
+\begin{landscape}
+	\label{fig:compare1}
+	\includepdf[landscape=true]{figures/comparsion.pdf}
+\end{landscape}
+
+\begin{landscape}
+	\label{fig:compare2}
+	\includepdf[landscape=true]{figures/comparsion_dimension_ship.pdf}
+\end{landscape}
+
+\begin{landscape}
+	\label{fig:compare3}
+	\includepdf[landscape=true]{figures/comparsion_dimension_fleet.pdf}
+\end{landscape}
+
+Die Schiffsverteilungsfunktion auf Seite \pageref{fig:compare1} zeigt alle verwendeten Strategien im Vergleich zueinander. Dabei beschreibt die rote ''min'' Kurve eine bereinigte Version der Random-Strategie, um die verwendeten 48 Threads zu berücksichtigen. 
+
+Wie zu erwarten gewesen ist liegt die full-Grid-Strategie unterhalb der sparse-Grid-Strategie und schließt damit schlechter ab. Beide Gitter-Strategien liegen deutlich unterhalb der Quasi-Random-Strategien. Allerdings können wir einen Vergleich von Halton und Sobol erst in den späteren Abbildungen vornehmen, da sich diese noch um eine Dimension unterschieden. 
+
+In dieser Darstellung lassen sich Random und bereinigte Random-Strategie kaum unterschieden.
+
+Betrachten wir nun die Flottenverteilungsfunktion auf Seite \pageref{fig:compare1}. Allgemein sind Kurven in dieser Abbildung die schneller ansteigen besser, da es gewünscht ist möglichst schnell am oberen Rand anzukommen. Dies würde nämlich bedeuten, dass die zufällige Flotte versenkt ist. 
+Die full-Grid-Strategie bewegt sich ganz unten, das heißt sie macht den kleinsten Fortschritt um die Flotte zu versenken. Die sparse-Grid-Strategie liegt darüber macht also einen besseren Fortschritt. 
+Die interessanten Stellen sind nun einerseits der Wechsel von Halton zwischen 0.2 und 0.4. Das bedeutet, dass Halton zuvor schlechter voran gekommen ist als Random und sich in diesem Zeitraum Random gegenüber verbessert. Ab 0.8 liegt bei Halton allerdings ein Messfehler vor, da die Kurve zu früh auf 1 ansteigt. Andererseits der Vergleich der beiden Random-Strategien interessant. Unbereinigt würde die Random-Strategie besser abschneiden als sie eigentlich sollte. Dies ist gut zu sehen von 0.8 bis 1.0. Dort löst sich Random langsam von bereinigt-Random (min). Zu beachten ist, dass Sobol in diesem Plot noch außer Konkurrenz ist, da es Sobol für $10^7$ ist.
+
+Dies ist allerdings behoben auf Seite \pageref{fig:compare2}. Hier wurde zum besseren Vergleich für Sobol noch die Kurve ''halD7'' eingefügt, die Halton für $10^7$ darstellt. Aufgrund des engen Verlaufs dieser beiden Kurven in der Abbildung rechts oben ist zu vermuten, dass dies für $D=8$ ebenfalls der Fall ist. Somit können wir uns für Vergleiche Sobol mit $D=8$ einfach nahe Halton denken. Die Abbildung rechts oben ist besonders interessant, da sie eine Vergrößerung um den Nullpunkt zeigt. 
+
+Der erste Schuss von full-Grid und sparse-Grid geht immer in die Mitte. Dort liegen am meisten Schiffe wodurch ganz zu Beginn die Gitter-Strategien kurzzeitig besser verlaufen als die quasi-zufälligen Strategien und bei größerem Zoom auch besser als Random. Dieser Vorsprung geht allerdings sehr schnell  verloren und die Gitter werden überholt.
+
+Was die Erwartungswerte auf Seite \pageref{fig:compare2} angeht sehen die wie erwartet aus. Full-Grid gefolgt von sparse-Grid, dann Halton/Sobol und zuletzt Random. 
+
+Auf Seite \pageref{fig:compare3} sind zuletzt noch die Flottenverteilungsfunktionen dargestellt. Hier können noch einmal schön die zuvor hervorgehobenen Stellen, insbesondere oben rechts, betrachtet werden. Etwas neues interessantes ist, dass sich Halton von Sobol löst für $D=7$. Dies lässt vermuten, dass Sobol, wenn man es mit Halton für $D=8$ vergleicht, sich eher am Verlauf der Random-Strategie orientiert, wovon sich Halton ebenfalls lösen kann.
+
+Das gleiche Bild zeigen die Erwartungswerte. Wenn wir Sobol für $D=8$ eher bei Random ansiedeln dann zeigt sich Halton mit dem kleinsten Erwartungswert.
+
+\section{Zusammenfassung und Fazit}
+In dieser Ausarbeitung wurden zunächst formal das Spielprinzip, Strategien und eine Einbettung für diese in ein Monte-Carlo-Verfahren vorgestellt. Anschließend wurden Algorithmen für volle Gitter, dünne Gitter, Halton- und Sobol-Sequenzen vorgestellt und teilweise auf ihre Komplexität analysiert. Danach wurde deren eventuell vom Algorithmus abweichende Implementierung thematisiert. Abweichungen konnten dabei auftreten damit die Implementierung  auf Systemen mit beliebig großem Speicher lauffähig ist. Es wurden für verschiedene Dimensionen und Spielfeldgrößen obige Strategien und eine Random-Strategie ausgeführt. Die Ergebnisse wurden ausgewertet, graphisch dargestellt und die Strategien damit verglichen. Dabei hat sich gezeigt, dass um ein einzelnes zufälliges Schiff zu treffen sich die Random-Strategie am besten eignet, die von fast jedem Spieler des echten Spiels benutzt wird. Um eine zufällige Flotte zu versenken hatte die Halton-Strategie den geringsten Erwartungswert an Schüssen, also eignet sich diese am besten ein Flotte zu versenken.
 
 
 % Literaturverzeichnis ------------------------------------------------
@@ -1323,6 +1415,19 @@ Um Strategien dennoch zu vergleichen und zu bewerten, kann $E(\mathbf{T}^{\Omega
 	\newblock From Encyclopedia of Quantitative Finance,
 	\newblock Universität Bonn,
 	\newblock 2008
+	
+	\bibitem[JK03]{JK03}
+	\textsc{Joe}, S. ; \textsc{Kuo}, F. Y.:
+	\newblock \textit{Remark on Algorithm 659: Implementing Sobol's Quasirandom Sequence Generator},
+	\newblock Universität New South Wales,
+	\newblock 2003
+	
+	\bibitem[JK10]{JK10}
+	\textsc{Joe}, S. ; \textsc{Kuo}, F. Y.:
+	\newblock \textit{Data and Algorithm from},
+	\newblock \url{https://web.maths.unsw.edu.au/~fkuo/sobol/}
+	\newblock Universität New South Wales,
+	\newblock Stand 06.05.2019 20:56
 	
 \end{thebibliography}
 
