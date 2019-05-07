@@ -120,15 +120,15 @@
 \thispagestyle{empty}
 
 \begin{abstract}
-In dieser Ausarbeitung werden zunächst formal das Spielprinzip, Strategien und eine Einbettung für diese in ein Monte-Carlo-Verfahren vorgestellt. Anschließend werden Algorithmen für volle und dünne Gitter, Halton- und Sobol-Sequenzen vorgestellt und teilweise auf ihre Komplexität analysiert. Danach wird deren Implementierung thematisiert. Schließlich werden die Ergebnisse ausgewertet, graphisch dargestellt und die Strategien damit verglichen um herauszufinden welche Strategie sich am besten zum Versenken einer Flotte eignet.
+In dieser Ausarbeitung werden zunächst formal das Spielprinzip, Strategien und eine Einbettung für diese in ein Monte-Carlo-Verfahren vorgestellt. Anschließend werden Algorithmen für Schussstrategien mit vollen und dünnen Gittern, Halton- und Sobol-Sequenzen vorgestellt und teilweise ihre Komplexität analysiert. Danach wird deren Implementierung thematisiert. Schließlich werden die Ergebnisse ausgewertet, graphisch dargestellt und die Strategien anhand dessen verglichen um herauszufinden welche Strategie sich am besten zum Versenken eines einzelnen Schiffs bzw. einer Flotte eignet.
 \end{abstract}
 
 % Einleitung -----------------------------------------------------------------
 \section{Einleitung}
 
 \subsection{Spielbeschreibung}
-Diese Ausarbeitung beschäftigt sich mit der Umsetzung von Schiffe-Versenken in beliebig viele Dimensionen.
-Die generelle Funktionsweise von dem normalen Schiffe-Versenken bleibt erhalten, muss jedoch um folgende Dinge erweitert werden, um auch in höheren Dimensionen gut spielbar zu sein:
+Diese Ausarbeitung beschäftigt sich mit der Umsetzung von Schiffe-Versenken in beliebig vielen Dimensionen.
+Die generelle Funktionsweise von normalem Schiffe-Versenken bleibt erhalten, muss jedoch um folgende Dinge erweitert werden, um auch in höheren Dimensionen gut spielbar zu sein:
 
 ...
 
@@ -141,17 +141,17 @@ Nach jedem Schuss erfährt der Spieler, welche Schiffe der Flotte er getroffen h
 Ein Schiff gilt als versenkt, sobald es getroffen wurde.
 Sobald alle Schiffe versenkt wurden, ist das Spiel beendet.
 Das Ziel des Spielers ist es, mit möglichst wenig Schüssen alle Schiffe zu versenken.
-Diese Spielregeln sind äquivalent zu denen in \cite{}.
+Diese Spielregeln sind äquivalent zu denen in \cite{M13}.
 
 
 \subsection{Inhalt}
 
-Zum Anfang werden die in der Spielbeschreibung genannten Konzepte mit einigen Definitionen formalisiert, damit sie später angewendet werden können.
+Zu Beginn werden die in der Spielbeschreibung genannten Konzepte mit einigen Definitionen formalisiert, damit sie später angewendet werden können.
 
 Der zweite Teil dieser Ausarbeitung beschäftigt sich dann mit der Bewertung einer gegebenen Strategie, d.h. mit der Berechnung der Anzahl an Schüssen, die mit einer Strategie für verschiedene Flotten benötigt werden.
 Da diese Berechnung sehr aufwändig ist, wird ein Monte-Carlo Algorithmus zur Berechnung beschrieben und implementiert.
 
-Im dritten Teil werden unter den zuvor etablierten Rahmenbedingungen verschiedene Strategien vorgestellt und implementiert. Zu den Strategien zählen dünne und volle Gitter, klassisches und Quasi Monte Carlo.
+Im dritten Teil werden unter den zuvor etablierten Rahmenbedingungen verschiedene Strategien vorgestellt und implementiert. Zu den Strategien zählen dünne und volle Gitter, klassisches Monte Carlo in Form einer zufälligen Strategie und Quasi Monte Carlo in Form von Halton- und Sobol-Strategien.
 
 Im letzten Teil werden die Ergebnisse für die genannten Strategien präsentiert, ausgewertet und miteinander verglichen.
 
@@ -224,7 +224,7 @@ Daher gibt es genau
 \[
 \left(\frac{(N+1) N}{2}\right)^d
 \]
-gültige Schiffspositionen, da für jede Schiffsposition für jede Dimension gültige Start- und Endkoordinaten gewählt werden müssen, also genau $d$ gültige Start- und Endkoordinaten.
+gültige Schiffspositionen, da für jede Schiffsposition und Dimension gültige Start- und Endkoordinaten gewählt werden müssen, also genau $d$ gültige Start- und Endkoordinaten.
 \end{proof}
 
 \begin{definition}
@@ -358,7 +358,7 @@ P(\omega) = \frac{1}{|\Omega_L|}
 die Wahrscheinlichkeit, dass das Schiff $\omega$ ausgewählt wird.
 \end{definition}
 
-Dann ist $(\Omega_L, P)$ ein endlicher Laplacescher W-Raum und P eine Gleichverteilung.
+Somit ist $(\Omega_L, P)$ ein endlicher Laplacescher W-Raum und P eine Gleichverteilung.
 
 \begin{definition}
 Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
@@ -387,7 +387,7 @@ P(\omega) = \frac{1}{|\Omega_F|}
 die Wahrscheinlichkeit, dass die Flotte $\omega$ ausgewählt wird.
 \end{definition}
 
-Dann ist $(\Omega_F, P)$ ein endlicher Laplacescher W-Raum und P eine Gleichverteilung.
+Somit ist $(\Omega_F, P)$ ein endlicher Laplacescher W-Raum und P eine Gleichverteilung.
 
 \begin{definition}
 Sei $\strat \in \strategies$ die verwendete Schuss-Strategie.
@@ -449,7 +449,7 @@ Sei $\strat \in \strategies$ die verwendete Schuss-Strategie und $v \in \{1, \do
 
 Sei $\Omega_L \subseteq L_{all}$ eine Menge an Schiffen und $n=|\Omega_L|$.
 
-Sei $L=\{x \in \Omega_L \mid \shot_count(l, \strat) \leq v)\}$ die Menge an Schiffen aus $\Omega_L$, die nach maximal $v$ Schüssen versenkt werden und $l=|L|$.
+Sei außerdem $L=\{x \in \Omega_L \mid \shot_count(l, \strat) \leq v)\}$ die Menge an Schiffen aus $\Omega_L$, die nach maximal $v$ Schüssen versenkt werden und $l=|L|$.
 
 Dann ist
 \begin{align}
@@ -468,13 +468,13 @@ Die Wahrscheinlichkeit, ein Schiff auszuwählen, dass in $L$ liegt, beträgt $\f
 
 Bestimmt man nun $P(\mathbf{T}^{\Omega_L}_{\strat} \leq v)$ mithilfe einer so groß wie möglichen Stichprobe $\Omega_L$, kann man annehmen, dass $P(\mathbf{T}^{\Omega_L}_{\strat} \leq v)$ eine Approximation von $P(\mathbf{T}^{L_{all}}_{\strat} \leq v)$ ist. Wie gut diese Approximation ist, hängt von der Stichprobengröße ab.
 
-Um nun die Verteilungsfunktion von Flotten zu bestimmen, wird im folgenden wird nun davon ausgegangen, dass gilt:
+Um nun die Verteilungsfunktion von Flotten zu bestimmen, wird im folgenden nun davon ausgegangen, dass gilt:
 \[
 P(\mathbf{T}^{\Omega_L}_{\strat} \leq v) \approx P(\mathbf{T}^{L_{all}}_{\strat} \leq v)
 \]
 d.h. unsere aus der Stichprobe berechnete Verteilungsfunktion ist die beste Approximation von der echten Verteilungsfunktion.
 
-Ein Sampling error $e_v=P(\mathbf{T}^{\Omega_L}_{\strat} \leq v) - P(\mathbf{T}^{L_{all}}_{\strat} \leq v)$ verstärkt sich zwar bei der Berechnung von der Verteilungsfunktion der Flotten um ca. den Faktor $2^{e_v |L_{all}|} - 1$, wie aber gleich zu sehen ist, macht dies bei den sehr kleinen Werten von $P(\mathbf{X}^{F_{all}}_{\strat} \leq v)$ fast keinen Unterschied.
+Ein Sampling error $e_v=P(\mathbf{T}^{\Omega_L}_{\strat} \leq v) - P(\mathbf{T}^{L_{all}}_{\strat} \leq v)$ verstärkt sich zwar bei der Berechnung der Verteilungsfunktion der Flotten um ca. den Faktor $2^{e_v |L_{all}|} - 1$, wie aber später in der Auswertung zu sehen ist, macht dies bei den sehr kleinen Werten von $P(\mathbf{X}^{F_{all}}_{\strat} \leq v)$ fast keinen Unterschied.
 
 \begin{satz}
 Sei $\strat \in \strategies$ die verwendete Schuss-Strategie und $v \in \{1, \dots, |C_{all}|\}$
@@ -563,12 +563,13 @@ Es wird aus den Ergebnissen von einer Stichprobe mit $n$ Schiffen $\Omega_L$ die
 \section{Strategien}
 
 
-Eine Strategie gibt eine Folge von Schüssen vor, die auf das Spielfeld abgegeben werden. Dabei unterscheiden sich die Strategien in der Auswahl ihrer Schüsse. Eine mögliche Vorgehensweise wäre die zufällige Wahl der nächsten zu beschießenden Zelle. Im Vergleich dazu ist es interessant zu sehen wie diskrepanzminimierende Diskretisierungsverfahren als mögliche Schussstrategie abschneiden. Dies wurde erstmals in \cite{M13} näher betrachtet. Dabei werden die von diesen Verfahren genutzten Stützstellen als Schussfolgen interpretiert. Um Strategien bewerten zu können benötigt man den Vergleich zu einer optimalen Schussstrategie. Diese wurde ebenfalls in \cite{M13} vorgestellt allerdings für ineffizient erklärt. Es bleibt zu klären, ob die optimale Strategie mit der hier vorgestellten Monte-Carlo Herangehensweise effizienter umzusetzen ist und zu Vergleichen auch in höheren Dimensionen herangezogen werden kann.
+Eine Strategie gibt eine Folge von Schüssen vor, die auf das Spielfeld abgegeben werden. Dabei unterscheiden sich die Strategien in der Auswahl ihrer Schüsse. Eine mögliche Vorgehensweise wäre die zufällige Wahl der nächsten zu beschießenden Zelle. Im Vergleich dazu ist es interessant zu sehen wie diskrepanzminimierende Diskretisierungsverfahren als mögliche Schussstrategie abschneiden. Dies wurde erstmals in \cite{M13} näher betrachtet. Dabei werden die von diesen Verfahren genutzten Stützstellen als Schussfolgen interpretiert. Um Strategien bewerten zu können kann die in \cite{M13} vorgestellte optimalen Schussstrategie herangezogen werden. Dabei wird nicht die Strategie selbst implementiert, da diese bereits in \cite{M13} für zu langsam erklärt wurde, sondern ihre Aussage zur Bewertung der Strategien genutzt. Die optimale Strategie wählt als Ziel immer den Punkt mit den meisten Schiffen aus. Sollte also eine Strategie mehr Schiffe mit weniger Schüssen versenken als eine andere kann diese als besser bezeichnet werden.
+
 
 
 \subsection{Maximum Strategie oder optimale Strategie}
 
-Diese in \cite{M13} Abbildung 3.15 vorgestellte Strategie ist optimal, da sie immer an die Position schießt an der sie zu jedem Zeitpunkt am meisten Schiffe auf einmal treffen und damit versenken kann. Dazu wird zunächst eine Anfangsverteilung berechnet. Jeder Zelle wird die Anzahl der darauf liegenden Schiffe zugewiesen. Der nächste Schuss wird auf die Zelle mit der größten Zahl abgegeben. Schließlich wird die Verteilung aktualisiert um die gerade versenkten Schiffe.
+Diese in \cite{M13} Abbildung 3.15 vorgestellte Strategie ist optimal, da sie immer an die Position schießt an der sie zu jedem Zeitpunkt am meisten Schiffe auf einmal treffen und damit versenken kann. Dazu wird zunächst eine Anfangsverteilung berechnet. Jeder Zelle wird die Anzahl der sich dort befindenden Schiffe zugewiesen. Der nächste Schuss wird auf die Zelle mit der größten Zahl abgegeben. Schließlich wird die Verteilung aktualisiert um die gerade versenkten Schiffe zu entfernen.
 
 Die optimale Strategie kann durch folgenden Algorithmus in Pseudo-Code beschrieben werden:
 
@@ -590,7 +591,7 @@ Die optimale Strategie kann durch folgenden Algorithmus in Pseudo-Code beschrieb
 	\end{algorithmic}
 \end{tcolorbox}
 
-In \cite{M13} wurde bereits angesprochen, dass dieser Algorithmus sehr hohe Kosten hat. Obiger Code wird über alle Zellen des Spielfelds iteriert, das heißt wir haben $N^d$ Schleifendurchläufe pro Aufruf der Strategie. In jedem dieser Durchläufe wird die $\hit$ Funktion aufgerufen. Diese muss für jedes Schiff aus der aktuellen Flotte $F$ prüfen ob dieses die momentan anvisierte Zelle $c$ enthält. Diese Überprüfung kann mittels zwei arithmetischen Vergleichen (Erinnerung: ein Schiff wird als Tupel $(c_{min},c_{max})$ gespeichert) erledigt werden. Damit haben wir für den Aufruf der $\hit$ Funktion Kosten von $O(2\cdot |F|)$, bzw. $O(F)$. Somit betragen sich die gesamten Kosten der optimalen Strategie auf $O(N^d\cdot F)$.
+In \cite{M13} wurde bereits angesprochen, dass dieser Algorithmus sehr hohe Kosten hat. Obiger Code wird über alle Zellen des Spielfelds iteriert, das heißt wir haben $N^d$ Schleifendurchläufe pro Aufruf der Strategie. In jedem dieser Durchläufe wird die $\hit$ Funktion aufgerufen. Diese muss für jedes Schiff aus der aktuellen Flotte $F$ prüfen ob dieses die momentan anvisierte Zelle $c$ enthält. Diese Überprüfung kann mittels zwei arithmetischen Vergleichen (Erinnerung: ein Schiff wird als Tupel $(c_{min},c_{max})$ gespeichert) erledigt werden. Damit haben wir für den Aufruf der $\hit$ Funktion Kosten von $O(2\cdot |F|)$, bzw. $O(|F|)$. Somit betragen sich die gesamten Kosten der optimalen Strategie auf $O(N^d\cdot |F|)$.
  
 
 \subsection{Volle Gitter Strategie}
@@ -609,7 +610,7 @@ Es lassen sich durch Kombinationen von Inkrementen Gitter erzeugen. Unsere Schus
 \end{figure}
 
 
-Noch zu beachten ist, dass Koordinatenlevel bei Gittern die Maschenweite und damit die Genauigkeit angeben. Normalerweise legt man ein Gitterlevel fest und erzeugt sich dann aus Inkrementen ein Gitter eben dieses Levels. In unseren Fall arbeiten wir uns durch die Inkremente bei steigendem Gitterlevel aufsteigend durch um immer genauere Gitter zu erzeugen, bis wir alle Schiffe der Flotte getroffen haben.
+Noch zu beachten ist, dass Koordinatenlevel bei Gittern die Maschenweite und damit die Genauigkeit angeben. Normalerweise legt man ein Gitterlevel fest und erzeugt sich dann aus Inkrementen ein Gitter eben dieses Levels. In unseren Fall arbeiten wir uns durch die Inkremente bei aufsteigendem Gitterlevel um immer genauere Gitter zu erzeugen, bis wir alle Schiffe der Flotte getroffen haben.
 
 \subsubsection{Mathematische Grundlagen der vollen Gitter}
 
@@ -632,15 +633,15 @@ Diese Definition kann anhand Abbildung \ref{fig:gitter02} verdeutlicht werden. D
 	\label{fig:gitter02}
 \end{figure}
 
-Wie man gut an Abbildung \ref{fig:gitter02} sehen kann können volle Gitter kleineren Gitterlevels als Teilbausteine für Größere genutzt werden. Für eine Schussfolge heißt das man startet bei dem Gitter das nur aus einem Punkt besteht und arbeitet sich zu Gittern höheren Gitterlevels vor. Damit bei der Schussfolge keine Wiederholungen auftreten sollten nur neu hinzugekommene Punkte bei Erhöhen des Gitterlevels beachtet werden. Im zweidimensionalen entspricht dies gerade Quadraten die bei Erhöhen des Gitterlevels um eine Längeneinheit pro Kante wachsen. Dabei wird dann lediglich die hinzukommende Schicht an Punkten betrachtet. Damit lässt sich einer Schussfolge bereits eine grobe Struktur geben. 
+Wie man gut an Abbildung \ref{fig:gitter02} sehen kann können volle Gitter kleineren Gitterlevels als Teilbausteine für Größere genutzt werden. Für eine Schussfolge heißt das man startet bei dem Gitter das nur aus einem Punkt besteht und arbeitet sich zu Gittern höheren Gitterlevels vor. Damit bei der Schussfolge keine Wiederholungen auftreten sollten nur neu hinzugekommene Punkte bei Erhöhen des Gitterlevels beachtet werden. Im zweidimensionalen entspricht dies gerade Quadraten, die bei Erhöhen des Gitterlevels um eine Längeneinheit pro Kante wachsen. Dabei wird dann lediglich die hinzukommende Schicht an Punkten betrachtet. Damit lässt sich einer Schussfolge bereits eine grobe Struktur geben. 
 
-Außerdem ist an Abbildung \ref{fig:gitter02} zu sehen, dass in den neu hinzukommenden Punkten mindestens eine neue Koordinaten verwendet wird. Das heißt wir können pro neuer Schicht zu Beginn einmalig die neuen Koordinaten berechnen und anschließend diese einfach aufsteigend miteinander zu Punkten kombinieren. Dabei können Schüsse wie Zahlen in einem Zahlensystem betrachtet werden. Wir denken uns die verwendeten Koordinaten aus denen Schüsse kombiniert werden können als Ziffern eines Zahlensystems. Dabei sind Koordinaten eines höheren Koordinatenlevels größer einzuordnen als die eines niedrigeren. Außerdem werden die Koordinaten innerhalb eines Koordinatenlevels von klein nach groß sortiert. Damit ergibt sich eine absolute Ordnung der Punkte und Schüsse dieser Strategie lassen sich durch Hochzählen der Zahlen des Zahlensystems bestimmen.
+Außerdem ist an Abbildung \ref{fig:gitter02} zu sehen, dass in den neu hinzukommenden Punkten mindestens eine neue Koordinaten verwendet wird. Das heißt wir können pro neuer Schicht zu Beginn einmalig die neuen Koordinaten berechnen und anschließend diese einfach aufsteigend miteinander zu Punkten kombinieren. Dabei können Schüsse wie Zahlen in einem Zahlensystem betrachtet werden. Wir denken uns die verwendeten Koordinaten aus denen Schüsse kombiniert werden können als Ziffern eines Zahlensystems. Darin sind Koordinaten eines höheren Koordinatenlevels größer einzuordnen als die eines niedrigeren. Außerdem werden die Koordinaten innerhalb eines Koordinatenlevels von klein nach groß sortiert. Damit ergibt sich eine absolute Ordnung der Punkte. Schüsse dieser Strategie lassen sich durch Inkrementieren der Ziffern des Zahlensystems bestimmen.
 
 Von diesen Koordinaten gibt es maximal $N$ viele. Diese werden im nachfolgenden Algorithmus in $K$ gespeichert.
 
 \subsubsection{Erster naiver Algorithmus für volle Gitter Strategie}
 
-Der Algorithmus soll eine feste Menge an möglichen Koordinaten $K$ für ein Koordinatenlevel $L$ als globale Variablen verwenden. Davon werden alle Linearkombinationen durch inkrementieren der Koordinaten (vgl. absolute Ordnung) gebildet. Sobald alle Kombinationen erreicht wurden wird $K$ um die neuen Koordinaten des nächsten Koordinatenlevels erweitert. Außerdem muss der letzte abgegebene Schuss gespeichert werden um daraus den nächsten Schuss zu berechnen. Diese grobe Struktur lässt sich folgendermaßen darstellen:
+Der Algorithmus soll eine feste Menge an möglichen Koordinaten $K$ für ein Koordinatenlevel $L$ als globale Variablen verwenden. Davon werden alle Linearkombinationen durch inkrementieren der Koordinaten (vgl. absolute Ordnung) gebildet. Sobald alle Kombinationen erreicht wurden wird $K$ um die neuen Koordinaten des nächsten Koordinatenlevels erweitert. Außerdem muss der letzte abgegebene Schuss gespeichert werden um daraus das nächste Ziel ableiten zu können. Diese grobe Struktur lässt sich folgendermaßen darstellen:
 
 \begin{tcolorbox}
 	\begin{algorithmic}
@@ -682,7 +683,7 @@ Im folgenden werden die Abschnitte und Funktionen des Algorithmus genauer betrac
 	\end{algorithmic}
 \end{tcolorbox}
 
-Mit dieser Funktion wird die erste Koordinate initialisiert. Wenn $K$ leer haben wir noch keine Koordinate gespeichert und daher auch noch keinen Schuss abgegeben. Die erste Koordinate, die für das erste volle Gitter benutzt wird ist gerade die Größe des Spielfelds $N$ halbiert. Falls $N$ ungerade ist wird abgerundet. max\_coord enthält die maximal mögliche Koordinate. $L$ beschreibt das maximale Koordinatenlevel von dem unsere Koordinaten in $K$ stammen. Gesamte Komplexität $O(1)$.
+Mit dieser Funktion wird die erste Koordinate initialisiert. Wenn $K$ leer ist haben wir noch keine Koordinate gespeichert und daher auch noch keinen Schuss abgegeben. Die erste Koordinate, die für das erste volle Gitter benutzt wird ist gerade die Größe des Spielfelds $N$ halbiert. Falls $N$ ungerade ist wird abgerundet. max\_coord enthält die maximal mögliche Koordinate. $L$ beschreibt das maximale Koordinatenlevel von dem unsere Koordinaten in $K$ stammen. Gesamte Laufzeitkomplexität $O(1)$.
 
 \smallskip
 \hrule
@@ -706,10 +707,10 @@ Mit dieser Funktion wird die erste Koordinate initialisiert. Wenn $K$ leer haben
 
 Wenn der letzte Schuss nur aus den größtmöglichen Koordinaten besteht haben wir bereits zuvor alle anderen Kombinationsmöglichkeiten ausgenutzt und müssen nun die Menge an Koordinaten $K$ erweitern. Dazu werden gerade die Werte als Koordinaten hinzugefügt, die in den Zwischenräumen zweier vorheriger Koordinaten liegen (Vgl. Abbildung \ref{fig:gitter01}). 
 
-Da wir in unserer Herangehensweise diskret arbeiten kann es sein, dass das Halbieren nicht immer aufgeht daher muss hier gerundet werden. Es wird aufgerundet, da sonst der Fall eintreten kann, das Punkte nicht erreicht werden können. Dabei wird durch eine Abfrage gewährleistet das keine gleichen Koordinaten aufgenommen werden. Zum Schluss wird die Menge der Koordinaten aktualisiert und das Koordinatenlevel erhöht. $K$ kann maximal um $\left\lceil\frac{N}{2}\right\rceil$ viele neue Koordinaten erweitert werden. Das ist gleichzeitig auch die maximal mögliche Größe von $K_{old}$. Also haben wir für die Schleife $O(N)$. 
+Da wir in unserer Herangehensweise diskret arbeiten kann es sein, dass das Halbieren nicht immer aufgeht daher muss hier gerundet werden. Es wird aufgerundet, da sonst der Fall eintreten kann, das Punkte nicht erreicht werden können. Dabei wird durch eine Abfrage gewährleistet das keine gleichen Koordinaten aufgenommen werden. Zum Schluss wird die Menge der Koordinaten $K$ aktualisiert und das Koordinatenlevel $L$ erhöht. $K$ kann maximal um $\left\lceil\frac{N}{2}\right\rceil$ viele neue Koordinaten erweitert werden. Das ist gleichzeitig auch die maximal mögliche Größe von $K_{old}$. Also haben wir für die Schleife $O(N)$. 
 
 
-Der Vergleich im If benötigt $d$ Schritte daher ist die Komplexität $O\left(N+d\right)$.
+Der Vergleich im If benötigt $d$ Schritte daher ist die Zeitkomplexität $O\left(N+d\right)$.
 
 \smallskip
 \hrule
@@ -754,7 +755,7 @@ Hier wird geprüft ob wir uns am Anfang des ersten Gitters befinden und der erst
 	\end{algorithmic}
 \end{tcolorbox}
 
-In diesem Abschnitt wird das Inkrementieren im gedachten Zahlensystem realisiert. Dabei wird von der letzten Ziffer nach vorne gehend geprüft welche davon den aktuell maximal möglichen Wert hat. Diese Ziffern müssen beim Zählen dann zurück auf Null bzw. die kleinste Koordinate $K[0]$ springen. Sobald die erste Ziffer erreicht wird, die nicht den maximal Wert hat kann diese um eins erhöht werden. Die restlichen Ziffern, falls vorhanden, bleiben gleich. 
+In diesem Abschnitt wird das Inkrementieren im gedachten Zahlensystem realisiert. Dabei wird von der letzten Ziffer nach links gehend geprüft welche davon den aktuell maximal möglichen Wert hat. Diese Ziffern müssen beim Zählen dann zurück auf Null bzw. die kleinste Koordinate $K[0]$ springen. Sobald die erste Ziffer erreicht wird, die nicht den maximal Wert hat kann diese um eins erhöht werden. Die restlichen Ziffern, falls vorhanden, bleiben gleich. 
 
 Die Schleife kann maximal $d$ Schritte durchführen. Es wurde bereits vorher ausgeschlossen, dass $s$ nur aus maximalen Koordinaten bestehen kann, also springen wir auf jeden Fall irgendwann innerhalb der $d$ Schritte in den else Teil. 
 
@@ -774,7 +775,7 @@ Bezüglich der Speicherplatz Komplexität haben wir für $K$ $O(N)$, da für die
 
 Im Algorithmus werden alle abgegebenen Schüsse in shots gespeichert. Da dies nach diesem Ansatz $C_{all}$ viele sind ergibt das eine gesamte Speicherplatz Komplexität von $O(N+C_{all})$.
 
-Um die Abhängigkeit der Laufzeitkomplexität von $C_{all}$ kommen wir nicht herum, da jede Zelle mindestens einmal betrachtet werden muss. Allerdings ist die Speicherplatzkomplexität zu vermeidbar wie wir später noch sehen werden. 
+Um die Abhängigkeit der Laufzeitkomplexität von $C_{all}$ kommen wir nicht herum, da jede Zelle mindestens einmal betrachtet werden muss. Allerdings ist die Speicherplatzkomplexität vermeidbar wie wir später noch sehen werden. 
 
 
 \subsection{Dünne Gitter Strategie}
@@ -812,9 +813,9 @@ Die Definition des dünnen Gitters kann anhand Abbildung \ref{fig:gitter03} verd
 
 \subsubsection{Erster naiver Algorithmus für dünne Gitter}
 
-In Abbildung \ref{fig:gitter03} ist zu sehen, dass sich im zweidimensionalen Fall bei steigendem Level der Gitter immer eine Diagonale dazukommt. Für den ersten Algorithmus der dünne Gitter Strategie benötigen wir ein $S'$, das Tupel aus zwei $d$-dimensionalen Vektoren speichert. Der erste um die Zelle zu beschreiben und der zweite um das Koordinatenlevel aus der die korrespondierende Koordinate stammt zu definieren. Das neue $K'$ speichert nun die Koordinaten nach Koordinatenlevels getrennt in verschiedenen Listen oder Arrays und nicht wie $K$ noch alles in einer Liste/Array. $S'$ und $K'$ werden global initialisiert.
+In Abbildung \ref{fig:gitter03} ist zu sehen, dass sich im zweidimensionalen Fall bei steigendem Level der Gitter immer eine Diagonale dazukommt. Für den ersten Algorithmus der dünne Gitter Strategie benötigen wir ein $S'$, welches Tupel aus zwei $d$-dimensionalen Vektoren speichert. Der erste um die Zelle zu beschreiben und der zweite um das Koordinatenlevel aus der die korrespondierende Koordinate stammt zu definieren. Das neue $K'$ speichert nun die Koordinaten nach Koordinatenlevels getrennt in verschiedenen Listen oder Arrays und nicht wie $K$ noch alles in einer Liste/Array. $S'$ und $K'$ sind globale Variablen.
 
-Die Funktionsweise des folgenden Algorithmus leitet sich von der mit dünne Gittern einhergehenden Bedingung $|\underline{m}|_1\leq n+d-1$ an die Inkremente ab. Bei konstanter Dimension erhöht sich pro dazukommende Diagonale um das nächste Gitter zu erzeugen jeweils nur $n$ um eins. Das heißt von den Indices der Inkremente kann sich maximal eines auf ein neues Koordinatenlevel erhöhen damit die Bedingung weiterhin erhalten bleibt. Also erarbeiten wir ausgehend von den alten die neuen Schüsse, indem einzelne Koordinaten um ein Koordinatenlevel erhöht werden. Dabei ist zu beachten, dass innerhalb eines neuen Koordinatenlevels es mehrere mögliche Koordinaten gibt. 
+Die Funktionsweise des folgenden Algorithmus leitet sich von der mit dünne Gittern einhergehenden Bedingung $|\underline{m}|_1\leq n+d-1$ an die Inkremente ab. Bei konstanter Dimension erhöht sich pro dazukommende Diagonale $n$ jeweils um eins um das nächste Gitter zu erzeugen. Das heißt von den Indices der Inkremente kann sich maximal eines auf ein neues Koordinatenlevel erhöhen damit die Bedingung weiterhin erhalten bleibt. Also erarbeiten wir ausgehend von den alten die neuen Schüsse, indem einzelne Koordinaten um ein Koordinatenlevel erhöht werden. Dabei ist zu beachten, dass innerhalb eines neuen Koordinatenlevels es mehrere mögliche Koordinaten gibt. 
 
 
 \begin{tcolorbox}
@@ -951,9 +952,9 @@ Also haben wir einen Speicherbedarf für eine ''Diagonale'' von $O\left(2^L \cdo
 Wie bereits für die vollen Gitter ist solch eine Speicherplatzausnutzung nicht wünschenswert.
 
 
-\subsection{Monte-Carlo Strategie}
+\subsection{Monte-Carlo- / Random-Strategie}
 
-Ähnlich wie Strategien aus der Diskretisierung durch dünne und volle Gitter gewonnen wurden, kann eine Strategie aus der Monte-Carlo Diskretisierung abgeleitet werden. Dabei stellt die Wahl der Stützstellen, die bei Gittern noch nach Gesetzmäßigkeiten ausgewählt wurden, effektiv die Strategie dar, so dass diese Punkte den Schüssen entsprechen. Da bei Monte-Carlo diese Stützstellen zufällig gewählt werden, tun wir dies auch hier für die Monte-Carlo Strategie. 
+Ähnlich wie Strategien aus der Diskretisierung durch dünne und volle Gitter gewonnen wurden, kann eine Strategie aus der Monte-Carlo Diskretisierung abgeleitet werden. Dabei stellen die gewählten Stützstellen, die bei Gittern noch nach Gesetzmäßigkeiten ausgesucht wurden, die Strategie dar. Da bei Monte-Carlo diese Stützstellen zufällig gewählt werden, tun wir dies auch hier für die Random-Strategie. 
 
 Diese Strategie kommt einer realen Strategie am nächsten, da die meisten Spieler nach dem Zufallsprinzip vorgehen. Der Algorithmus ist sehr simpel, da lediglich eine zufällige Zelle als Ziel des Schusses gewählt werden muss.
 
@@ -965,12 +966,12 @@ Diese Strategie kommt einer realen Strategie am nächsten, da die meisten Spiele
 	\end{algorithmic}
 \end{tcolorbox}
 
-Die zufällige Auswahl von Zellen, die nicht bereits beschossen wurden lässt sich leicht realisieren indem man zum Beispiel zuerst alle Zellen durchzählt, wobei auf die erste als erstes geschossen werden soll und die Zellen dann eine Weile miteinander zufällig tauscht. Damit erreicht man eine zufällige Schussfolge.
+Die zufällige Auswahl von Zellen, die nicht bereits beschossen wurden lässt sich leicht realisieren indem man zum Beispiel zuerst alle Zellen einem Array zuweist. Dann die Elemente des Arrays zufällig miteinander vertauscht und schließlich beginnend bei Arrayindex 0 die Zellen beschießt. Auf diese Weise erreicht man eine zufällige Schussfolge.
 
 
 \subsection{Sobol Strategie}
 Die Sobol-Sequenz ist eine Zahlensequenz, die ursprünglich bei der Suche nach einer schnell konvergierenden Zahlenfolge bei der Approximation von Integralen entwickelt wurde.
-Sie basiert auf Polynomen auf $\mathbb{Z}_2$, also Polynomen, deren Koeffizienten aus diesem Feld stammen un daher nur die Werte 0 oder 1 annehmen können.
+Sie basiert auf Polynomen auf dem $\mathbb{Z}_2$, also Polynomen, deren Koeffizienten aus diesem Feld stammen und daher nur die Werte 0 oder 1 annehmen können.
 
 \subsubsection{Definition von Sobol-Punkten}
 Die Definition verläuft ganz analog zu \cite{JK03}. Zunächst wird für $j$-te Komponente des zu generierenden Punkts ein Polynom aus $\mathbb{Z}_2$ der Form
@@ -981,33 +982,33 @@ gewählt. Dann werden damit Koeffizienten der Form
 \begin{equation}
 m_{k,j}=2a_{1,j}m_{k-1,j}\oplus\dots\oplus 2^{s_j-1}a_{s_j-1,j}m_{k-s_j+1,j}\oplus2^{s_j}m_{k-s_j,j}\oplus m_{k-s_j,j}
 \end{equation}
-bestimmt. Die Startwerte der $m_{1,j}$ bis $m_{s_j,j}$ können frei gewählt werden, solange sie $\leq 2^k$ sind. Diese Startwerte wurden von \cite{JK10} aus der Datei new-joe-kuo-7.21201 für die ersten 15 Dimensionen entnommen. Daraus können dann die directions numbers $v_{k,j}$ berechnet werden mit:
+bestimmt. Die Startwerte der $m_{1,j}$ bis $m_{s_j,j}$ können frei gewählt werden, solange sie $\leq 2^k$ sind. Diese Startwerte wurden für die Implementierung von \cite{JK10} aus der Datei new-joe-kuo-7.21201 für die ersten 15 Dimensionen entnommen. Daraus können dann die directions numbers $v_{k,j}$ berechnet werden mit:
 \begin{equation}
 v_{k,j} = \frac{m_{k,j}}{2^k}
 \end{equation}
 
-Damit kann nun der $i$-te Punkt der Sobol Sequenz berechnet werden mit $i=(\dots b_2 b_1)_2$ also der Binärdarstellung von $i$:
+Daraus kann schließlich der $i$-te Punkt der Sobol Sequenz berechnet werden mit $i=(\dots b_2 b_1)_2$ also der Binärdarstellung von $i$:
 \begin{equation}
 x_{i,j}=b_1v_{1,j}\oplus b_2v_{2,j}\oplus\dots
 \end{equation}
 
-Der Algorithmus folgt dem in \cite{JK10} gezeigten mit kleineren Änderungen um ihn mit unserer Herangehensweise kompatibel zu machen. Dieser und dessen mitgelieferte Koeffizienten sind allerdings nur für $2^{32}$ Punkte maximal ausgelegt.
+Der Algorithmus folgt dem in \cite{JK10} gezeigten mit kleineren Änderungen um ihn mit unserer Herangehensweise kompatibel zu machen. Der dort vorgestellte Algorithmus und dessen mitgelieferte Koeffizienten sind allerdings nur für maximal $2^{32}$ Punkte ausgelegt.
 
 \subsection{Halton Strategie}
 Die Halton Sequenz ist eine Zahlensequenz, die eine niedrige Diskrepanz besitzt und daher nahezu zufällig erscheint.
 
 \subsubsection{Konstruktion einer eindimensionalen Halton Sequenz}
-Die Bestimmung von Halton Punkten basiert auf Primzahlen, die als Basis dienen. Um die $i$-te Zahl der Sequenz zu bestimmen wird zuerst die Basisdarstellung von $i$ bestimmt. Sei für eine Primzahl $p$ $i$ in gegeben in Basisdarstellung mit Koeffizienten $a_j$ mit $j\in{0,\dots,k}$ so, dass gilt:
+Die Bestimmung von Halton Punkten basiert auf Primzahlen, die als Basis dienen. Um die $i$-te Zahl der Sequenz zu bestimmen wird zuerst die Basisdarstellung von $i$ bestimmt. Sei für eine Primzahl $p$, die als Basis dient, $i$ gegeben in Basisdarstellung mit Koeffizienten $a_j$ mit $j\in{0,\dots,k}$ so, dass gilt:
 \begin{equation}
 i = a_0p^0+\dots+a_kp^k
 \end{equation}
-Um die zum Index $i$ gehörige Zahl der Halton Sequenz$ i_{\text{Halton}}$ zu erhalten wird die Basisdarstellung folgendermaßen umgewandelt:
+Um die zum Index $i$ gehörende Zahl der Halton Sequenz $i_{\text{Halton}}$ zu erhalten wird die Basisdarstellung folgendermaßen umgewandelt:
 \begin{equation}
 i_{\text{Halton}} = a_0p^{-1}+a_1p^{-2} + \dots+a_kp^{-(k+1)}
 \end{equation}
 
 \subsubsection{Algorithmus zur Halton Sequenz}
-Halton Sequenzen mit beliebiger Basis lassen sich mit folgenden Algorithmus erzeugen. Dabei gibt dieser jeweils nur eine Zahl der Sequenz mit dem Index, der dem Algorithmus übergeben wurde.
+Halton Sequenzen mit beliebiger Basis lassen sich mit folgenden Algorithmus erzeugen. Dabei gibt dieser jeweils nur die $j$-te Zahl der Sequenz aus, wenn $j=index$ ist.
 
 \begin{tcolorbox}
 	\begin{algorithmic}
@@ -1025,7 +1026,7 @@ Halton Sequenzen mit beliebiger Basis lassen sich mit folgenden Algorithmus erze
 \end{tcolorbox}
 
 \subsubsection{Erzeugen einer Schussstrategie}
-Wir benötigen zuerst die Möglichkeit mehrdimensionale Punkte erzeugen zu können. Mehrdimensionale Halton Sequenzen werden durch das Kombinieren von eindimensionalen Sequenzen erreicht. Dazu werden als Basen teilerfremde Primzahlen gewählt und der jeweils $i$-te generierte Punkt der einzelnen Sequenzen bildet eine Koordinate des $i$-ten Punkts in mehreren Dimensionen. Das heißt aus Sequenzen $\left(\frac{1}{2},\frac{1}{4},\frac{3}{4},\dots\right)$ und $\left(\frac{1}{3},\frac{2}{3},\frac{1}{9},\dots\right)$ ergeben sich zweidimensionale Punkte $\left(\left(\frac{1}{2},\frac{1}{3}\right),\left(\frac{1}{4},\frac{2}{3}\right),\left(\frac{3}{4},\frac{1}{9}\right),\dots\right)$.
+Wir benötigen zuerst die Möglichkeit mehrdimensionale Punkte erzeugen zu können. Mehrdimensionale Halton Sequenzen werden durch das Kombinieren von eindimensionalen Sequenzen erreicht. Dazu werden als Basen teilerfremde Primzahlen gewählt und der jeweils $i$-te generierte Punkt der einzelnen Sequenzen bildet eine Koordinate des $i$-ten mehrdimensionalen Punkts. Das heißt aus Sequenzen $\left(\frac{1}{2},\frac{1}{4},\frac{3}{4},\dots\right)$ und $\left(\frac{1}{3},\frac{2}{3},\frac{1}{9},\dots\right)$ ergeben sich zweidimensionale Punkte $\left(\left(\frac{1}{2},\frac{1}{3}\right),\left(\frac{1}{4},\frac{2}{3}\right),\left(\frac{3}{4},\frac{1}{9}\right),\dots\right)$.
 
 Anhand dieses Beispiels haben wir bereits das zweite Problem gesehen. Die Zahlenwerte müssen noch auf die Spielfeldgröße erweitert werden. Dies lässt sich leicht durch einer Multiplikation mit $N$ und runden erledigen. Damit würde sich die Ausgabe des Algorithmus ändern zu $\lfloor result * N \rfloor$.
 
@@ -1043,7 +1044,7 @@ Dies bedeutet für die Strategien, dass diese ihre Angaben wann welche Zelle bes
 
 \subsection{Allgemeines zu Gittern}
 
-Unser Ansatz arbeitet mit diskreten Zellen und Spielfeldern. Das bedeutet, dass wir an manchen Stellen besonders vorsichtig sein müssen. Wie zum Beispiel bei Redundanzen in den Koordinatenpunkten. Diese können entstehen wenn die Halbierung der Koordinaten der letzten ($\lceil\log_2(N)\rceil$) Koordinatenlevels nicht aufgeht. Durch anschließendes Runden kann es zu doppelt auftretenden Koordinaten kommen. Diese können sich sowohl in anderen Koordinatenlevels als auch im selben Koordinatenlevel wiederholen. Allerdings treten ''Wiederholer'' nur im letzten ($\lceil\log_2(N)\rceil$) Koordinatenlevels auf. Da vorher die Maschenweite noch nicht eng genug war um Kollisionen hervorzurufen. Das bedeutet es muss beachtet werden, dass die tatsächliche Anzahl an neuen Koordinaten, die im letzten Koordinatenlevels dazukommen, kleiner ist als einfach nur das Doppelte des vorherigen Koordinatenlevels. Dies wiederum beeinflusst die Anzahl der Punkte aller Inkremente in deren Index sich mindestens einmal das maximale Koordinatenlevel befindet. Das Auftreten der Redundanzen hängt einzig von der Spielfeldgröße $N$ ab. Nur wenn $N = 2^k-1$ mit $k\in\mathbb{N}$ treten keine Redundanzen auf.
+Unser Ansatz arbeitet mit diskreten Zellen und Spielfeldern. Das bedeutet, dass wir an manchen Stellen besonders vorsichtig sein müssen. Wie zum Beispiel bei Redundanzen in den Koordinatenpunkten. Diese können entstehen wenn die Halbierung der Koordinaten der letzten ($\lceil\log_2(N)\rceil$) Koordinatenlevels nicht aufgeht. Durch anschließendes Runden kann es zu doppelt auftretenden Koordinaten kommen. Diese können sich sowohl in anderen Koordinatenlevels als auch im selben Koordinatenlevel wiederholen. Allerdings treten ''Wiederholer'' nur im letzten ($\lceil\log_2(N)\rceil$) Koordinatenlevel auf. Da vorher die Maschenweite noch nicht eng genug war um Kollisionen hervorzurufen. Das bedeutet es muss beachtet werden, dass die tatsächliche Anzahl an neuen Koordinaten, die im letzten Koordinatenlevels dazukommen, kleiner ist als einfach nur das Doppelte des vorherigen Koordinatenlevels. Dies wiederum beeinflusst die Anzahl der Punkte aller Inkremente in deren Index sich mindestens einmal das maximale Koordinatenlevel befindet. Das Auftreten der Redundanzen hängt einzig von der Spielfeldgröße $N$ ab. Nur wenn $N = 2^k-1$ mit $k\in\mathbb{N}$ treten keine Redundanzen auf.
 
 \begin{figure}
 	\centering
@@ -1060,10 +1061,10 @@ In der Implementierung spielt die Redundanz nur in den dünnen Gittern eine Roll
 Die tatsächliche Implementierung muss weiterhin die grobe Struktur des naiven Algorithmus verfolgen, da alles andere schlichtweg falsch wäre. Um es mit der Terminologie des zweidimensionalen Falles auszudrücken, es müssen weiterhin die Schichten nacheinander abgearbeitet werden (vgl. Abbildung \ref{fig:fullGrid01}).
 
 \begin{figure}
-	\subfigure[Schicht Giiterlevel 0]{\resizebox{36mm}{!}{\includegraphics{figures/FullGridGeneral1}}}
-	\subfigure[Schicht Giiterlevel 1]{\resizebox{36mm}{!}{\includegraphics{figures/FullGridGeneral2}}}
-	\subfigure[Schicht Giiterlevel 2]{\resizebox{36mm}{!}{\includegraphics{figures/FullGridGeneral3}}}
-	\subfigure[Schicht Giiterlevel 3]{\resizebox{36mm}{!}{\includegraphics{figures/FullGridGeneral4}}}
+	\subfigure[Schicht Gitterlevel 0]{\resizebox{36mm}{!}{\includegraphics{figures/FullGridGeneral1}}}
+	\subfigure[Schicht Gitterlevel 1]{\resizebox{36mm}{!}{\includegraphics{figures/FullGridGeneral2}}}
+	\subfigure[Schicht Gitterlevel 2]{\resizebox{36mm}{!}{\includegraphics{figures/FullGridGeneral3}}}
+	\subfigure[Schicht Gitterlevel 3]{\resizebox{36mm}{!}{\includegraphics{figures/FullGridGeneral4}}}
 	\caption{Grobe Struktur bzgl. Inkremente volle Gitter Strategie 2 Dimensionen}
 	\label{fig:fullGrid01}
 \end{figure}
@@ -1100,7 +1101,7 @@ Die Funktion \textsc{getMaxLevel}() bestimmt in $O\left(d\cdot 2^{\lceil\log_2(N
 Die Funktion \textsc{calculateShotnumber}() errechnet in $O(max) = O\left(\lceil\log_2(N)\rceil\right)$ Schritten die Schussnummer von currentCell in dieser Strategie. Diese wird bestimmt durch Addition der MAX\_LEVEL\_FULL aller Gitterlevel bis max und LEVEL\_FULL[max]. Schließlich wird noch LEVEL\_FULL[max] inkrementiert.
 
 \subsubsection{Komplexität}
-Somit erhalten wir eine Laufzeitkomplexität von \\ $O\left(BlockSize\cdot\left(d\left( 2^{\lceil\log_2(N)\rceil}+1\right)+\lceil\log_2(N)\rceil\right)\right)$ für den vollen Gitter Algorithmus. Die Speicherkomplexität beläuft sich dann auf $O(BlockSize)$. Bei $d$ Dimensionen kann BlockSize variiert werden zwischen $N^1$ und $N^d$. Wobei $N^d$ nur zu empfehlen ist wenn ausreichend Speicher zur Verfügung steht. 
+Somit erhalten wir eine Laufzeitkomplexität von \\ $O\left(BlockSize\cdot\left(d\left( 2^{\lceil\log_2(N)\rceil}+1\right)+\lceil\log_2(N)\rceil\right)\right)$ für den vollen Gitter Algorithmus ($BlockSize$ beschriebt die Anzahl der Zellen eines Blocks). Die Speicherkomplexität beläuft sich dann auf $O(BlockSize)$. Bei $d$ Dimensionen kann $BlockSize$ variiert werden zwischen $N^1$ und $N^d$. Wobei $N^d$ nur zu empfehlen ist wenn ausreichend Speicher zur Verfügung steht. 
 
 \subsection{Dünne Gitter Strategie}
 
@@ -1204,11 +1205,11 @@ Die Kurven in der unteren Abbildung auf Seite \pageref{fig:random1} zeigt, dass 
 	\includepdf[landscape=true]{figures/fullGrid_size.pdf}
 \end{landscape}
 
-Die Abbildungen auf Seite \pageref{fig:fullGrid1} und \pageref{fig:fullGrid2} haben den gleichen Aufbau wie bei der Random-Strategie. Zunächst ist aus Seite \pageref{fig:fullGrid1} wieder die Schiffs- und Flottenverteilungsfunktion zu sehen. Dabei ist ein flacherer Anstieg bei der oberen Abbildung als noch bei der Random- Strategie zu sehen. Dies wird vor allem im Vergleichsplot deutlich, der später folgt. 
+Die Abbildungen auf Seite \pageref{fig:fullGrid1} und \pageref{fig:fullGrid2} haben den gleichen Aufbau wie bei der Random-Strategie. Zunächst ist auf Seite \pageref{fig:fullGrid1} wieder die Schiffs- und Flottenverteilungsfunktion zu sehen. Dabei ist ein flacherer Anstieg bei der oberen Abbildung als noch bei der Random- Strategie zu sehen. Dies wird vor allem im Vergleichsplot deutlich, der später folgt. 
 
 Die Erwartungswerte auf Seite \pageref{fig:fullGrid2} verhalten sich nun deutlich anders als noch bei der Random-Strategie. Hier haben wir bereits mit Skalierung ein Wachstum in den mittleren Dimensionen. Das heißt die absoluten Zahlen müssen noch viel stärker exponentiell wachsen als bei der Random-Strategie. Dies verdeutlicht wie weit wir noch von der Random-Strategie weg sind. Später gut zu sehen in den Vergleichsplots.
 
-Auf Seite \pageref{fig:fullGrid3} ist eine genauere Betrachtung der Erwartungswerte für Flotten zu sehen. Hier wird durch die Vergrößerungen die starke Annäherung an 1 noch einmal hervorgehoben. Die Tendenz zeigt, dass wir pro Dimension um ca. $+9\cdot10^{-D}$ näher an die 1 kommen.  
+Auf Seite \pageref{fig:fullGrid3} ist eine genauere Betrachtung der Erwartungswerte für Flotten zu sehen. Hier wird durch die Vergrößerungen die starke Annäherung an 1 noch einmal hervorgehoben. Die Tendenz zeigt, dass wir pro Dimension $D$ um ca. $+9\cdot10^{-D}$ näher an die 1 kommen.  
 
 Schließlich sind auf Seite \pageref{fig:fullGrid4} eine Schiffs- und Flottenverteilungsfunktion mit variierender Größe aufgetragen. Dabei erreicht man hierbei im Gegensatz zur Variation der Dimensionen viel schneller eine Schranke für die noch vertretbare Laufzeit des Codes. Hier ist wieder eine schneller Anstieg auf 1 zu beobachten, da bei großen Spielfeldgrößen auch wenige Prozent der Zellen bereits eine große absolute Anzahl haben. Die Verläufe sind sehr ähnlich zur Variation der Dimension.
 
@@ -1236,7 +1237,7 @@ Schließlich sind auf Seite \pageref{fig:fullGrid4} eine Schiffs- und Flottenver
 
 Die Abbildungen auf den Seiten \pageref{fig:sparseGrid1} bis \pageref{fig:sparseGrid4} haben den gleichen Aufbau wie bei anderen Strategien.
 
-Bei der Schiffsverteilungsfunktion auf Seite \pageref{fig:sparseGrid1} haben wir einen ähnlichen Verlauf wie bisher, allerdings bereits einen etwas steileren Anstieg als noch bei full Grids. Die Flottenverteilungsfunktion verläuft analog zu anderen Strategien mit den typischen Erwartungswerten nahe 1.
+Bei der Schiffsverteilungsfunktion auf Seite \pageref{fig:sparseGrid1} haben wir einen ähnlichen Verlauf wie bisher, allerdings einen etwas steileren Anstieg als noch bei full Grids. Die Flottenverteilungsfunktion verläuft analog zu anderen Strategien mit den typischen Erwartungswerten nahe 1.
 
 Die auf Seite \pageref{fig:sparseGrid2} dargestellten Erwartungswerte unterscheiden sich in ihrer Tendenz zu denen bei full Grids. Diese haben schon eher einen Verlauf wie bei der Random-Strategie.
 
@@ -1328,7 +1329,7 @@ Wie in einigen Graphen von $P(\mathbf{X}^{F_{all}}_{\strat} \leq v)$ vorallem f�
 Um Strategien dennoch zu vergleichen und zu bewerten, kann $E(\mathbf{T}^{\Omega_L}_{\strat})$, d.h. der Erwartungswert für Schiffe herangezogen werden.
 
 \subsection{Fehlerbetrachtung}
-Bevor zum Vergleich der Strategien kommen noch ein paar Worte zu auftretenden Fehlern und Einschränkungen, die gemacht werden müssen. 
+Bevor wir zum Vergleich der Strategien kommen noch ein paar Worte zu auftretenden Fehlern und Einschränkungen, die gemacht werden müssen. 
 
 Die Halton-Strategie lässt sich nur bis in Größenordnungen von $O(10^8)$ vielleicht noch $O(10^9)$ durchführen. Alles was darüber liegt würde einfach zu lange brauchen. Die Halton-Strategie wie auch die Sobol-Strategie hat die Eigenheit, dass nicht alle Zellen des Spielfelds einmalig und nach bestimmter Reihenfolge beschossen wird. Zugegebenermaßen die Reihenfolge bleibt gleich, das Problem liegt viel mehr beim einmaligen bzw. nicht einmaligen Beschießen von Zellen. Da die Zahlen der Sequenz normalerweise als Kommazahlen zwischen 0 und 1 generiert werden wurden diese mit der Spielfeldgröße multipliziert und anschließend gerundet. Daher entstanden viele gleiche Punkte in der Sequenz. Die Strategie sucht dann, wenn bereits ein großer Anteil des Felds beschossen wurde, in den vielen Doppeltreffern die Zellen heraus, die zum ersten Mal beschossen werden. Daher wird bei so einer Strategie für eine Spielfeldgröße von z.B. $10^8$ ein Vielfaches von $10^8$ an Punkten generiert bis alle Zellen getroffen wurden.
 
@@ -1351,28 +1352,28 @@ Die Sobol-Strategie ist nach Konstruktion bereits nur für Zahlen bis $2^{32}$ a
 	\includepdf[landscape=true]{figures/comparsion_dimension_fleet.pdf}
 \end{landscape}
 
-Die Schiffsverteilungsfunktion auf Seite \pageref{fig:compare1} zeigt alle verwendeten Strategien im Vergleich zueinander. Dabei beschreibt die rote ''min'' Kurve eine bereinigte Version der Random-Strategie, um die verwendeten 48 Threads zu berücksichtigen. 
+Die Schiffsverteilungsfunktion auf Seite \pageref{fig:compare1} zeigt alle verwendeten Strategien im Vergleich zueinander. Dabei soll durch die Kurven minRandom und maxRandom die Varianz bei der Random-Strategie miteinbezogen werden.
 
 Wie zu erwarten gewesen ist liegt die full-Grid-Strategie unterhalb der sparse-Grid-Strategie und schließt damit schlechter ab. Beide Gitter-Strategien liegen deutlich unterhalb der Quasi-Random-Strategien. Allerdings können wir einen Vergleich von Halton und Sobol erst in den späteren Abbildungen vornehmen, da sich diese noch um eine Dimension unterschieden. 
 
-In dieser Darstellung lassen sich Random und bereinigte Random-Strategie kaum unterschieden.
+In dieser Darstellung lassen sich minRandom und maxRandom kaum unterschieden.
 
-Betrachten wir nun die Flottenverteilungsfunktion auf Seite \pageref{fig:compare1}. Allgemein sind Kurven in dieser Abbildung die schneller ansteigen besser, da es gewünscht ist möglichst schnell am oberen Rand anzukommen. Dies würde nämlich bedeuten, dass die zufällige Flotte versenkt ist. 
+Betrachten wir nun die Flottenverteilungsfunktion auf Seite \pageref{fig:compare1}. Allgemein sind Kurven, die in dieser Abbildung schneller ansteigen besser, da es gewünscht ist möglichst schnell am oberen Rand anzukommen. Dies würde nämlich bedeuten, dass die zufällige Flotte versenkt ist. 
 Die full-Grid-Strategie bewegt sich ganz unten, das heißt sie macht den kleinsten Fortschritt um die Flotte zu versenken. Die sparse-Grid-Strategie liegt darüber macht also einen besseren Fortschritt. 
-Die interessanten Stellen sind nun einerseits der Wechsel von Halton zwischen 0.2 und 0.4. Das bedeutet, dass Halton zuvor schlechter voran gekommen ist als Random und sich in diesem Zeitraum Random gegenüber verbessert. Ab 0.8 liegt bei Halton allerdings ein Messfehler vor, da die Kurve zu früh auf 1 ansteigt. Andererseits der Vergleich der beiden Random-Strategien interessant. Unbereinigt würde die Random-Strategie besser abschneiden als sie eigentlich sollte. Dies ist gut zu sehen von 0.8 bis 1.0. Dort löst sich Random langsam von bereinigt-Random (min). Zu beachten ist, dass Sobol in diesem Plot noch außer Konkurrenz ist, da es Sobol für $10^7$ ist.
+Die interessanten Stellen sind nun einerseits der Wechsel von Halton zwischen 0.2 und 0.4. Das bedeutet, dass Halton zuvor schlechter voran gekommen ist als Random und sich in diesem Zeitraum gegenüber der Random-Strategie verbessert hat. Ab 0.8 liegt bei Halton allerdings ein Messfehler vor, da die Kurve zu früh auf 1 ansteigt. Andererseits ist der Vergleich der minRandom und maxRandom Kurven interessant. Im Bereich von 0.8 bis 1.0 liegt maxRandom oberhalb von minRandom was natürlich zu erwarten ist. Allerdings ist der durch die Varianz entstehende Schlauch zwischen den beiden Kurven reicht klein. Die Kurven überlagern sich entweder, oder sie haben nur einen kleinen Abstand zueinander. Das heißt die Varianz bei der Random-Strategie ist nicht allzu groß. Zu beachten ist, dass Sobol in diesem Plot noch außer Konkurrenz ist, da es Sobol für $10^7$ ist.
 
-Dies ist allerdings behoben auf Seite \pageref{fig:compare2}. Hier wurde zum besseren Vergleich für Sobol noch die Kurve ''halD7'' eingefügt, die Halton für $10^7$ darstellt. Aufgrund des engen Verlaufs dieser beiden Kurven in der Abbildung rechts oben ist zu vermuten, dass dies für $D=8$ ebenfalls der Fall ist. Somit können wir uns für Vergleiche Sobol mit $D=8$ einfach nahe Halton denken. Die Abbildung rechts oben ist besonders interessant, da sie eine Vergrößerung um den Nullpunkt zeigt. 
+Dies ist allerdings behoben auf Seite \pageref{fig:compare2}. Hier wurde zum besseren Vergleich für Sobol noch die Kurve ''halD7'' eingefügt, die Halton für $D=7$ darstellt. Aufgrund des engen Verlaufs dieser beiden Kurven in der Abbildung rechts oben ist zu vermuten, dass dies für $D=8$ ebenfalls der Fall ist. Somit können wir uns für Vergleiche Sobol mit $D=8$ einfach nahe Halton denken. Die Abbildung rechts oben ist besonders interessant, da sie eine Vergrößerung um den Nullpunkt zeigt. 
 
 Der erste Schuss von full-Grid und sparse-Grid geht immer in die Mitte. Dort liegen am meisten Schiffe wodurch ganz zu Beginn die Gitter-Strategien kurzzeitig besser verlaufen als die quasi-zufälligen Strategien und bei größerem Zoom auch besser als Random. Dieser Vorsprung geht allerdings sehr schnell  verloren und die Gitter werden überholt.
 
-Was die Erwartungswerte auf Seite \pageref{fig:compare2} angeht sehen die wie erwartet aus. Full-Grid gefolgt von sparse-Grid, dann Halton/Sobol und zuletzt Random. 
+Was die Erwartungswerte auf Seite \pageref{fig:compare2} angeht sehen diese wie erwartet aus. Full-Grid gefolgt von sparse-Grid, dann Halton/Sobol und zuletzt Random. 
 
-Auf Seite \pageref{fig:compare3} sind zuletzt noch die Flottenverteilungsfunktionen dargestellt. Hier können noch einmal schön die zuvor hervorgehobenen Stellen, insbesondere oben rechts, betrachtet werden. Etwas neues interessantes ist, dass sich Halton von Sobol löst für $D=7$. Dies lässt vermuten, dass Sobol, wenn man es mit Halton für $D=8$ vergleicht, sich eher am Verlauf der Random-Strategie orientiert, wovon sich Halton ebenfalls lösen kann.
+Auf Seite \pageref{fig:compare3} sind zuletzt noch die Flottenverteilungsfunktionen dargestellt. Hier können noch einmal schön die zuvor hervorgehobenen Stellen, insbesondere oben rechts, betrachtet werden. Etwas neues interessantes ist, dass sich Halton von Sobol löst für $D=7$. Dies lässt vermuten, dass sich Sobol für $D=8$ eher am Verlauf der Random-Strategie orientiert, wovon sich Halton dann ebenfalls lösen würde.
 
-Das gleiche Bild zeigen die Erwartungswerte. Wenn wir Sobol für $D=8$ eher bei Random ansiedeln dann zeigt sich Halton mit dem kleinsten Erwartungswert.
+Die gleiche Tendenz zeigen die Erwartungswerte. Wenn wir Sobol für $D=8$ eher bei Random ansiedeln dann zeigt sich Halton mit dem kleinsten Erwartungswert.
 
 \section{Zusammenfassung und Fazit}
-In dieser Ausarbeitung wurden zunächst formal das Spielprinzip, Strategien und eine Einbettung für diese in ein Monte-Carlo-Verfahren vorgestellt. Anschließend wurden Algorithmen für volle Gitter, dünne Gitter, Halton- und Sobol-Sequenzen vorgestellt und teilweise auf ihre Komplexität analysiert. Danach wurde deren eventuell vom Algorithmus abweichende Implementierung thematisiert. Abweichungen konnten dabei auftreten damit die Implementierung  auf Systemen mit beliebig großem Speicher lauffähig ist. Es wurden für verschiedene Dimensionen und Spielfeldgrößen obige Strategien und eine Random-Strategie ausgeführt. Die Ergebnisse wurden ausgewertet, graphisch dargestellt und die Strategien damit verglichen. Dabei hat sich gezeigt, dass um ein einzelnes zufälliges Schiff zu treffen sich die Random-Strategie am besten eignet, die von fast jedem Spieler des echten Spiels benutzt wird. Um eine zufällige Flotte zu versenken hatte die Halton-Strategie den geringsten Erwartungswert an Schüssen, also eignet sich diese am besten ein Flotte zu versenken.
+In dieser Ausarbeitung wurden zunächst formal das Spielprinzip, Strategien und eine Einbettung für diese in ein Monte-Carlo-Verfahren vorgestellt. Anschließend wurden Algorithmen für volle Gitter, dünne Gitter, Halton- und Sobol-Sequenzen vorgestellt und teilweise auf ihre Komplexität analysiert. Danach wurde deren eventuell vom Algorithmus abweichende Implementierung thematisiert. Abweichungen konnten dabei auftreten wenn die Implementierung  auf Systemen mit beliebig großem Speicher lauffähig sein sollte. Es wurden für verschiedene Dimensionen und Spielfeldgrößen obige Strategien und eine Random-Strategie ausgeführt. Die Ergebnisse wurden ausgewertet, graphisch dargestellt und die Strategien damit verglichen. Dabei hat sich gezeigt, dass um ein einzelnes zufälliges Schiff zu treffen sich die Random-Strategie am besten eignet, die bereits von fast jedem Spieler des echten Spiels benutzt wird. Um eine zufällige Flotte zu versenken eignet sich die Halton-Strategie mit dem geringsten Erwartungswert an Schüssen am besten.
 
 
 % Literaturverzeichnis ------------------------------------------------
