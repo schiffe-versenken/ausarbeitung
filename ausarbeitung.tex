@@ -128,21 +128,23 @@ In dieser Ausarbeitung werden zunächst formal das Spielprinzip, Strategien und 
 
 \subsection{Spielbeschreibung}
 Diese Ausarbeitung beschäftigt sich mit der Umsetzung von Schiffe-Versenken in beliebig vielen Dimensionen.
-Die generelle Funktionsweise von normalem Schiffe-Versenken bleibt erhalten, muss jedoch um folgende Dinge erweitert werden, um auch in höheren Dimensionen gut spielbar zu sein:
+Die generelle Funktionsweise von normalem Schiffe-Versenken bleibt erhalten, muss jedoch um einige Dinge erweitert werden, um auch in höheren Dimensionen gut spielbar zu sein. Diese Spielregeln sind äquivalent zu denen in \cite{M13}.
 
-...
+Das Spielfeld besteht, analog zum echten Spiel, aus Zellen, auf die jeweils geschossen werden kann. Bloß kann hier das Spielfeld beliebig viele Dimension umfassen und kann somit viel mehr Zellen enthalten, als das echte Spiel, in dem es nur 2 Dimensionen gibt. Die Spielfeldgröße entlang einer Dimension kann ebenfalls beliebig, also auch viel größer, gewählt werden, mit der Einschränkung, dass die Spielfeldgröße der Einfachheit halber in allen Dimensionen gleich groß ist.
+
+Eine Schiffsposition ist ein Hyperquader, der einen Teil des Spielfeldes, also einige Zellen, umfasst. Die Ausdehnung des Hyperquaders muss entlang jeder Dimension mindestens eine Zelle und maximal die Spielfeldgröße sein. Die Menge aller möglichen Schiffspositionen ist also die Menge aller Hyperquader, für die diese Bedingung gilt. Das heißt, dass verschiedene Schiffe sich, im Gegensatz zum orginalen Spiel, entlang jeder Dimension überlappen können.
 
 Zu Beginn werden eine beliebige Anzahl an Schiffen auf dem Spielfeld platziert.
 Die Gesamtheit aller gewählten Schiffspositionen wird auch die Flotte genannt.
 Es wird davon ausgegangen, dass die Schiffspositionen rein zufällig ausgewählt wurden, d.h. dass zu Spielbeginn eine Flotte aus der Menge aller möglichen Flotten ausgewählt wird. Jede mögliche Flotte hat hierbei die gleiche Wahrscheinlichkeit, ausgewählt zu werden.
+
 Nun kann der Spieler anfangen, auf bestimmte Positionen auf dem Spielfeld, auch Zellen genannt, zu schießen.
 Da Schiffe überlappen können, können mit jedem Schuss mehrere Schiffe, also Teilmengen der Flotte getroffen werden.
 Nach jedem Schuss erfährt der Spieler, welche Schiffe der Flotte er getroffen hat.
 Ein Schiff gilt als versenkt, sobald es getroffen wurde.
-Sobald alle Schiffe versenkt wurden, ist das Spiel beendet.
+Sobald alle Schiffe der Flotte versenkt wurden, ist die Flotte versenkt und das Spiel beendet.
 Das Ziel des Spielers ist es, mit möglichst wenig Schüssen alle Schiffe zu versenken.
-Diese Spielregeln sind äquivalent zu denen in \cite{M13}.
-
+Dafür können verschiedene Schuss-Strategien angewendet und miteinander verglichen werden.
 
 \subsection{Inhalt}
 
@@ -474,7 +476,7 @@ P(\mathbf{T}^{\Omega_L}_{\strat} \leq v) \approx P(\mathbf{T}^{L_{all}}_{\strat}
 \]
 d.h. unsere aus der Stichprobe berechnete Verteilungsfunktion ist die beste Approximation von der echten Verteilungsfunktion.
 
-Ein Sampling error $e_v=P(\mathbf{T}^{\Omega_L}_{\strat} \leq v) - P(\mathbf{T}^{L_{all}}_{\strat} \leq v)$ verstärkt sich zwar bei der Berechnung der Verteilungsfunktion der Flotten um ca. den Faktor $2^{e_v |L_{all}|} - 1$, wie aber später in der Auswertung zu sehen ist, macht dies bei den sehr kleinen Werten von $P(\mathbf{X}^{F_{all}}_{\strat} \leq v)$ fast keinen Unterschied.
+Ein Sampling error $e_v=P(\mathbf{T}^{\Omega_L}_{\strat} \leq v) - P(\mathbf{T}^{L_{all}}_{\strat} \leq v)$ verstärkt sich zwar bei der Berechnung der Verteilungsfunktion der Flotten um ca. den Faktor $2^{e_v |L_{all}|} - 1$, wie später in der Auswertung zu sehen ist.
 
 \begin{satz}
 Sei $\strat \in \strategies$ die verwendete Schuss-Strategie und $v \in \{1, \dots, |C_{all}|\}$
